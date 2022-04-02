@@ -1,0 +1,6 @@
+hikari==2.0.0.dev106
+hikari_miru==1.1.1
+hikari-lightbulb==2.2.0
+lightbulb_ext_filament @ git+https://github.com/tandemdude/lightbulb-ext-filament@43351ab93b3c2ef1de47ce4539eaa20a5a580a85
+requests==2.27.1
+uvloop==0.16.0

@@ -1,0 +1,3 @@
+__version__ = "0.1.0"
+
+STARTUP_CHANNEL = 884298732848431126
