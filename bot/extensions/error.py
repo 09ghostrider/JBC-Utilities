@@ -31,12 +31,18 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         embed.description = f"> This command can only be used in DMs"
     elif isinstance(exception, lightbulb.errors.OnlyInGuild):
         embed.description = f"> This command can only be used in a guild"
+    elif isinstance(exception, TypeError):
+        embed.description = "> Invalid option type"
     # elif isinstance(exception, lightbulb.errors.CommandNotFound):
     #     embed.description = f"> Unknown command / is currently disabled"
     else:
         embed.description = f"> There was a error with this command"
         raise exception
-    await event.context.respond(embed=embed, reply=True)
+
+    try:
+        await event.context.respond(embed=embed, flags=ephemeral, reply=True)
+    except:
+        await event.context.respond(embed=embed, reply=True)
 
 def load(bot):
     bot.add_plugin(plugin)

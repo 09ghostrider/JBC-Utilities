@@ -14,8 +14,24 @@ with open(".\\secrets\\prefix") as f:
 with open(".\\secrets\\db") as f:
     mongoclient = f.read().strip()
 
+@lightbulb.Check
+def perms_check(ctx: lightbulb.Context) -> None:
+    cluster = MongoClient(mongoclient)
+    configs = cluster["highlights"]["server_configs"]
+
+    config = configs.find_one({"guild": ctx.event.message.guild_id})
+    if config == None:
+        return False
+    
+    for r in config["req"]:
+        role = ctx.app.cache.get_role(r)
+        if role in ctx.member.get_roles():
+            return True
+    return False
+
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
+@lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.command("highlight", "Highlighting means you will receive a message when your keyword is said in chat.", aliases=["hl"])
 @lightbulb.implements(lightbulb.PrefixCommandGroup)
 async def _hl(ctx: lightbulb.Context) -> None:
@@ -372,12 +388,19 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     dmed_users = []
 
     channel = await message.message.app.rest.fetch_channel(message.message.channel_id)
-    history = await channel.fetch_history(before=message.message.created_at).limit(4)
+    t = (message.message.created_at) + datetime.timedelta(0,1)
+    history = await channel.fetch_history(before=t).limit(5)
     description = ""
 
     for h in reversed(history):
-        description = description + "\n" + f"**[{h.created_at}] {h.author.username}:** {h.content[:200]}"
-    description = description + "\n" + f"**[{message.message.created_at}] {message.message.author.username}:** {message.message.content[:200]}"
+        try:
+            if len(h.content) > 200:
+                hc = h.content[:200]
+            else:
+                hc = h.content
+        except:
+            hc = ""
+        description = description + "\n" + f"**[<t:{round(h.created_at.timestamp())}:T>] {h.author.username}:** {hc}"
 
     matches = highlight.find(
             # {"hl": {"$in": word}},
@@ -389,7 +412,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     for word in words:
         if matches is not None:
             for match in matches:
-                if word in match["hl"]:
+                if word.lower() in match["hl"]:
                     if user_id not in match["block_member"] and message.message.channel_id not in match["block_channel"]:
                         if int(match["_id"]) not in dmed_users:
                             last_seen_check = False

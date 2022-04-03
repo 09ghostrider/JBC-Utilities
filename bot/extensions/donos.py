@@ -15,15 +15,37 @@ with open(".\\secrets\\prefix") as f:
 with open(".\\secrets\\db") as f:
     mongoclient = f.read().strip()
 
+@lightbulb.Check
+def perms_check(ctx: lightbulb.Context) -> None:
+    cluster = MongoClient(mongoclient)
+    configs = cluster["donations"]["server_configs"]
+
+    config = configs.find_one({"guild": ctx.event.message.guild_id})
+    if config == None:
+        return False
+    
+    for r in config["req"]:
+        role = ctx.app.cache.get_role(r)
+        if role in ctx.member.get_roles():
+            return True
+    return False
+
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
 @lightbulb.command("donation", "maintain and manage donations of a member", aliases=["dono"])
 @lightbulb.implements(lightbulb.PrefixCommandGroup)
 async def _donation(ctx: lightbulb.Context) -> None:
-    pass
+    embed=hikari.Embed(title="=== Command Help ===", description="""donation - maintain and manage donations of a member
+
+Usage: -donation [subcommand]
+    """, color=random.randint(0x0, 0xffffff))
+    embed.add_field(name="== Subcommands ==", value="""- remove - remove a members donation note
+- show - check the notes of a member
+- add - add amount to a members donation""")
+    await ctx.respond(embed=embed)
 
 @_donation.child
-@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD))
+@lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.option("note", "take a note for this donation", type=str, required=False, default="No Note Provided", modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.option("amount", "the amount to add", type=int, required=True)
 @lightbulb.option("member", "the member to add donation", type=hikari.Member, required=True)
@@ -72,7 +94,7 @@ async def _add(ctx: lightbulb.Context) -> None:
     await ctx.respond(embed=embed, reply=True)
 
 @_donation.child
-@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD))
+@lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.option("note_id", "the id of the note to delete", required=True, type=int)
 @lightbulb.command("remove", "remove a members donation note", aliases=["r", "rn", "removenote", "-"], inherit_checks=True)
 @lightbulb.implements(lightbulb.PrefixSubCommand)
@@ -105,7 +127,7 @@ async def _remove(ctx: lightbulb.Context) -> None:
     await ctx.respond(embed=embed, reply=True)
 
 @_donation.child
-@lightbulb.option("member", "the member to check the notes of", required=False, default=None)
+@lightbulb.option("member", "the member to check the notes of", required=False, default=None, type=hikari.Member)
 @lightbulb.command("show", "check the notes of a member", aliases=["c", "s", "notes", "ns"], inherit_checks=True)
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _show(ctx: lightbulb.Context) -> None:
@@ -135,20 +157,27 @@ async def _show(ctx: lightbulb.Context) -> None:
     else:
         total_pages = round((len(notes) // page_limit) + 1)
     total_count = len(notes)
-    for n1 in range(0, total_pages):
+    
+    if total_pages == 0:
         embed=hikari.Embed(color=random.randint(0x0, 0xffffff), description=f"Donor: {member} ({member.id})\nTotal Donation(s): {total_count}\nTotal Amount: {total_donation}")
-        # embed.set_footer(text=f"{member}", icon=member.avatar_url)
         embed.set_thumbnail(member.avatar_url)
-        for n2 in range(0, 9):
-            try:
-                n_id = notes[0]["note_id"]
-                a = notes[0]["amount"]
-                no = notes[0]["note"]
-                embed.add_field(name=f"Note #{n_id}", value=f"Amount: {a}\nNote: {no}", inline=True)
-                notes.pop(0)
-            except:
-                pass
         pages.append(embed)
+
+    else:
+        for n1 in range(0, total_pages):
+            embed=hikari.Embed(color=random.randint(0x0, 0xffffff), description=f"Donor: {member} ({member.id})\nTotal Donation(s): {total_count}\nTotal Amount: {total_donation}")
+            # embed.set_footer(text=f"{member}", icon=member.avatar_url)
+            embed.set_thumbnail(member.avatar_url)
+            for n2 in range(0, 9):
+                try:
+                    n_id = notes[0]["note_id"]
+                    a = notes[0]["amount"]
+                    no = notes[0]["note"]
+                    embed.add_field(name=f"Note #{n_id}", value=f"Amount: {a}\nNote: {no}", inline=True)
+                    notes.pop(0)
+                except:
+                    pass
+            pages.append(embed)
 
     navigator = nav.NavigatorView(pages=pages)
     await navigator.send(ctx.event.message.channel_id)

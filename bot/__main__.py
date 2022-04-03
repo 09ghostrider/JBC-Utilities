@@ -97,7 +97,7 @@ if __name__ == "__main__":
     bot.run(
         status=hikari.Status.IDLE,
         activity=hikari.Activity(
-            name=f"{prefix}help", 
+            name=f"with you",
             type=hikari.ActivityType.PLAYING,
         )
     )
