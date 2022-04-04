@@ -7,10 +7,10 @@ import miru
 from bot import extensions
 from . import STARTUP_CHANNEL
 
-with open(".\\secrets\\token") as f:
+with open("./secrets/token") as f:
     _token = f.read().strip()
 
-with open(".\\secrets\\prefix") as f:
+with open("./secrets/prefix") as f:
     prefix = f.read().strip()
 
 ephemeral = hikari.MessageFlag.EPHEMERAL
