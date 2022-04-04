@@ -93,7 +93,7 @@ async def _serverconf(ctx: lightbulb.Context) -> None:
         
         elif option == "remove":
             if role.id not in find["req"]:
-                await ctx.resopnd(f"{role.mention} is not in the list", reply=True, role_mentions=False)
+                await ctx.respond(f"{role.mention} is not in the list", reply=True, role_mentions=False)
                 return
             
             find["req"].pop(find["req"].index(role.id))
@@ -133,7 +133,7 @@ async def _serverconf(ctx: lightbulb.Context) -> None:
         
         elif option == "add":
             if role.id in find["req"]:
-                await ctx.resopnd(f"{role.mention} is already in the list", reply=True, role_mentions=False)
+                await ctx.respond(f"{role.mention} is already in the list", reply=True, role_mentions=False)
                 return
             
             find["req"].append(role.id)
@@ -146,7 +146,7 @@ async def _serverconf(ctx: lightbulb.Context) -> None:
         
         elif option == "remove":
             if role.id not in find["req"]:
-                await ctx.resopnd(f"{role.mention} is not in the list", reply=True, role_mentions=False)
+                await ctx.respond(f"{role.mention} is not in the list", reply=True, role_mentions=False)
                 return
             
             find["req"].pop(find["req"].index(role.id))
@@ -186,7 +186,7 @@ async def _serverconf(ctx: lightbulb.Context) -> None:
         
         elif option == "add":
             if role.id in find["req"]:
-                await ctx.resopnd(f"{role.mention} is already in the list", reply=True, role_mentions=False)
+                await ctx.respond(f"{role.mention} is already in the list", reply=True, role_mentions=False)
                 return
             
             find["req"].append(role.id)
@@ -199,7 +199,7 @@ async def _serverconf(ctx: lightbulb.Context) -> None:
         
         elif option == "remove":
             if role.id not in find["req"]:
-                await ctx.resopnd(f"{role.mention} is not in the list", reply=True, role_mentions=False)
+                await ctx.respond(f"{role.mention} is not in the list", reply=True, role_mentions=False)
                 return
             
             find["req"].pop(find["req"].index(role.id))
@@ -239,7 +239,7 @@ async def _serverconf(ctx: lightbulb.Context) -> None:
         
         elif option == "add":
             if role.id in find["req"]:
-                await ctx.resopnd(f"{role.mention} is already in the list", reply=True, role_mentions=False)
+                await ctx.respond(f"{role.mention} is already in the list", reply=True, role_mentions=False)
                 return
             
             find["req"].append(role.id)
@@ -252,7 +252,7 @@ async def _serverconf(ctx: lightbulb.Context) -> None:
         
         elif option == "remove":
             if role.id not in find["req"]:
-                await ctx.resopnd(f"{role.mention} is not in the list", reply=True, role_mentions=False)
+                await ctx.respond(f"{role.mention} is not in the list", reply=True, role_mentions=False)
                 return
             
             find["req"].pop(find["req"].index(role.id))
