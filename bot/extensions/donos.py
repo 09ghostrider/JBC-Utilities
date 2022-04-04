@@ -47,14 +47,28 @@ Usage: -donation [subcommand]
 @_donation.child
 @lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.option("note", "take a note for this donation", type=str, required=False, default="No Note Provided", modifier=lightbulb.commands.base.OptionModifier(3))
-@lightbulb.option("amount", "the amount to add", type=int, required=True)
+@lightbulb.option("amount", "the amount to add", type=str, required=True)
 @lightbulb.option("member", "the member to add donation", type=hikari.Member, required=True)
 @lightbulb.command("add", "add amount to a members donation", aliases=["a", "sn", "setnote", "+"], inherit_checks=True)
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _add(ctx: lightbulb.Context) -> None:
     member = ctx.options.member
-    amount = int(ctx.options.amount)
+    amount = ctx.options.amount
     note = ctx.options.note
+
+    try:
+        amount = int(amount)
+    except:
+        try:
+            if "e" in amount:
+                first_digit, how_many_zeros = amount.split("e")
+                amount = int(f"{first_digit}{'0' * int(how_many_zeros)}")
+            else:
+                await ctx.respond("Invalid amount", reply=True)
+                return
+        except:
+            await ctx.respond("Invalid amount", reply=True)
+            return
 
     if amount <= 0:
         await ctx.respond("Invalid amount", reply=True)
