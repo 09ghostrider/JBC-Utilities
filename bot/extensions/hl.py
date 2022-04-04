@@ -8,10 +8,10 @@ import datetime
 
 plugin = lightbulb.Plugin("hl")
 
-with open(".\\secrets\\prefix") as f:
+with open("./secrets/prefix") as f:
     prefix = f.read().strip()
 
-with open(".\\secrets\\db") as f:
+with open("./secrets/db") as f:
     mongoclient = f.read().strip()
 
 @lightbulb.Check
