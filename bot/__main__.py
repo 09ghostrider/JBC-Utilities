@@ -18,15 +18,15 @@ ephemeral = hikari.MessageFlag.EPHEMERAL
 bot = lightbulb.BotApp(
     token=_token,
     prefix=lightbulb.when_mentioned_or(prefix),
-    logs={
-        "version": 1,
-        "incremental": True,
-        "loggers": {
-            "hikari": {"level": "INFO"},
-            "hikari.ratelimits": {"level": "TRACE_HIKARI"},
-            "lightbulb": {"level": "DEBUG"},
-        }
-    },
+    # logs={
+    #     "version": 1,
+    #     "incremental": True,
+    #     "loggers": {
+    #         "hikari": {"level": "INFO"},
+    #         "hikari.ratelimits": {"level": "TRACE_HIKARI"},
+    #         "lightbulb": {"level": "DEBUG"},
+    #     }
+    # },
     default_enabled_guilds=[881031368199524372, 832105614577631232],
     help_slash_command=True,
     case_insensitive_prefix_commands=True
