@@ -17,7 +17,7 @@ with open("./secrets/db") as f:
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-@lightbulb.option("content", "the content to dm", required=True, type=str)
+@lightbulb.option("content", "the content to dm", required=True, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.option("member", "the member to dm", required=True, type=hikari.User)
 @lightbulb.command("dm", "dm a member", aliases=["directmessage"])
 @lightbulb.implements(lightbulb.PrefixCommand)
