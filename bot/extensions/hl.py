@@ -18,7 +18,7 @@ with open("./secrets/db") as f:
 @lightbulb.Check
 def perms_check(ctx: lightbulb.Context) -> None:
     cluster = MongoClient(mongoclient)
-    configs = cluster["highlights"]["server_configs"]
+    configs = cluster["highlight"]["server_configs"]
 
     config = configs.find_one({"guild": ctx.interaction.guild_id})
     if config == None:

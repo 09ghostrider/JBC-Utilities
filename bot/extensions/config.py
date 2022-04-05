@@ -46,7 +46,7 @@ async def _list(ctx: lightbulb.Context) -> None:
         find = db.find_one({"guild": {"$eq": guild_id}})
     elif command == "hl":
         cluster = MongoClient(mongoclient)
-        db = cluster["highlights"]["server_configs"]
+        db = cluster["highlight"]["server_configs"]
         find = db.find_one({"guild": {"$eq": guild_id}})
     else:
         await ctx.respond("Unknown command", reply=True, flags=ephemeral)
@@ -120,7 +120,7 @@ async def _list(ctx: lightbulb.Context) -> None:
         
     elif command == "hl":
         cluster = MongoClient(mongoclient)
-        db = cluster["highlights"]["server_configs"]
+        db = cluster["highlight"]["server_configs"]
         find = db.find_one({"guild": {"$eq": guild_id}})
         if find == None:
             find = {
@@ -199,7 +199,7 @@ async def _list(ctx: lightbulb.Context) -> None:
         
     elif command == "hl":
         cluster = MongoClient(mongoclient)
-        db = cluster["highlights"]["server_configs"]
+        db = cluster["highlight"]["server_configs"]
         find = db.find_one({"guild": {"$eq": guild_id}})
         if find == None:
             find = {
