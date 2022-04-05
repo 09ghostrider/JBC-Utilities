@@ -178,30 +178,30 @@ async def _list(ctx: lightbulb.Context) -> None:
 
     await ctx.respond(embed=embed, reply=True)
 
-@plugin.listener(hikari.MessageCreateEvent)
-async def _on_message(message: hikari.MessageCreateEvent) -> None:
-    if message.is_human == False:
-        return
+# @plugin.listener(hikari.MessageCreateEvent)
+# async def _on_message(message: hikari.MessageCreateEvent) -> None:
+#     if message.is_human == False:
+#         return
     
-    guild_id = message.message.guild_id
-    mentions = message.message.mentions.users
-    if mentions == {}:
-        return
-    member = list(mentions.items())[0][0]
+#     guild_id = message.message.guild_id
+#     mentions = message.message.mentions.users
+#     if mentions == {}:
+#         return
+#     member = list(mentions.items())[0][0]
 
-    cluster = MongoClient(mongoclient)
-    reacts = cluster["ar"]["react"]
-    react = reacts.find_one({"guild": {"$eq": guild_id}, "member": {"$eq": member}})
+#     cluster = MongoClient(mongoclient)
+#     reacts = cluster["ar"]["react"]
+#     react = reacts.find_one({"guild": {"$eq": guild_id}, "member": {"$eq": member}})
 
-    if react != None:
-        e = react["react"]
-        if e != []:
-            for x in e:
-                emoji = await message.app.rest.fetch_emoji(guild_id, x)
-                try:
-                    await message.message.add_reaction(emoji)
-                except:
-                    pass
+#     if react != None:
+#         e = react["react"]
+#         if e != []:
+#             for x in e:
+#                 emoji = await message.app.rest.fetch_emoji(guild_id, x)
+#                 try:
+#                     await message.message.add_reaction(emoji)
+#                 except:
+#                     pass
 
 def load(bot):
     bot.add_plugin(plugin)
