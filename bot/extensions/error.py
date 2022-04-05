@@ -10,7 +10,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
     embed = hikari.Embed(title=f"{error} Error", color="FF0000")
     if isinstance(event.exception, lightbulb.CommandInvocationError):
         embed.description = f"> Something went wrong during invocation of command `{event.context.command.name}`."
-        await event.context.respond(embed=embed, reply=True)
+        await event.context.respond(embed=embed, reply=True, flags=ephemeral)
         raise event.exception
 
     exception = event.exception.__cause__ or event.exception

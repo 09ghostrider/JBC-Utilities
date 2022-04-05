@@ -23,9 +23,10 @@ def perms_check(ctx: lightbulb.Context) -> None:
     if config == None:
         return False
     
+    roles = ctx.interaction.member.get_roles()
     for r in config["req"]:
         role = ctx.app.cache.get_role(r)
-        if role in ctx.member.get_roles():
+        if role in roles:
             return True
     return False
 
@@ -33,7 +34,7 @@ def perms_check(ctx: lightbulb.Context) -> None:
 @lightbulb.add_checks(lightbulb.guild_only)
 @lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.command("react", "add or remove auto reaction of a member", aliases=["r"])
-@lightbulb.implements(lightbulb.PrefixCommandGroup)
+@lightbulb.implements(lightbulb.SlashCommandGroup)
 async def _ar(ctx: lightbulb.Context) -> None:
     embed=hikari.Embed(title="=== Command Help ===", description="""react - add or remove auto reaction of a member
 
@@ -48,11 +49,12 @@ Usage: -react [subcommand]
 @lightbulb.option("emoji", "the emoji to add", default=str, required=True)
 @lightbulb.option("member", "the member to add the reaction for", type=hikari.Member, required=True)
 @lightbulb.command("add", "add a ar", inherit_checks=True, aliases=["a", "+"])
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _add(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     member = ctx.options.member
     emoji = ctx.options.emoji
-    guild_id = ctx.event.message.guild_id
+    guild_id = ctx.interaction.guild_id
 
     if member.is_bot == True:
         await ctx.respond("You can only add ars to humans", reply=True)
@@ -97,11 +99,12 @@ async def _add(ctx: lightbulb.Context) -> None:
 @lightbulb.option("emoji", "the emoji to add", default=str, required=True)
 @lightbulb.option("member", "the member to add the reaction for", type=hikari.Member, required=True)
 @lightbulb.command("remove", "remove a ar", inherit_checks=True, aliases=["r", "-"])
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _remove(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     member = ctx.options.member
     emoji = ctx.options.emoji
-    guild_id = ctx.event.message.guild_id
+    guild_id = ctx.interaction.guild_id
 
     if member.is_bot == True:
         await ctx.respond("You can only remove ars from humans", reply=True)
@@ -145,10 +148,11 @@ async def _remove(ctx: lightbulb.Context) -> None:
 @_ar.child
 @lightbulb.option("member", "the member to add the reaction for", type=hikari.Member, required=True)
 @lightbulb.command("list", "view a members reactors", inherit_checks=True, aliases=["l", "show", "s"])
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _list(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     member = ctx.options.member
-    guild_id = ctx.event.message.guild_id
+    guild_id = ctx.interaction.guild_id
 
     cluster = MongoClient(mongoclient)
     reacts = cluster["ar"]["react"]

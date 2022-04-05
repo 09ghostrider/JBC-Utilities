@@ -7,6 +7,7 @@ from pymongo import MongoClient
 import datetime
 
 plugin = lightbulb.Plugin("hl")
+ephemeral = hikari.MessageFlag.EPHEMERAL
 
 with open("./secrets/prefix") as f:
     prefix = f.read().strip()
@@ -19,13 +20,14 @@ def perms_check(ctx: lightbulb.Context) -> None:
     cluster = MongoClient(mongoclient)
     configs = cluster["highlights"]["server_configs"]
 
-    config = configs.find_one({"guild": ctx.event.message.guild_id})
+    config = configs.find_one({"guild": ctx.interaction.guild_id})
     if config == None:
         return False
     
+    roles = ctx.interaction.member.get_roles()
     for r in config["req"]:
         role = ctx.app.cache.get_role(r)
-        if role in ctx.member.get_roles():
+        if role in roles:
             return True
     return False
 
@@ -33,9 +35,9 @@ def perms_check(ctx: lightbulb.Context) -> None:
 @lightbulb.add_checks(lightbulb.guild_only)
 @lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.command("highlight", "Highlighting means you will receive a message when your keyword is said in chat.", aliases=["hl"])
-@lightbulb.implements(lightbulb.PrefixCommandGroup)
+@lightbulb.implements(lightbulb.SlashCommandGroup)
 async def _hl(ctx: lightbulb.Context) -> None:
-    embed=hikari.Embed(title="=== Command Help ===", description="""highlight - Highlighting means you will receive a message when your keyword is said in chat.
+    embed=hikari.Embed(title="=== Command Help ===", description="""highlight - Highlighting means you will receive a message when your keyword is said in chat. It will only notify you if you haven't posted anything in chat for the past 5 minutes.
 
     Usage: -highlight [subcommand]
     """, color=random.randint(0x0, 0xffffff))
@@ -50,24 +52,21 @@ async def _hl(ctx: lightbulb.Context) -> None:
 @_hl.child
 @lightbulb.option("word", "the word to start tracking")
 @lightbulb.command("add", "add a word to your highlights list", inherit_checks=True, aliases=["+", "a"])
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _add(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     word = ctx.options.word
     word = word.lower()
     user_id = ctx.author.id
 
-    # await ctx.respond(ctx.event.message.mentions)
-    if bool(ctx.event.message.mentions.users) or bool(ctx.event.message.mentions.role_ids) or bool(ctx.event.message.mentions.channels) or ctx.event.message.mentions.everyone:
-        await ctx.respond("You can't highlight mentions")
-        return
     if "@everyone" in word or "@here" in word:
-        await ctx.respond("You cant highlight `@everyone` and `@here`")
+        await ctx.respond("You cant highlight `@everyone` and `@here`", flags=ephemeral)
         return
     if len(word) < 2:
-        await ctx.respond("Word needs to be at least 2 characters long")
+        await ctx.respond("Word needs to be at least 2 characters long", flags=ephemeral)
         return
     if len(word) > 20:
-        await ctx.respond("Words can only be upto 20 characters")
+        await ctx.respond("Words can only be upto 20 characters", flags=ephemeral)
         return
     
     cluster = MongoClient(mongoclient)
@@ -90,12 +89,12 @@ async def _add(ctx: lightbulb.Context) -> None:
         in_db = True
         hl_count = len(user_data["hl"])
         if hl_count >= 10:
-            await ctx.respond("You can only have 10 highlights")
+            await ctx.respond("You can only have 10 highlights", flags=ephemeral)
             return
         hl_list = user_data["hl"]
         
         if word in hl_list:
-            await ctx.respond("That word is already in your highlight list")
+            await ctx.respond("That word is already in your highlight list", flags=ephemeral)
             return
         user_data["hl"].append(word)
     if in_db == False:
@@ -107,8 +106,9 @@ async def _add(ctx: lightbulb.Context) -> None:
 @_hl.child
 @lightbulb.option("word", "the word to stop tracking")
 @lightbulb.command("remove", "remove a word from your highlight list", inherit_checks=True, aliases=["-", "r"])
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _remove(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     word = ctx.options.word
     word = word.lower()
     user_id = ctx.author.id
@@ -120,12 +120,12 @@ async def _remove(ctx: lightbulb.Context) -> None:
         "_id": {"$eq": user_id}
     })
     if user_data == None:
-        await ctx.respond(f"You are not tracking any words")
+        await ctx.respond(f"You are not tracking any words", flags=ephemeral)
         return
     
     hl_list = user_data["hl"]
     if word not in hl_list:
-        await ctx.respond("You are not tracking that word")
+        await ctx.respond("You are not tracking that word", flags=ephemeral)
         return
     
     hl_list.pop(hl_list.index(word))
@@ -134,8 +134,9 @@ async def _remove(ctx: lightbulb.Context) -> None:
 
 @_hl.child
 @lightbulb.command("list", "show your current highlight list", inherit_checks=True, aliases=["show", "l"])
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _list(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     user_id = ctx.author.id
 
     cluster = MongoClient(mongoclient)
@@ -154,7 +155,7 @@ async def _list(ctx: lightbulb.Context) -> None:
         }
 
     if user_data["hl"] == []:
-        await ctx.respond("You are not tracking anything")
+        await ctx.respond("You are not tracking anything", flags=ephemeral)
         return
 
     hl_str = ""
@@ -179,8 +180,9 @@ async def _list(ctx: lightbulb.Context) -> None:
 @_hl.child
 @lightbulb.option("blocks", "the member or channel to block", type=str)
 @lightbulb.command("block", "block a channel or member from triggering your highlights", inherit_checks=True, aliases=["b"])
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _block(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     blocks = ctx.options.blocks
     channel = None
     member = None
@@ -208,11 +210,11 @@ async def _block(ctx: lightbulb.Context) -> None:
             except:
                 pass
         else:
-            await ctx.respond("Unknown channel or member")
+            await ctx.respond("Unknown channel or member", flags=ephemeral)
             return
     
     if channel == None and member == None:
-        await ctx.respond("Unknown channel or member")
+        await ctx.respond("Unknown channel or member", flags=ephemeral)
         return
     
     cluster = MongoClient(mongoclient)
@@ -237,28 +239,29 @@ async def _block(ctx: lightbulb.Context) -> None:
             await ctx.respond(f"Successfuly blocked {channel.mention}")
             highlight.update_one({"_id":user_id}, {"$set":{"block_channel":user_data["block_channel"]}})
         else:
-            await ctx.respond("That channel is already blocked")
+            await ctx.respond("That channel is already blocked", flags=ephemeral)
             return
     elif member != None:
         if member.id == ctx.author.id:
-            await ctx.respond("You dont need to block yourself, you cant trigger your own highlights")
+            await ctx.respond("You dont need to block yourself, you cant trigger your own highlights", flags=ephemeral)
             return
         if member.is_bot == True:
-            await ctx.respond("You dont need to block bots, they cant trigger your highlights")
+            await ctx.respond("You dont need to block bots, they cant trigger your highlights", flags=ephemeral)
             return
         if member.id not in user_data["block_member"]:
             user_data["block_member"].append(member.id)
             await ctx.respond(f"Successfuly blocked {member.mention}", user_mentions=False)
             highlight.update_one({"_id":user_id}, {"$set":{"block_member":user_data["block_member"]}})
         else:
-            await ctx.respond("That member is already blocked")
+            await ctx.respond("That member is already blocked", flags=ephemeral)
             return
 
 @_hl.child
 @lightbulb.option("blocks", "the member or channel to unblock", type=str)
 @lightbulb.command("unblock", "unblock a blocked channel or member", inherit_checks=True, aliases=["unb"])
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _unblock(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     blocks = ctx.options.blocks
     channel = None
     member = None
@@ -286,11 +289,11 @@ async def _unblock(ctx: lightbulb.Context) -> None:
             except:
                 pass
         else:
-            await ctx.respond("That is not in your block list")
+            await ctx.respond("That is not in your block list", flags=ephemeral)
             return
     
     if channel == None and member == None:
-        await ctx.respond("That is not in your block list")
+        await ctx.respond("That is not in your block list", flags=ephemeral)
         return
     
     cluster = MongoClient(mongoclient)
@@ -331,8 +334,9 @@ async def _unblock(ctx: lightbulb.Context) -> None:
 
 @_hl.child
 @lightbulb.command("clear", "clear all your highlights", inherit_checks=True, aliases=["c"])
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _clear(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     cluster = MongoClient(mongoclient)
     highlight = cluster["highlight"]["highlight"]
     user_id = ctx.author.id
@@ -342,14 +346,14 @@ async def _clear(ctx: lightbulb.Context) -> None:
     })
 
     if user_data == None:
-        await ctx.respond("You are not tracking anything")
+        await ctx.respond("You are not tracking anything", flags=ephemeral)
         return
     
     else:
         try:
             highlight.update_one({"_id":user_id}, {"$set": {"hl": []}})
         except Exception as e:
-            await ctx.respond("There was a error")
+            await ctx.respond("There was a error", flags=ephemeral)
             raise e
         await ctx.respond("Cleared all your highlights")
 

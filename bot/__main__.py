@@ -27,7 +27,9 @@ bot = lightbulb.BotApp(
             "lightbulb": {"level": "DEBUG"},
         }
     },
-    default_enabled_guilds=[881031368199524372]
+    default_enabled_guilds=[881031368199524372, 832105614577631232],
+    help_slash_command=True,
+    case_insensitive_prefix_commands=True
 )
 
 bot.load_extensions_from(pathlib.Path(os.path.realpath(extensions.__file__)).parent, must_exist=True)

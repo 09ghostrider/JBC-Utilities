@@ -8,6 +8,7 @@ import datetime
 from miru.ext import nav
 
 plugin = lightbulb.Plugin("donations")
+ephemeral = hikari.MessageFlag.EPHEMERAL
 
 with open("./secrets/prefix") as f:
     prefix = f.read().strip()
@@ -20,20 +21,21 @@ def perms_check(ctx: lightbulb.Context) -> None:
     cluster = MongoClient(mongoclient)
     configs = cluster["donations"]["server_configs"]
 
-    config = configs.find_one({"guild": ctx.event.message.guild_id})
+    config = configs.find_one({"guild": ctx.interaction.guild_id})
     if config == None:
         return False
     
+    roles = ctx.interaction.member.get_roles()
     for r in config["req"]:
         role = ctx.app.cache.get_role(r)
-        if role in ctx.member.get_roles():
+        if role in roles:
             return True
     return False
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
 @lightbulb.command("donation", "maintain and manage donations of a member", aliases=["dono"])
-@lightbulb.implements(lightbulb.PrefixCommandGroup)
+@lightbulb.implements(lightbulb.SlashCommandGroup)
 async def _donation(ctx: lightbulb.Context) -> None:
     embed=hikari.Embed(title="=== Command Help ===", description="""donation - maintain and manage donations of a member
 
@@ -50,8 +52,9 @@ Usage: -donation [subcommand]
 @lightbulb.option("amount", "the amount to add", type=str, required=True)
 @lightbulb.option("member", "the member to add donation", type=hikari.Member, required=True)
 @lightbulb.command("add", "add amount to a members donation", aliases=["a", "sn", "setnote", "+"], inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _add(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     member = ctx.options.member
     amount = ctx.options.amount
     note = ctx.options.note
@@ -64,21 +67,21 @@ async def _add(ctx: lightbulb.Context) -> None:
                 first_digit, how_many_zeros = amount.split("e")
                 amount = int(f"{first_digit}{'0' * int(how_many_zeros)}")
             else:
-                await ctx.respond("Invalid amount", reply=True)
+                await ctx.respond("Invalid amount", reply=True, flags=ephemeral)
                 return
         except:
-            await ctx.respond("Invalid amount", reply=True)
+            await ctx.respond("Invalid amount", reply=True, flags=ephemeral)
             return
 
     if amount <= 0:
-        await ctx.respond("Invalid amount", reply=True)
+        await ctx.respond("Invalid amount", reply=True, flags=ephemeral)
         return
     
     if member.is_bot == True:
-        await ctx.respond("You can not add donation to bots", reply=True)
+        await ctx.respond("You can not add donation to bots", reply=True, flags=ephemeral)
         return
 
-    guild_id = ctx.event.message.guild_id
+    guild_id = ctx.interaction.guild_id
 
     cluster = MongoClient(mongoclient)
     donos = cluster["donations"]["donations"]
@@ -111,10 +114,11 @@ async def _add(ctx: lightbulb.Context) -> None:
 @lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.option("note_id", "the id of the note to delete", required=True, type=int)
 @lightbulb.command("remove", "remove a members donation note", aliases=["r", "rn", "removenote", "-"], inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _remove(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     note_id = ctx.options.note_id
-    guild_id = ctx.event.message.guild_id
+    guild_id = ctx.interaction.guild_id
 
     cluster = MongoClient(mongoclient)
     donos = cluster["donations"]["donations"]
@@ -124,7 +128,7 @@ async def _remove(ctx: lightbulb.Context) -> None:
         "guild": {"$eq": guild_id}
     })
     if dono == None:
-        await ctx.respond("Unknown Note ID")
+        await ctx.respond("Unknown Note ID", flags=ephemeral)
         return
     
     a = dono["amount"]
@@ -143,12 +147,13 @@ async def _remove(ctx: lightbulb.Context) -> None:
 @_donation.child
 @lightbulb.option("member", "the member to check the notes of", required=False, default=None, type=hikari.Member)
 @lightbulb.command("show", "check the notes of a member", aliases=["c", "s", "notes", "ns"], inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
+@lightbulb.implements(lightbulb.SlashSubCommand)
 async def _show(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=ephemeral)
     member = ctx.options.member
     if member == None:
-        member = ctx.event.message.member
-    guild_id = ctx.event.message.guild_id
+        member = ctx.interaction.member
+    guild_id = ctx.interaction.guild_id
 
     cluster = MongoClient(mongoclient)
     donos = cluster["donations"]["donations"]
@@ -194,7 +199,8 @@ async def _show(ctx: lightbulb.Context) -> None:
             pages.append(embed)
 
     navigator = nav.NavigatorView(pages=pages)
-    await navigator.send(ctx.event.message.channel_id)
+    await ctx.respond("Shown Below", flags=ephemeral)
+    await navigator.send(ctx.interaction.channel_id)
 
 def load(bot):
     bot.add_plugin(plugin)
