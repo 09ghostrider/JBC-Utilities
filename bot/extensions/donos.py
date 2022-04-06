@@ -16,6 +16,21 @@ with open("./secrets/prefix") as f:
 with open("./secrets/db") as f:
     mongoclient = f.read().strip()
 
+donor_roles = {
+    "5000000": 851467779500802169,
+    "25000000": 851467810713632808,
+    "50000000": 851467811338321970,
+    "100000000": 851631415040671816,
+    "250000000": 851631453414359071,
+    "500000000": 851631177085222952,
+    "750000000": 851631180336070739,
+    "1000000000": 851631182776893482,
+    "2000000000": 954550639776657449,
+    "3000000000": 954550731921313792,
+    "4000000000": 954550735528419368,
+    "5000000000": 954550744390971492
+}
+
 @lightbulb.Check
 def perms_check(ctx: lightbulb.Context) -> None:
     cluster = MongoClient(mongoclient)
@@ -105,9 +120,46 @@ async def _add(ctx: lightbulb.Context) -> None:
     }
     donos.insert_one(dono)
 
+    cluster2 = MongoClient(mongoclient)
+    donos2 = cluster2["donations"]["donations"]
+    dono2 = donos2.find({"guild": guild_id, "member": member.id})
+    total_donation = 0
+    for d in dono2:
+        total_donation += d["amount"]
+    
     embed=hikari.Embed(title=f"Note Taken", description=f"**ID:** #{note_id}\n**Amount:** {amount}\n**Note:** {note}", color=random.randint(0x0, 0xffffff))
     embed.set_thumbnail(member.avatar_url)
     embed.set_footer(text=f"{member.username}'s Donation")
+
+    needs_roles = []
+    remove_roles = []
+    for dr in donor_roles:
+        if int(dr) <= total_donation:
+            needs_roles.append(int(donor_roles[dr]))
+        else:
+            remove_roles.append(int(donor_roles[dr]))
+    
+    member_roles = member.get_roles()
+
+    added_roles = ""
+    for r1 in needs_roles:
+        role1 = ctx.app.cache.get_role(r1)
+        if role1 not in member_roles:
+            await member.add_role(role1)
+            added_roles = added_roles + f" {role1.mention}"
+    
+    removed_roles = ""
+    for r2 in remove_roles:
+        role2 = ctx.app.cache.get_role(r2)
+        if role2 in member_roles:
+            await member.remove_role(role2)
+            removed_roles = removed_roles + f" {role2.mention}"
+
+    if added_roles != "":
+        embed.add_field(name="Roles Added", value=added_roles)
+    if removed_roles != "":
+        embed.add_field(name="Roles Removed", value=removed_roles)
+    
     await ctx.respond(embed=embed, reply=True)
 
 @_donation.child
@@ -135,13 +187,52 @@ async def _remove(ctx: lightbulb.Context) -> None:
     n = dono["note"]
     embed=hikari.Embed(title="Note Deleted", color=random.randint(0x0, 0xffffff), description=f"**Amount:** {a}\n**Note:** {n}")
     member = await ctx.app.rest.fetch_member(guild_id, dono["member"])
+    
     if member != None:
         embed.set_thumbnail(member.avatar_url)
         embed.set_footer(text=f"{member.username}'s Donation")
+    
     donos.delete_one({
         "note_id": note_id,
         "guild": guild_id
     })
+
+    cluster2 = MongoClient(mongoclient)
+    donos2 = cluster2["donations"]["donations"]
+    dono2 = donos2.find({"guild": guild_id, "member": member.id})
+    total_donation = 0
+    for d in dono2:
+        total_donation += d["amount"]
+
+    needs_roles = []
+    remove_roles = []
+    for dr in donor_roles:
+        if int(dr) <= total_donation:
+            needs_roles.append(int(donor_roles[dr]))
+        else:
+            remove_roles.append(int(donor_roles[dr]))
+    
+    member_roles = member.get_roles()
+
+    added_roles = ""
+    for r1 in needs_roles:
+        role1 = ctx.app.cache.get_role(r1)
+        if role1 not in member_roles:
+            await member.add_role(role1)
+            added_roles = added_roles + f" {role1.mention}"
+    
+    removed_roles = ""
+    for r2 in remove_roles:
+        role2 = ctx.app.cache.get_role(r2)
+        if role2 in member_roles:
+            await member.remove_role(role2)
+            removed_roles = removed_roles + f" {role2.mention}"
+
+    if added_roles != "":
+        embed.add_field(name="Roles Added", value=added_roles)
+    if removed_roles != "":
+        embed.add_field(name="Roles Removed", value=removed_roles)
+
     await ctx.respond(embed=embed, reply=True)
 
 @_donation.child
