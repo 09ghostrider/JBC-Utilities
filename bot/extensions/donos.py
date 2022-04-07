@@ -293,6 +293,108 @@ async def _show(ctx: lightbulb.Context) -> None:
     await ctx.respond("Shown Below", flags=ephemeral)
     await navigator.send(ctx.interaction.channel_id)
 
+@_donation.child
+@lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
+@lightbulb.option("note", "the new note", required=False, type=str, default=None)
+@lightbulb.option("amount", "the new amount", required=False, type=str, default=None)
+@lightbulb.option("note_id", "the note to edit", required=True, type=int)
+@lightbulb.command("edit", "edit a note of a member", aliases=["e"], inherit_checks=True)
+@lightbulb.implements(lightbulb.SlashSubCommand)
+async def _show(ctx: lightbulb.Context) -> None:
+    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+    note_id = ctx.options.note_id
+    guild_id = ctx.interaction.guild_id
+    amount = ctx.options.amount
+    note = ctx.options.note
+
+    if note == None and amount == None:
+        await ctx.respond("You cant edit a note without mention what to edit", reply=True, flags=ephemeral)
+        return
+
+    cluster = MongoClient(mongoclient)
+    donos = cluster["donations"]["donations"]
+
+    dono = donos.find_one({
+        "note_id": {"$eq": note_id},
+        "guild": {"$eq": guild_id}
+    })
+
+    if dono == None:
+        await ctx.respond("Unknown Note ID", flags=ephemeral)
+        return
+    
+    if amount != None:
+        try:
+            amount2 = int(amount)
+        except:
+            try:
+                if "e" in amount:
+                    first_digit, how_many_zeros = amount.split("e")
+                    amount2 = int(f"{first_digit}{'0' * int(how_many_zeros)}")
+                else:
+                    await ctx.respond("Invalid amount", reply=True, flags=ephemeral)
+                    return
+            except:
+                await ctx.respond("Invalid amount", reply=True, flags=ephemeral)
+                return
+        if amount2 <= 0:
+            await ctx.respond("Invalid amount", reply=True, flags=ephemeral)
+            return
+        dono["amount"] = amount2
+    
+    if note != None:
+        dono["note"] = note
+
+    a = dono["amount"]
+    n = dono["note"]
+    embed=hikari.Embed(title=f"Note Updated", description=f"**ID:** #{note_id}\n**Amount:** {a}\n**Note:** {n}", color=random.randint(0x0, 0xffffff))
+    member = await ctx.app.rest.fetch_member(guild_id, dono["member"])
+    
+    if member != None:
+        embed.set_thumbnail(member.avatar_url)
+        embed.set_footer(text=f"{member.username}'s Donation")
+
+    donos.update_one({"note_id": {"$eq": note_id}, "guild": {"$eq": guild_id}}, {"$set": {"note": dono["note"], "amount": dono["amount"]}})
+
+    cluster2 = MongoClient(mongoclient)
+    donos2 = cluster2["donations"]["donations"]
+    dono2 = donos2.find({"guild": guild_id, "member": member.id})
+    total_donation = 0
+    for d in dono2:
+        total_donation += d["amount"]
+
+    needs_roles = []
+    remove_roles = []
+    for dr in donor_roles:
+        if int(dr) <= total_donation:
+            needs_roles.append(int(donor_roles[dr]))
+        else:
+            remove_roles.append(int(donor_roles[dr]))
+    
+    member_roles = member.get_roles()
+
+    added_roles = ""
+    for r1 in needs_roles:
+        role1 = ctx.app.cache.get_role(r1)
+        if role1 not in member_roles:
+            await member.add_role(role1)
+            added_roles = added_roles + f" {role1.mention}"
+    
+    removed_roles = ""
+    for r2 in remove_roles:
+        role2 = ctx.app.cache.get_role(r2)
+        if role2 in member_roles:
+            await member.remove_role(role2)
+            removed_roles = removed_roles + f" {role2.mention}"
+
+    if added_roles != "":
+        embed.add_field(name="Roles Added", value=added_roles)
+    if removed_roles != "":
+        embed.add_field(name="Roles Removed", value=removed_roles)
+
+    await ctx.respond(embed=embed, reply=True)
+
+
 def load(bot):
     bot.add_plugin(plugin)
 
