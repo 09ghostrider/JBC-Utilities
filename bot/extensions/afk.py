@@ -72,6 +72,15 @@ async def _set(ctx: lightbulb.Context) -> None:
     afk.insert_one(user_data)
     await ctx.respond(f"{ctx.interaction.user.mention}: I set your AFK: {status}", role_mentions=False, user_mentions=True)
 
+    try:
+        nick = ctx.interaction.member.nickname
+        if nick == None:
+            nick = ctx.interaction.user.username
+        await ctx.interaction.member.edit(nick=f"[AFK] {nick}", reason="Member went AFK")
+    except Exception as e:
+        raise e
+
+
 @_afk.child
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS))
 @lightbulb.option("channel", "The channel to ignore", modifier=lightbulb.commands.base.OptionModifier(3), type=hikari.GuildChannel, required=False, default=None)
