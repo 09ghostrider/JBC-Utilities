@@ -78,7 +78,7 @@ async def _set(ctx: lightbulb.Context) -> None:
             nick = ctx.interaction.user.username
         await ctx.interaction.member.edit(nick=f"[AFK] {nick}", reason="Member went AFK")
     except Exception as e:
-        raise e
+        print(e)
 
 
 @_afk.child
