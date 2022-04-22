@@ -40,12 +40,10 @@ miru.load(bot)
 @bot.listen(hikari.StartedEvent)
 async def _on_started(event:hikari.StartedEvent) -> None:
     channel = await bot.rest.fetch_channel(STARTUP_CHANNEL)
-    # Logging
     await channel.send("Bot has started")
 
-    # Self Roles
-    # view = pingroles()
-    # view.start_listener()
+    view = pingroles()
+    view.start_listener()
 
 @bot.listen(hikari.StoppingEvent)
 async def _on_ended(event:hikari.StoppingEvent) -> None:
