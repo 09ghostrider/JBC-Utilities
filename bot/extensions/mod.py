@@ -11,9 +11,6 @@ plugin = lightbulb.Plugin("mod")
 with open("./secrets/prefix") as f:
     prefix = f.read().strip()
 
-with open("./secrets/db") as f:
-    mongoclient = f.read().strip()
-
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))

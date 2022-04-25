@@ -1,2 +1,4 @@
 bot/__pycache__/
 bot/extensions/__pycache__/
+.env
+.venv/

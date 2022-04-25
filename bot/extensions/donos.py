@@ -6,15 +6,16 @@ import pymongo
 from pymongo import MongoClient
 import datetime
 from miru.ext import nav
+from dotenv import load_dotenv
+import os
 
 plugin = lightbulb.Plugin("donations")
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
+load_dotenv()
+mongoclient = os.getenv("DATABASE")
 with open("./secrets/prefix") as f:
     prefix = f.read().strip()
-
-with open("./secrets/db") as f:
-    mongoclient = f.read().strip()
 
 donor_roles = {
     "5000000": 851467779500802169,

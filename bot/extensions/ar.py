@@ -5,14 +5,15 @@ import miru
 import pymongo
 from pymongo import MongoClient
 import datetime
+import os
+from dotenv import load_dotenv
 
 plugin = lightbulb.Plugin("ar")
 
+load_dotenv()
+mongoclient = os.getenv("DATABASE")
 with open("./secrets/prefix") as f:
     prefix = f.read().strip()
-
-with open("./secrets/db") as f:
-    mongoclient = f.read().strip()
 
 @lightbulb.Check
 def perms_check(ctx: lightbulb.Context) -> None:

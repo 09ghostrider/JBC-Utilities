@@ -5,15 +5,16 @@ import miru
 import pymongo
 from pymongo import MongoClient
 import datetime
+import os
+from dotenv import load_dotenv
 
 plugin = lightbulb.Plugin("serverconfig")
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
+load_dotenv()
+mongoclient = os.getenv("DATABASE")
 with open("./secrets/prefix") as f:
     prefix = f.read().strip()
-
-with open("./secrets/db") as f:
-    mongoclient = f.read().strip()
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
