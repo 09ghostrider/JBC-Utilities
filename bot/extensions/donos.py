@@ -37,11 +37,11 @@ def perms_check(ctx: lightbulb.Context) -> None:
     cluster = MongoClient(mongoclient)
     configs = cluster["donations"]["server_configs"]
 
-    config = configs.find_one({"guild": ctx.interaction.guild_id})
+    config = configs.find_one({"guild": ctx.event.message.guild_id})
     if config == None:
         return False
     
-    roles = ctx.interaction.member.get_roles()
+    roles = ctx.event.message.member.get_roles()
     for r in config["req"]:
         role = ctx.app.cache.get_role(r)
         if role in roles:
@@ -50,8 +50,8 @@ def perms_check(ctx: lightbulb.Context) -> None:
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
-@lightbulb.command("donation", "maintain and manage donations of a member", aliases=["dono"])
-@lightbulb.implements(lightbulb.SlashCommandGroup)
+@lightbulb.command("donation", "maintain and manage donations of a member", aliases=["dono", "donations"])
+@lightbulb.implements(lightbulb.PrefixCommandGroup)
 async def _donation(ctx: lightbulb.Context) -> None:
     embed=hikari.Embed(title="=== Command Help ===", description="""donation - maintain and manage donations of a member
 
@@ -68,9 +68,8 @@ Usage: -donation [subcommand]
 @lightbulb.option("amount", "the amount to add", type=str, required=True)
 @lightbulb.option("member", "the member to add donation", type=hikari.Member, required=True)
 @lightbulb.command("add", "add amount to a members donation", aliases=["a", "sn", "setnote", "+"], inherit_checks=True)
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _add(ctx: lightbulb.Context) -> None:
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     member = ctx.options.member
     amount = ctx.options.amount
     note = ctx.options.note
@@ -97,7 +96,7 @@ async def _add(ctx: lightbulb.Context) -> None:
         await ctx.respond("You can not add donation to bots", reply=True, flags=ephemeral)
         return
 
-    guild_id = ctx.interaction.guild_id
+    guild_id = ctx.event.message.guild_id
 
     cluster = MongoClient(mongoclient)
     donos = cluster["donations"]["donations"]
@@ -128,7 +127,7 @@ async def _add(ctx: lightbulb.Context) -> None:
     for d in dono2:
         total_donation += d["amount"]
     
-    embed=hikari.Embed(title=f"Note Taken", description=f"**ID:** #{note_id}\n**Amount:** {amount}\n**Note:** {note}", color=random.randint(0x0, 0xffffff))
+    embed=hikari.Embed(title=f"Note Taken", description=f"**ID:** #{note_id}\n**Amount:** {amount:,}\n**Note:** {note}", color=random.randint(0x0, 0xffffff))
     embed.set_thumbnail(member.avatar_url)
     embed.set_footer(text=f"{member.username}'s Donation")
 
@@ -167,11 +166,10 @@ async def _add(ctx: lightbulb.Context) -> None:
 @lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.option("note_id", "the id of the note to delete", required=True, type=int)
 @lightbulb.command("remove", "remove a members donation note", aliases=["r", "rn", "removenote", "-"], inherit_checks=True)
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _remove(ctx: lightbulb.Context) -> None:
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     note_id = ctx.options.note_id
-    guild_id = ctx.interaction.guild_id
+    guild_id = ctx.event.message.guild_id
 
     cluster = MongoClient(mongoclient)
     donos = cluster["donations"]["donations"]
@@ -181,12 +179,12 @@ async def _remove(ctx: lightbulb.Context) -> None:
         "guild": {"$eq": guild_id}
     })
     if dono == None:
-        await ctx.respond("Unknown Note ID", flags=ephemeral)
+        await ctx.respond("Unknown Note ID", reply=True)
         return
     
     a = dono["amount"]
     n = dono["note"]
-    embed=hikari.Embed(title="Note Deleted", color=random.randint(0x0, 0xffffff), description=f"**Amount:** {a}\n**Note:** {n}")
+    embed=hikari.Embed(title="Note Deleted", color=random.randint(0x0, 0xffffff), description=f"**Amount:** {a:,}\n**Note:** {n}")
     member = await ctx.app.rest.fetch_member(guild_id, dono["member"])
     
     if member != None:
@@ -239,13 +237,12 @@ async def _remove(ctx: lightbulb.Context) -> None:
 @_donation.child
 @lightbulb.option("member", "the member to check the notes of", required=False, default=None, type=hikari.Member)
 @lightbulb.command("show", "check the notes of a member", aliases=["c", "s", "notes", "ns"], inherit_checks=True)
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _show(ctx: lightbulb.Context) -> None:
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE, flags=ephemeral)
     member = ctx.options.member
     if member == None:
-        member = ctx.interaction.member
-    guild_id = ctx.interaction.guild_id
+        member = ctx.event.message.member
+    guild_id = ctx.event.message.guild_id
 
     cluster = MongoClient(mongoclient)
     donos = cluster["donations"]["donations"]
@@ -270,13 +267,13 @@ async def _show(ctx: lightbulb.Context) -> None:
     total_count = len(notes)
     
     if total_pages == 0:
-        embed=hikari.Embed(color=random.randint(0x0, 0xffffff), description=f"Donor: {member} ({member.id})\nTotal Donation(s): {total_count}\nTotal Amount: {total_donation}")
+        embed=hikari.Embed(color=random.randint(0x0, 0xffffff), description=f"Donor: {member} ({member.id})\nTotal Donation(s): {total_count}\nTotal Amount: {total_donation:,}")
         embed.set_thumbnail(member.avatar_url)
         pages.append(embed)
 
     else:
         for n1 in range(0, total_pages):
-            embed=hikari.Embed(color=random.randint(0x0, 0xffffff), description=f"Donor: {member} ({member.id})\nTotal Donation(s): {total_count}\nTotal Amount: {total_donation}")
+            embed=hikari.Embed(color=random.randint(0x0, 0xffffff), description=f"Donor: {member} ({member.id})\nTotal Donation(s): {total_count}\nTotal Amount: {total_donation:,}")
             # embed.set_footer(text=f"{member}", icon=member.avatar_url)
             embed.set_thumbnail(member.avatar_url)
             for n2 in range(0, 9):
@@ -284,32 +281,30 @@ async def _show(ctx: lightbulb.Context) -> None:
                     n_id = notes[0]["note_id"]
                     a = notes[0]["amount"]
                     no = notes[0]["note"]
-                    embed.add_field(name=f"Note #{n_id}", value=f"Amount: {a}\nNote: {no}", inline=True)
+                    embed.add_field(name=f"Note #{n_id}", value=f"Amount: {a:,}\nNote: {no}", inline=True)
                     notes.pop(0)
                 except:
                     pass
             pages.append(embed)
 
     navigator = nav.NavigatorView(pages=pages)
-    await ctx.respond("Shown Below", flags=ephemeral)
-    await navigator.send(ctx.interaction.channel_id)
+    await navigator.send(ctx.event.message.channel_id)
 
 @_donation.child
 @lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
-@lightbulb.option("note", "the new note", required=False, type=str, default=None)
-@lightbulb.option("amount", "the new amount", required=False, type=str, default=None)
+@lightbulb.option("note", "the new note", required=False, type=str, default=None, modifier=lightbulb.commands.base.OptionModifier(3))
+@lightbulb.option("amount", "the new amount", required=False, type=int, default=None)
 @lightbulb.option("note_id", "the note to edit", required=True, type=int)
 @lightbulb.command("edit", "edit a note of a member", aliases=["e"], inherit_checks=True)
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _show(ctx: lightbulb.Context) -> None:
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     note_id = ctx.options.note_id
-    guild_id = ctx.interaction.guild_id
+    guild_id = ctx.event.message.guild_id
     amount = ctx.options.amount
     note = ctx.options.note
 
     if note == None and amount == None:
-        await ctx.respond("You cant edit a note without mention what to edit", reply=True, flags=ephemeral)
+        await ctx.respond("You cant edit a note without mention which note to edit", reply=True)
         return
 
     cluster = MongoClient(mongoclient)
@@ -321,27 +316,14 @@ async def _show(ctx: lightbulb.Context) -> None:
     })
 
     if dono == None:
-        await ctx.respond("Unknown Note ID", flags=ephemeral)
+        await ctx.respond("Unknown Note ID", reply=True)
         return
     
     if amount != None:
-        try:
-            amount2 = int(amount)
-        except:
-            try:
-                if "e" in amount:
-                    first_digit, how_many_zeros = amount.split("e")
-                    amount2 = int(f"{first_digit}{'0' * int(how_many_zeros)}")
-                else:
-                    await ctx.respond("Invalid amount", reply=True, flags=ephemeral)
-                    return
-            except:
-                await ctx.respond("Invalid amount", reply=True, flags=ephemeral)
-                return
-        if amount2 <= 0:
-            await ctx.respond("Invalid amount", reply=True, flags=ephemeral)
+        if amount <= 0:
+            await ctx.respond("Invalid amount", reply=True)
             return
-        dono["amount"] = amount2
+        dono["amount"] = amount
     
     if note != None:
         dono["note"] = note

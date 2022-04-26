@@ -17,7 +17,7 @@ ephemeral = hikari.MessageFlag.EPHEMERAL
 
 bot = lightbulb.BotApp(
     token=os.getenv("TOKEN"),
-    prefix=lightbulb.when_mentioned_or(prefix),
+    prefix=lightbulb.when_mentioned_or([prefix, "jbc ", "jbc"]),
     # logs={
     #     "version": 1,
     #     "incremental": True,
@@ -28,7 +28,6 @@ bot = lightbulb.BotApp(
     #     }
     # },
     default_enabled_guilds=[881031368199524372, 832105614577631232],
-    help_slash_command=True,
     case_insensitive_prefix_commands=True
 )
 
@@ -53,7 +52,7 @@ async def _on_ended(event:hikari.StoppingEvent) -> None:
 @lightbulb.option("extension", "The extension to reload", modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("reload", "reload a bots extension")
-@lightbulb.implements(lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def _reload(ctx: lightbulb.Context) -> None:
     color = random.randint(0x0, 0xFFFFFF)
     extension = ctx.options.extension
@@ -62,13 +61,13 @@ async def _reload(ctx: lightbulb.Context) -> None:
         embed = hikari.Embed(description=f"Reloaded extention {extension}", color=color)
     except Exception as e:
         embed = hikari.Embed(description=f"Reloading extention {extension} failed.\nError: {e}", color=color)
-    await ctx.respond(embed=embed, flags=ephemeral)
+    await ctx.respond(embed=embed, reply=True)
 
 @bot.command()
 @lightbulb.option("extension", "The extension to load", modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("load", "load a bots extension")
-@lightbulb.implements(lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def _load(ctx: lightbulb.Context) -> None:
     color = random.randint(0x0, 0xFFFFFF)
     extension = ctx.options.extension
@@ -77,13 +76,13 @@ async def _load(ctx: lightbulb.Context) -> None:
         embed = hikari.Embed(description=f"Loaded extention {extension}", color=color)
     except Exception as e:
         embed = hikari.Embed(description=f"loading extention {extension} failed.\nError: {e}", color=color)
-    await ctx.respond(embed=embed, flags=ephemeral)
+    await ctx.respond(embed=embed, reply=True)
 
 @bot.command()
 @lightbulb.option("extension", "The extension to load", modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.add_checks(lightbulb.owner_only)
 @lightbulb.command("unload", "Unload a bots extension")
-@lightbulb.implements(lightbulb.SlashCommand)
+@lightbulb.implements(lightbulb.PrefixCommand)
 async def _unload(ctx: lightbulb.Context) -> None:
     color = random.randint(0x0, 0xFFFFFF)
     extension = ctx.options.extension
@@ -92,7 +91,7 @@ async def _unload(ctx: lightbulb.Context) -> None:
         embed = hikari.Embed(description=f"Unloaded extention {extension}", color=color)
     except Exception as e:
         embed = hikari.Embed(description=f"Unloading extention {extension} failed.\nError: {e}", color=color)
-    await ctx.respond(embed=embed, flags=ephemeral)
+    await ctx.respond(embed=embed, reply=True)
 
 if __name__ == "__main__":
     if os.name != "nt":

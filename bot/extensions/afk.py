@@ -20,41 +20,26 @@ def perms_check(ctx: lightbulb.Context) -> None:
     cluster = MongoClient(mongoclient)
     configs = cluster["afk"]["server_configs"]
 
-    config = configs.find_one({"guild": ctx.interaction.guild_id})
+    config = configs.find_one({"guild": ctx.event.message.guild_id})
     if config == None:
         return False
     
     for r in config["req"]:
         role = ctx.app.cache.get_role(r)
-        roles = ctx.interaction.member.get_roles()
+        roles = ctx.event.message.member.get_roles()
         if role in roles:
             return True
     return False
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
-@lightbulb.command("afk", "Set an AFK status to display when you are mentioned")
-@lightbulb.implements(lightbulb.SlashCommandGroup)
-async def _afk(ctx: lightbulb.Context) -> None:
-    embed=hikari.Embed(title="=== Command Help ===", description="""afk - Set an AFK status to display when you are mentioned
-
-Usage: -afk [subcommand]""", color=random.randint(0x0, 0xffffff))
-    embed.add_field(name="== Subcommands ==", value="""- clear - Remove the AFK status of a member.
-- ignore - Use in a channel to not return from AFK when talking in that channel.
-- ignored - List all the AFK ignored channels.
-- set - Set an AFK status shown when you're mentioned, and display in nickname.""")
-    await ctx.respond(embed=embed)
-
-@_afk.child
-@lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.option("status", "The status to set", modifier=lightbulb.commands.base.OptionModifier(3), type=str, default="AFK", required=False)
-@lightbulb.command("set", "Set an AFK status shown when you're mentioned, and display in nickname.", inherit_checks=True, aliases=["s"])
-@lightbulb.implements(lightbulb.SlashSubCommand)
-async def _set(ctx: lightbulb.Context) -> None:
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+@lightbulb.command("afk", "Set an AFK status shown when you're mentioned, and display in nickname.")
+@lightbulb.implements(lightbulb.PrefixCommandGroup)
+async def _afk(ctx: lightbulb.Context) -> None:
     status = ctx.options.status
-    user_id = ctx.interaction.user.id
-    guild_id = ctx.interaction.guild_id
+    user_id = ctx.event.message.author.id
+    guild_id = ctx.event.message.guild_id
     timestamp = round(datetime.datetime.now().timestamp())
 
     cluster = MongoClient(mongoclient)
@@ -68,33 +53,66 @@ async def _set(ctx: lightbulb.Context) -> None:
     "timestamp": timestamp
     }
 
-    # cluster = MongoClient(mongoclient)
-    # afk = cluster["afk"]["afk"]
     afk.insert_one(user_data)
-    await ctx.respond(f"{ctx.interaction.user.mention}: I set your AFK: {status}", role_mentions=False, user_mentions=True)
+    await ctx.respond(f"{ctx.event.message.author.mention}: I set your AFK: {status}", role_mentions=False, user_mentions=True)
 
     try:
-        nick = ctx.interaction.member.nickname
+        nick = ctx.event.message.member.nickname
         if nick == None:
-            nick = ctx.interaction.user.username
-        await ctx.interaction.member.edit(nick=f"[AFK] {nick}", reason="Member went AFK")
-    except Exception as e:
-        print(e)
+            nick = ctx.event.message.author.username
+        else:
+            if nick.startswith("[AFK] "):
+                return
+        await ctx.event.message.member.edit(nick=f"[AFK] {nick}", reason="Member went AFK")
+    except:
+        pass
+
+@_afk.child
+@lightbulb.add_checks(lightbulb.owner_only| lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
+@lightbulb.option("status", "The status to set", modifier=lightbulb.commands.base.OptionModifier(3), type=str, default="AFK", required=False)
+@lightbulb.command("set", "Set an AFK status shown when you're mentioned, and display in nickname.", inherit_checks=True, aliases=["s"])
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _set(ctx: lightbulb.Context) -> None:
+    status = ctx.options.status
+    user_id = ctx.event.message.author.id
+    guild_id = ctx.event.message.guild_id
+    timestamp = round(datetime.datetime.now().timestamp())
+
+    cluster = MongoClient(mongoclient)
+    afk = cluster["afk"]["afk"]
+    afk.delete_one({"id": user_id, "guild": guild_id})
+
+    user_data = {
+    "id": user_id,
+    "guild": guild_id,
+    "status": status,
+    "timestamp": timestamp
+    }
+
+    afk.insert_one(user_data)
+    await ctx.respond(f"{ctx.event.message.author.mention}: I set your AFK: {status}", role_mentions=False, user_mentions=True)
+
+    try:
+        nick = ctx.event.message.member.nickname
+        if nick == None:
+            nick = ctx.event.message.author.username
+        await ctx.event.message.member.edit(nick=f"[AFK] {nick}", reason="Member went AFK")
+    except:
+        pass
 
 
 @_afk.child
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS))
 @lightbulb.option("channel", "The channel to ignore", modifier=lightbulb.commands.base.OptionModifier(3), type=hikari.GuildChannel, required=False, default=None)
 @lightbulb.command("ignore", "Use in a channel to not return from AFK when talking in that channel.", inherit_checks=True, aliases=["i"])
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _ignore(ctx: lightbulb.Context) -> None:
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     c = ctx.options.channel
     if c == None:
-        channel = ctx.interaction.channel_id
+        channel = ctx.event.message.channel_id
     else:
         channel = c.id
-    guild_id = ctx.interaction.guild_id
+    guild_id = ctx.event.message.guild_id
 
     cluster = MongoClient(mongoclient)
     configs = cluster["afk"]["server_configs"]
@@ -115,10 +133,10 @@ async def _ignore(ctx: lightbulb.Context) -> None:
 
     if channel in config["ignored"]:
         config["ignored"].pop(config["ignored"].index(channel))
-        await ctx.respond(f"Removed <#{channel}> from AFK ignored list")
+        await ctx.respond(f"Removed <#{channel}> from AFK ignored list", reply=True)
     else:
         config["ignored"].append(channel)
-        await ctx.respond(f"Added <#{channel}> to AFK ignored list")
+        await ctx.respond(f"Added <#{channel}> to AFK ignored list", reply=True)
     
     if in_db == True:
         configs.update_one({"guild": guild_id}, {"$set":{"ignored": config["ignored"]}})
@@ -128,10 +146,9 @@ async def _ignore(ctx: lightbulb.Context) -> None:
 @_afk.child
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS))
 @lightbulb.command("ignored", "List all the AFK ignored channels", inherit_checks=True)
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _ignored(ctx: lightbulb.Context) -> None:
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
-    guild_id = ctx.interaction.guild_id
+    guild_id = ctx.event.message.guild_id
     cluster = MongoClient(mongoclient)
     configs = cluster["afk"]["server_configs"]
 
@@ -157,12 +174,12 @@ async def _ignored(ctx: lightbulb.Context) -> None:
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS))
 @lightbulb.option("member", "The member to clear AFK status", type=hikari.Member)
 @lightbulb.command("clear", "Remove the AFK status of a member.", inherit_checks=True, aliases=["c"])
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _clear(ctx: lightbulb.Context) -> None:
     await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     member = ctx.options.member
     user_id = member.id
-    guild_id = ctx.interaction.guild_id
+    guild_id = ctx.event.message.guild_id
 
     cluster = MongoClient(mongoclient)
     afk = cluster["afk"]["afk"]
