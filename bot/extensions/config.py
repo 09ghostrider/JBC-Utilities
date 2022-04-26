@@ -25,7 +25,7 @@ async def _serverconf(ctx: lightbulb.Context) -> None:
     pass
 
 @_serverconf.child
-@lightbulb.option("command", "the command to list permissions for", required=True, choices=["afk", "react", "donations", "hl"])
+@lightbulb.option("command", "the command to list permissions for", required=True, choices=["afk", "react", "donations", "highlight", "teleport"])
 @lightbulb.command("list", "list the roles that can use the command", aliases=["l", "s", "show"], inherit_checks=True)
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def _list(ctx: lightbulb.Context) -> None:
@@ -45,9 +45,13 @@ async def _list(ctx: lightbulb.Context) -> None:
         cluster = MongoClient(mongoclient)
         db = cluster["donations"]["server_configs"]
         find = db.find_one({"guild": {"$eq": guild_id}})
-    elif command == "hl":
+    elif command == "highlight":
         cluster = MongoClient(mongoclient)
         db = cluster["highlight"]["server_configs"]
+        find = db.find_one({"guild": {"$eq": guild_id}})
+    elif command == "teleport":
+        cluster = MongoClient(mongoclient)
+        db = cluster["tp"]["server_configs"]
         find = db.find_one({"guild": {"$eq": guild_id}})
     else:
         await ctx.respond("Unknown command", reply=True, flags=ephemeral)
@@ -70,7 +74,7 @@ async def _list(ctx: lightbulb.Context) -> None:
 
 @_serverconf.child
 @lightbulb.option("role", "the role to add", required=True, type=hikari.Role)
-@lightbulb.option("command", "the command to list permissions for", required=True, choices=["afk", "react", "donations", "hl"])
+@lightbulb.option("command", "the command to list permissions for", required=True, choices=["afk", "react", "donations", "highlight", "teleport"])
 @lightbulb.command("add", "add a role that can use the command", aliases=["a", "+"], inherit_checks=True)
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def _list(ctx: lightbulb.Context) -> None:
@@ -119,9 +123,22 @@ async def _list(ctx: lightbulb.Context) -> None:
         else:
             in_db = True
         
-    elif command == "hl":
+    elif command == "highlight":
         cluster = MongoClient(mongoclient)
         db = cluster["highlight"]["server_configs"]
+        find = db.find_one({"guild": {"$eq": guild_id}})
+        if find == None:
+            find = {
+                "guild": guild_id,
+                "req": []
+            }
+            in_db = False
+        else:
+            in_db = True
+    
+    elif command == "teleport":
+        cluster = MongoClient(mongoclient)
+        db = cluster["tp"]["server_configs"]
         find = db.find_one({"guild": {"$eq": guild_id}})
         if find == None:
             find = {
@@ -149,7 +166,7 @@ async def _list(ctx: lightbulb.Context) -> None:
 
 @_serverconf.child
 @lightbulb.option("role", "the role to remove", required=True, type=hikari.Role)
-@lightbulb.option("command", "the command to list permissions for", required=True, choices=["afk", "react", "donations", "hl"])
+@lightbulb.option("command", "the command to list permissions for", required=True, choices=["afk", "react", "donations", "highlight", "teleport"])
 @lightbulb.command("remove", "remove a role that can use the command", aliases=["a", "+"], inherit_checks=True)
 @lightbulb.implements(lightbulb.SlashSubCommand)
 async def _list(ctx: lightbulb.Context) -> None:
@@ -198,9 +215,22 @@ async def _list(ctx: lightbulb.Context) -> None:
         else:
             in_db = True
         
-    elif command == "hl":
+    elif command == "highlight":
         cluster = MongoClient(mongoclient)
         db = cluster["highlight"]["server_configs"]
+        find = db.find_one({"guild": {"$eq": guild_id}})
+        if find == None:
+            find = {
+                "guild": guild_id,
+                "req": []
+            }
+            in_db = False
+        else:
+            in_db = True
+
+    elif command == "teleport":
+        cluster = MongoClient(mongoclient)
+        db = cluster["tp"]["server_configs"]
         find = db.find_one({"guild": {"$eq": guild_id}})
         if find == None:
             find = {
