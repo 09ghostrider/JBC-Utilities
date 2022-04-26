@@ -19,7 +19,7 @@ hikari==2.0.0.dev106
 hikari-lightbulb==2.2.0
 hikari-miru==1.1.1
 idna==3.3
-lightbulb-ext-filament==0.1.2
+lightbulb-ext-filament @ git+https://github.com/tandemdude/lightbulb-ext-filament@43351ab93b3c2ef1de47ce4539eaa20a5a580a85
 multidict==6.0.2
 nusex==1.2.4
 pure25519==0.0.1

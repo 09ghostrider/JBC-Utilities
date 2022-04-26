@@ -7,11 +7,11 @@ error = "<a:cross:940923957979254795>"
 
 @plugin.listener(lightbulb.CommandErrorEvent)
 async def on_error(event: lightbulb.CommandErrorEvent) -> None:
+    e = False
     embed = hikari.Embed(title=f"{error} Error", color="FF0000")
     if isinstance(event.exception, lightbulb.CommandInvocationError):
         embed.description = f"> Something went wrong during invocation of command `{event.context.command.name}`."
-        await event.context.respond(embed=embed, reply=True, flags=ephemeral)
-        raise event.exception
+        e = True
 
     exception = event.exception.__cause__ or event.exception
 
@@ -27,22 +27,25 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
             args = args + f"`{arg.name}`, "
         args = args[:-2]
         embed.description = f"> Missing required argument(s): {args}"
+    elif isinstance(exception, lightbulb.errors.CommandNotFound):
+        return
     elif isinstance(exception, lightbulb.errors.OnlyInDM):
         embed.description = f"> This command can only be used in DMs"
     elif isinstance(exception, lightbulb.errors.OnlyInGuild):
         embed.description = f"> This command can only be used in a guild"
     elif isinstance(exception, TypeError):
         embed.description = "> Invalid option type"
-    # elif isinstance(exception, lightbulb.errors.CommandNotFound):
-    #     embed.description = f"> Unknown command / is currently disabled"
     else:
         embed.description = f"> There was a error with this command"
-        raise exception
+        e = True
 
     try:
-        await event.context.respond(embed=embed, flags=ephemeral, reply=True)
-    except:
         await event.context.respond(embed=embed, reply=True)
+    except:
+        await event.context.respond(embed=embed)
+    
+    if e == True:
+        raise exception
 
 def load(bot):
     bot.add_plugin(plugin)
