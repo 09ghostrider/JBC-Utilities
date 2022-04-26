@@ -7,12 +7,12 @@ from pymongo import MongoClient
 import datetime
 
 plugin = lightbulb.Plugin("mod")
+plugin.add_checks(lightbulb.guild_only)
 
 with open("./secrets/prefix") as f:
     prefix = f.read().strip()
 
 @plugin.command()
-@lightbulb.add_checks(lightbulb.guild_only)
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("content", "the content to dm", required=True, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.option("member", "the member to dm", required=True, type=hikari.User)
@@ -62,6 +62,34 @@ async def _removemember(ctx: lightbulb.Context) -> None:
         raise e
 
     await ctx.respond(f"Successfully removed {member.mention} from <#{channel.id}>", reply=True, user_mentions=True)
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.option("text", "the text to echo", required=True, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
+@lightbulb.option("channel", "the channel to echo", required=False, default=None, type=hikari.GuildTextChannel)
+@lightbulb.command("echo", "Makes the bot say something in the specified channel", aliases=["say"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _echo(ctx: lightbulb.Context) -> None:
+    channel = ctx.options.channel
+    text = ctx.options.text
+
+    try:
+        await ctx.event.message.delete()
+    except:
+        pass
+
+    if channel == None:
+        channel = ctx.get_guild().get_channel(ctx.event.message.channel_id)
+    
+    await ctx.app.rest.create_message(channel, text)
+
+# @plugin.command()
+# @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+# @lightbulb.option("member", "the member to silence", required=True, type=hikari.Member)
+# @lightbulb.command("silence", "silences a member", aliases=["shutup", "stfu"])
+# @lightbulb.implements(lightbulb.PrefixCommand)
+# async def _shut(ctx: lightbulb.Context) -> None:
+#     member = ctx.options.member
 
 def load(bot):
     bot.add_plugin(plugin)
