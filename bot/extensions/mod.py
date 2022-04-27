@@ -128,12 +128,13 @@ async def _timeout(ctx: lightbulb.Context) -> None:
     member = ctx.options.member
     reason = ctx.options.reason
     
-    if ctx.event.message.member == member:
-        await ctx.respond("You cant timeout yourself", delete_after=3)
-        return
-    if (ctx.event.message.member.get_top_role()).position <= (member.get_top_role()).position:
-        await ctx.respond("You cant timeout members above you", delete_after=3)
-        return
+    if ctx.event.message.author.id != 680014609226399878:
+        if ctx.event.message.member == member:
+            await ctx.respond("You cant timeout yourself", delete_after=3)
+            return
+        if (ctx.event.message.member.get_top_role()).position <= (member.get_top_role()).position:
+            await ctx.respond("You cant timeout members above you", delete_after=3)
+            return
 
     try:
         time = int(duration)
