@@ -5,10 +5,14 @@ import miru
 import pymongo
 from pymongo import MongoClient
 import datetime
+import os
+from dotenv import load_dotenv
 
 plugin = lightbulb.Plugin("mod")
 plugin.add_checks(lightbulb.guild_only)
 
+load_dotenv()
+mongoclient = os.getenv("DATABASE")
 with open("./secrets/prefix") as f:
     prefix = f.read().strip()
 
@@ -83,13 +87,92 @@ async def _echo(ctx: lightbulb.Context) -> None:
     
     await ctx.app.rest.create_message(channel, text)
 
-# @plugin.command()
-# @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-# @lightbulb.option("member", "the member to silence", required=True, type=hikari.Member)
-# @lightbulb.command("silence", "silences a member", aliases=["shutup", "stfu"])
-# @lightbulb.implements(lightbulb.PrefixCommand)
-# async def _shut(ctx: lightbulb.Context) -> None:
-#     member = ctx.options.member
+@plugin.command()
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.option("member", "member", required=True, type=hikari.Member)
+@lightbulb.command("silence", "make a member stfu", aliases=["shutup", "stfu", "shut"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _shut(ctx: lightbulb.Context) -> None:
+    member = ctx.options.member
+    guild_id = ctx.event.message.guild_id
+
+    cluster = MongoClient(mongoclient)
+    silenced = cluster["mod"]["silenced"]
+    data = silenced.find_one({"guild": {"$eq": guild_id}})
+    if data == None:
+        data = {
+            "guild": guild_id,
+            "silenced": [member.id]
+        }
+        silenced.insert_one(data)
+        await ctx.respond(f"{member.mention} has been silenced", reply=True, user_mentions=True)
+
+    else:
+        if member.id in data["silenced"]:
+            data["silenced"].pop(data["silenced"].index(member.id))
+            await ctx.respond(f"{member.mention} has been unsilenced", reply=True, user_mentions=True)
+        else:
+            data["silenced"].append(member.id)
+            await ctx.respond(f"{member.mention} has been silenced", reply=True, user_mentions=True)
+        silenced.update_one({"guild": {"$eq": guild_id}}, {"$set": {"silenced": data["silenced"]}})
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | lightbulb.owner_only)
+@lightbulb.option("reason", "the reason for timeout", default="None", required=False, modifier=lightbulb.commands.base.OptionModifier(3), type=str)
+@lightbulb.option("duration", "the duration of timeout", required=True, type=str)
+@lightbulb.option("member", "the member to timeout", required=True, type=hikari.Member)
+@lightbulb.command("timeout", "Timeout a member", aliases=["to"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _timeout(ctx: lightbulb.Context) -> None:
+    duration = ctx.options.duration
+    member = ctx.options.member
+    reason = ctx.options.reason
+    
+    if ctx.event.message.member == member:
+        await ctx.respond("You cant timeout yourself", delete_after=3)
+        return
+    if (ctx.event.message.member.get_top_role()).position <= (member.get_top_role()).position:
+        await ctx.respond("You cant timeout members above you", delete_after=3)
+        return
+
+    try:
+        time = int(duration)
+    except:
+        convertTimeList = {'s':1, 'm':60, 'h':3600, 'd':86400, 'S':1, 'M':60, 'H':3600, 'D':86400}
+        try:
+            time = int(duration[:-1]) * convertTimeList[duration[-1]]
+        except:
+            await ctx.respond("Invalid duration")
+            return
+    if time > 2419200:
+        await ctx.respond("You can only timeout members upto **28d**", delete_after=3)
+        return
+        
+    new_reason = f"Action requested by {ctx.event.message.author.username}#{ctx.event.message.author.discriminator}\n Reason: {reason}"
+    try:
+        await member.edit(communication_disabled_until=(datetime.datetime.utcfromtimestamp(int(round((datetime.datetime.now().timestamp())+time)))), reason=new_reason)
+        await ctx.respond(f"{member.mention} ({member.username}#{member.discriminator}) has been put to timeout for **{duration}**\n**Reason:** {reason}")
+    except Exception as e:
+        await ctx.respond(e, delete_after=5)
+        raise e
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | lightbulb.owner_only)
+@lightbulb.option("reason", "the reason for removal of timeout", default="None", required=False, modifier=lightbulb.commands.base.OptionModifier(3), type=str)
+@lightbulb.option("member", "the member to remove timeout from", required=True, type=hikari.Member)
+@lightbulb.command("removetimeout", "Remove timeout from a member", aliases=["rto", "unto", "removeto"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _removetimeout(ctx: lightbulb.Context) -> None:
+    member = ctx.options.member
+    reason = ctx.options.reason
+        
+    new_reason = f"Action requested by {ctx.event.message.author.username}#{ctx.event.message.author.discriminator}\n Reason: {reason}"
+    try:
+        await member.edit(communication_disabled_until=None, reason=new_reason)
+        await ctx.respond(f"{member.mention} ({member.username}#{member.discriminator}) has been removed from timeout\n**Reason:** {reason}")
+    except Exception as e:
+        await ctx.respond(e, delete_after=5)
+        raise e
 
 def load(bot):
     bot.add_plugin(plugin)
