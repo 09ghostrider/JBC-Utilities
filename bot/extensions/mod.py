@@ -85,7 +85,7 @@ async def _echo(ctx: lightbulb.Context) -> None:
     if channel == None:
         channel = ctx.get_guild().get_channel(ctx.event.message.channel_id)
     
-    await ctx.app.rest.create_message(channel, text)
+    await ctx.app.rest.create_message(channel, text, user_mentions=True)
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
@@ -95,6 +95,13 @@ async def _echo(ctx: lightbulb.Context) -> None:
 async def _shut(ctx: lightbulb.Context) -> None:
     member = ctx.options.member
     guild_id = ctx.event.message.guild_id
+    
+    owner_role = ctx.app.cache.get_role(832107331265232909)
+    if owner_role in member.get_roles():
+        return await ctx.respond("You can't silence owners", reply=True)
+    
+    if member.id == 680014609226399878:
+        return await ctx.respond("No", reply=True)
 
     cluster = MongoClient(mongoclient)
     silenced = cluster["mod"]["silenced"]

@@ -53,13 +53,13 @@ async def _gdonate(ctx: lightbulb.Context) -> None:
 
     embed2=hikari.Embed(color=c, title="Thank you for donating", description="Your donation has been recorded, and a giveaway manager will respond soon.\nPlease be patient.\nKindly do not ping giveaway managers.")
     embed2.set_footer(text=ctx.get_guild().name, icon=ctx.get_guild().icon_url)
-    msg = await ctx.respond(embed=embed2)
+    msg = await ctx.respond(f"{ctx.event.message.author.mention}", embed=embed2, user_mentions=True)
 
     cmd = f"!!giveaway start {ctx.options.duration} {ctx.options.winners} {ctx.options.requirements} {ctx.options.prize} --donor {ctx.event.message.author.id} --msg {ctx.options.message} --ping"
     link = miru.Button(label="Donation", url=f"https://discord.com/channels/{ctx.event.message.guild_id}/{ctx.event.message.channel_id}/{(await msg.message()).id}")
     link2 = miru.Button(label="Donation", url=f"https://discord.com/channels/{ctx.event.message.guild_id}/{ctx.event.message.channel_id}/{(await msg.message()).id}")
 
-    view = miru.View(timeout=600)
+    view = miru.View(timeout=36000)
     view.add_item(claim_button(cmd))
     view.add_item(link)
     msg2 = await ctx.app.rest.create_message(ctx.get_guild().get_channel(851346473370124309), "<@&832111569764352060> **NEW DONATION**", embed=embed, role_mentions=True, components=view.build())
@@ -91,10 +91,10 @@ async def _ginfo(ctx: lightbulb.Context) -> None:
 
 **&gdonate <duration> <prize> [winners] [requirements] [message]**
 eg: &gdonate 1h 1tro 1 level5 I love donating to JBC!
-eg: &gdonate 6h 1tro|5pem level15|5mDonor This is how to donate multiple items or multiple requirements.
+eg: &gdonate 6h 1tro;;5pem level15;;5mDonor This is how to donate multiple items or multiple requirements.
 
 {br_dot} Minimum donation for all is **500k.**
-{br_dot} Note that spaces will end your argument. For donating multiple items, refrain from using a space. Instead seperate them with a **|**.
+{br_dot} Note that spaces will end your argument. For donating multiple items, refrain from using a space. Instead seperate them with **;;**.
 {br_dot} A giveaway manager will then respond as soon as possible, please do not ping them.
 {br_dot} If you would like to leave an area blank, just type **None**.
 {br_dot} You will receive donator roles for donating a certain amount ranging from 5 million to 1 billion.

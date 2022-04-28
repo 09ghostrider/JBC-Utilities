@@ -19,7 +19,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         embed.description = f"> You are not the owner of this bot."
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
         embed.description = f"> This command is on cooldown. Retry in `{exception.retry_after:.2f}` seconds."
-    if isinstance(exception, lightbulb.errors.CheckFailure):
+    elif isinstance(exception, lightbulb.errors.CheckFailure):
         embed.description = f"> You do not have the right permissions to use this command"
     elif isinstance(exception, lightbulb.errors.NotEnoughArguments):
         args = ""
@@ -40,9 +40,12 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         e = True
 
     try:
-        await event.context.respond(embed=embed, reply=True)
+        await event.context.respond(embed=embed, flags=ephemeral)
     except:
-        await event.context.respond(embed=embed)
+        try:
+            await event.context.respond(embed=embed, reply=True)
+        except:
+            await event.context.respond(embed=embed)
     
     if e == True:
         raise exception

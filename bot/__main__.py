@@ -7,7 +7,9 @@ import miru
 from bot import extensions
 from . import STARTUP_CHANNEL
 from bot.extensions.roles import pingroles
+# from bot.extensions.giveaway import giveaway_view
 from dotenv import load_dotenv
+from lightbulb.ext import tasks
 
 load_dotenv()
 with open("./secrets/prefix") as f:
@@ -34,6 +36,7 @@ bot = lightbulb.BotApp(
 bot.load_extensions_from(pathlib.Path(os.path.realpath(extensions.__file__)).parent, must_exist=True)
 bot.load_extensions("lightbulb.ext.filament.exts.superuser")
 miru.load(bot)
+tasks.load(bot)
 
 @bot.listen(hikari.StartedEvent)
 async def _on_started(event:hikari.StartedEvent) -> None:
@@ -42,6 +45,9 @@ async def _on_started(event:hikari.StartedEvent) -> None:
 
     view = pingroles()
     view.start_listener()
+
+    # view2 = giveaway_view()
+    # view2.start_listener()
 
 @bot.listen(hikari.StoppingEvent)
 async def _on_ended(event:hikari.StoppingEvent) -> None:
