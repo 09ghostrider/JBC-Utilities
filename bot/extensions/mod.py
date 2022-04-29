@@ -124,7 +124,7 @@ async def _shut(ctx: lightbulb.Context) -> None:
         silenced.update_one({"guild": {"$eq": guild_id}}, {"$set": {"silenced": data["silenced"]}})
 
 @plugin.command()
-@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | lightbulb.owner_only)
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MODERATE_MEMBERS) | lightbulb.owner_only)
 @lightbulb.option("reason", "the reason for timeout", default="None", required=False, modifier=lightbulb.commands.base.OptionModifier(3), type=str)
 @lightbulb.option("duration", "the duration of timeout", required=True, type=str)
 @lightbulb.option("member", "the member to timeout", required=True, type=hikari.Member)
@@ -165,7 +165,7 @@ async def _timeout(ctx: lightbulb.Context) -> None:
         raise e
 
 @plugin.command()
-@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | lightbulb.owner_only)
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MODERATE_MEMBERS) | lightbulb.owner_only)
 @lightbulb.option("reason", "the reason for removal of timeout", default="None", required=False, modifier=lightbulb.commands.base.OptionModifier(3), type=str)
 @lightbulb.option("member", "the member to remove timeout from", required=True, type=hikari.Member)
 @lightbulb.command("removetimeout", "Remove timeout from a member", aliases=["rto", "unto", "removeto"])
@@ -181,6 +181,29 @@ async def _removetimeout(ctx: lightbulb.Context) -> None:
     except Exception as e:
         await ctx.respond(e, delete_after=5)
         raise e
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_channel_permissions(hikari.Permissions.MANAGE_MESSAGES))
+@lightbulb.option("duration", "the duration of sm", required=False, default=0, type=str)
+@lightbulb.command("slowmode", "edit the slowmode of a channel", aliases=["sm"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _sm(ctx: lightbulb.Context) -> None:
+    duration = ctx.options.duration
+    try:
+        duration = int(duration)
+    except:
+        convertTimeList = {'s':1, 'm':60, 'h':3600, 'd':86400, 'S':1, 'M':60, 'H':3600, 'D':86400}
+        try:
+            duration = int(duration[:-1]) * convertTimeList[duration[-1]]
+        except:
+            return await ctx.respond("Invalid duration\nAvailable options: s, m, h, d")
+    if duration > 21600:
+        duration = 21600
+    if duration < 0:
+        duration = 0
+    
+    await ctx.get_guild().get_channel(ctx.event.message.channel_id).edit(rate_limit_per_user=duration)
+    await ctx.respond(f"Set the slowmode to {str(datetime.timedelta(seconds = duration))}", reply=True)
 
 def load(bot):
     bot.add_plugin(plugin)
