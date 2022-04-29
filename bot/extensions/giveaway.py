@@ -403,6 +403,7 @@ async def _pingrole(ctx: lightbulb.Context) -> None:
     config = configs.find_one({"guild": guild_id})
     if config == None:
         config = {
+            "guild": guild_id,
             "req": None,
             "ping": role.id
         }
@@ -426,13 +427,14 @@ async def _managerrole(ctx: lightbulb.Context) -> None:
     config = configs.find_one({"guild": guild_id})
     if config == None:
         config = {
+            "guild": guild_id,
             "req": role.id,
             "ping": None
         }
         configs.insert_one(config)
     else:
         config["req"] = role.id
-        configs.update_one({"guild": guild_id}, {"$set":{"req": config["req"]}})
+        configs.update_one({"guild": guild_id}, {"$set": {"req": config["req"]}})
     await ctx.respond(f"Set manager role as {role.mention}", reply=True, role_mentions=False)
 
 @_gconfig.child
@@ -447,6 +449,7 @@ async def _view(ctx: lightbulb.Context) -> None:
     config = configs.find_one({"guild": guild_id})
     if config == None:
         config = {
+            "guild": guild_id,
             "req": None,
             "ping": None
         }

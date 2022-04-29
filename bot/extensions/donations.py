@@ -97,7 +97,7 @@ eg: &gdonate 6h 1tro;;5pem level15;;5mDonor This is how to donate multiple items
 {br_dot} Note that spaces will end your argument. For donating multiple items, refrain from using a space. Instead seperate them with **;;**.
 {br_dot} A giveaway manager will then respond as soon as possible, please do not ping them.
 {br_dot} If you would like to leave an area blank, just type **None**.
-{br_dot} You will receive donator roles for donating a certain amount ranging from 5 million to 1 billion.
+{br_dot} You will receive donator roles for donating a certain amount ranging from 5 million to 5 billion.
 {br_dot} If you want to sponsor a heist, dm a online ADMIN. minimum donation for heist is 5 million.
 {br_dot} If you would like to donate for nitro giveaways, please dm <@!488132046087258112>
 {br_dot} If you wish to help support the server, you can also donate by just sending the items to <@!848196070437158912>. This will still count to your total donations."""
