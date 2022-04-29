@@ -273,7 +273,7 @@ Hosted by: {host.mention}
         if config != None:
             pr = config["ping"]
             if pr != None:
-                await ctx.app.rest.create_message(channel, "<@&{pr}>", role_mentions=True)
+                await ctx.app.rest.create_message(channel, f"<@&{pr}>", role_mentions=True)
 
     # final response
     await ctx.respond(f"{greentick} | Successfully started giveaway")
