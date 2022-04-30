@@ -42,7 +42,7 @@ async def _addmember(ctx: lightbulb.Context) -> None:
     channel = ctx.options.channel
 
     try:
-        await ctx.bot.rest.edit_permission_overwrites(channel=channel, target=member, allow=(hikari.Permissions.SEND_MESSAGES | hikari.Permissions.VIEW_CHANNEL | hikari.Permissions.READ_MESSAGE_HISTORY))
+        await ctx.bot.rest.edit_permission_overwrites(channel=channel, target=member, allow=(hikari.Permissions.SEND_MESSAGES | hikari.Permissions.VIEW_CHANNEL | hikari.Permissions.READ_MESSAGE_HISTORY | hikari.Permissions.MANAGE_WEBHOOKS))
     except Exception as e:
         await ctx.respond(f"There was an error adding the member", reply=True)
         raise e
