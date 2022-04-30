@@ -42,7 +42,7 @@ async def _addmember(ctx: lightbulb.Context) -> None:
     channel = ctx.options.channel
 
     try:
-        await ctx.bot.rest.edit_permission_overwrites(channel=channel, target=member, allow=(hikari.Permissions.SEND_MESSAGES | hikari.Permissions.VIEW_CHANNEL | hikari.Permissions.READ_MESSAGE_HISTORY | hikari.Permissions.MANAGE_WEBHOOKS))
+        await ctx.bot.rest.edit_permission_overwrites(channel=channel, target=member, allow=(hikari.Permissions.SEND_MESSAGES | hikari.Permissions.VIEW_CHANNEL | hikari.Permissions.READ_MESSAGE_HISTORY))
     except Exception as e:
         await ctx.respond(f"There was an error adding the member", reply=True)
         raise e
@@ -82,9 +82,8 @@ async def _echo(ctx: lightbulb.Context) -> None:
     except:
         pass
 
-    if channel == None:
-        channel = ctx.get_guild().get_channel(ctx.event.message.channel_id)
-    
+    if channel:
+        channel = await ctx.event.message.fetch_channel()
     await ctx.app.rest.create_message(channel, text, user_mentions=True)
 
 @plugin.command()
@@ -158,7 +157,7 @@ async def _timeout(ctx: lightbulb.Context) -> None:
         
     new_reason = f"Action requested by {ctx.event.message.author} | Reason: {reason}"
     await member.edit(communication_disabled_until=(datetime.datetime.utcfromtimestamp(int(round((datetime.datetime.now().timestamp())+time)))), reason=new_reason)
-    await ctx.respond(f"{member.mention} has been put to timeout for {str(datetime.timedelta(seconds = duration))}\nReason: {reason}", reply=True)
+    await ctx.respond(f"{member.mention} has been put to timeout for {datetime.timedelta(seconds = time)}\nReason: {reason}", reply=True)
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MODERATE_MEMBERS) | lightbulb.owner_only)
@@ -195,7 +194,27 @@ async def _sm(ctx: lightbulb.Context) -> None:
         duration = 0
     
     await ctx.get_guild().get_channel(ctx.event.message.channel_id).edit(rate_limit_per_user=duration)
-    await ctx.respond(f"Set the slowmode to {str(datetime.timedelta(seconds = duration))}", reply=True)
+    await ctx.respond(f"Set the slowmode to {datetime.timedelta(seconds = int(duration))}", reply=True)
+
+# @plugin.command()
+# @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
+# @lightbulb.option("role", "the role to lock the channel for (default = @everyone)", type=hikari.Role, default=None, required=False)
+# @lightbulb.option("channel", "the channel to lock (default = current channel)", type=hikari.GuildTextChannel, default=None, required=False)
+# @lightbulb.command("lock", "locks a channel", aliases=["lockdown"])
+# @lightbulb.implements(lightbulb.PrefixCommand)
+# async def _lock(ctx: lightbulb.Context) -> None:
+#     channel = ctx.options.channel
+#     role = ctx.options.role
+
+#     if channel is None:
+#         channel = await ctx.event.message.fetch_channel()
+#     if role is None:
+#         role = ctx.app.cache.get_role(ctx.event.message.guild_id)
+
+#     old_perms = channel.permission_overwrites()
+#     print(old_perms)
+
+#     await ctx.bot.rest.edit_permission_overwrites(channel=channel, )
 
 def load(bot):
     bot.add_plugin(plugin)
