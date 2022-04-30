@@ -156,13 +156,9 @@ async def _timeout(ctx: lightbulb.Context) -> None:
         await ctx.respond("You can only timeout members upto **28d**", delete_after=3)
         return
         
-    new_reason = f"Action requested by {ctx.event.message.author.username}#{ctx.event.message.author.discriminator}\n Reason: {reason}"
-    try:
-        await member.edit(communication_disabled_until=(datetime.datetime.utcfromtimestamp(int(round((datetime.datetime.now().timestamp())+time)))), reason=new_reason)
-        await ctx.respond(f"{member.mention} ({member.username}#{member.discriminator}) has been put to timeout for **{duration}**\n**Reason:** {reason}")
-    except Exception as e:
-        await ctx.respond(e, delete_after=5)
-        raise e
+    new_reason = f"Action requested by {ctx.event.message.author} | Reason: {reason}"
+    await member.edit(communication_disabled_until=(datetime.datetime.utcfromtimestamp(int(round((datetime.datetime.now().timestamp())+time)))), reason=new_reason)
+    await ctx.respond(f"{member.mention} has been put to timeout for {str(datetime.timedelta(seconds = duration))}\nReason: {reason}", reply=True)
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MODERATE_MEMBERS) | lightbulb.owner_only)
@@ -174,16 +170,12 @@ async def _removetimeout(ctx: lightbulb.Context) -> None:
     member = ctx.options.member
     reason = ctx.options.reason
         
-    new_reason = f"Action requested by {ctx.event.message.author.username}#{ctx.event.message.author.discriminator}\n Reason: {reason}"
-    try:
-        await member.edit(communication_disabled_until=None, reason=new_reason)
-        await ctx.respond(f"{member.mention} ({member.username}#{member.discriminator}) has been removed from timeout\n**Reason:** {reason}")
-    except Exception as e:
-        await ctx.respond(e, delete_after=5)
-        raise e
+    new_reason = f"Action requested by {ctx.event.message.author} | Reason: {reason}"
+    await member.edit(communication_disabled_until=None, reason=new_reason)
+    await ctx.respond(f"{member.mention} has been removed from timeout\nReason: {reason}", reply=True)
 
 @plugin.command()
-@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_channel_permissions(hikari.Permissions.MANAGE_MESSAGES))
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_MESSAGES) |  lightbulb.owner_only)
 @lightbulb.option("duration", "the duration of sm", required=False, default=0, type=str)
 @lightbulb.command("slowmode", "edit the slowmode of a channel", aliases=["sm"])
 @lightbulb.implements(lightbulb.PrefixCommand)

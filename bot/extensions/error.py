@@ -3,7 +3,7 @@ import lightbulb
 
 plugin = lightbulb.Plugin("errorHandler")
 ephemeral = hikari.MessageFlag.EPHEMERAL
-error = "<a:cross:940923957979254795>"
+error = "<a:RedCross:944235488808665109>"
 
 @plugin.listener(lightbulb.CommandErrorEvent)
 async def on_error(event: lightbulb.CommandErrorEvent) -> None:
@@ -40,7 +40,7 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         e = True
 
     try:
-        await event.context.respond(embed=embed, flags=ephemeral)
+        await event.context.respond(embed=embed, flags=ephemeral, reply=True)
     except:
         try:
             await event.context.respond(embed=embed, reply=True)

@@ -33,7 +33,7 @@ class claim_button(miru.Button):
 async def _gdonate(ctx: lightbulb.Context) -> None:
     c = random.randint(0x0, 0xffffff)
     options = ctx.options.options
-    options = options.split("/")
+    options = options.split("/", 4)
     if len(options) < 5:
         return await ctx.respond("Please include all the options\nNote: U can use 'None' instead of leaving the blank empty", reply=True)
 
@@ -54,14 +54,14 @@ async def _gdonate(ctx: lightbulb.Context) -> None:
     embed2.set_footer(text=ctx.get_guild().name, icon=ctx.get_guild().icon_url)
     msg = await ctx.respond(f"{ctx.event.message.author.mention}", embed=embed2, user_mentions=True)
 
-    cmd = f"!!giveaway start {ctx.options.duration} {ctx.options.winners} {ctx.options.requirements} {ctx.options.prize} --donor {ctx.event.message.author.id} --msg {ctx.options.message} --ping"
+    cmd = f"!!giveaway start {options[0]} {options[2]} {options[3]} {options[1]} --donor {ctx.event.message.author.id} --msg {options[4]} --ping"
     link = miru.Button(label="Donation", url=f"https://discord.com/channels/{ctx.event.message.guild_id}/{ctx.event.message.channel_id}/{(await msg.message()).id}")
     link2 = miru.Button(label="Donation", url=f"https://discord.com/channels/{ctx.event.message.guild_id}/{ctx.event.message.channel_id}/{(await msg.message()).id}")
 
     view = miru.View(timeout=None)
     view.add_item(claim_button(cmd))
     view.add_item(link)
-    msg2 = await ctx.app.rest.create_message(ctx.get_guild().get_channel(851346473370124309), "<@&832111569764352060> **NEW DONATION**", embed=embed, role_mentions=False, components=view.build())
+    msg2 = await ctx.app.rest.create_message(ctx.get_guild().get_channel(851346473370124309), "<@&832111569764352060> **NEW DONATION**", embed=embed, role_mentions=True, components=view.build())
 
     view.start(msg2)
     await view.wait()
