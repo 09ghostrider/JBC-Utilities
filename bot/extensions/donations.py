@@ -61,7 +61,7 @@ async def _gdonate(ctx: lightbulb.Context) -> None:
     view = miru.View(timeout=None)
     view.add_item(claim_button(cmd))
     view.add_item(link)
-    msg2 = await ctx.app.rest.create_message(ctx.get_guild().get_channel(851346473370124309), "<@&832111569764352060> **NEW DONATION**", embed=embed, role_mentions=False, components=view.build())
+    msg2 = await ctx.app.rest.create_message(ctx.get_guild().get_channel(851346473370124309), "<@&832111569764352060> **NEW DONATION**", embed=embed, role_mentions=True, components=view.build())
 
     view.start(msg2)
     await view.wait()
