@@ -56,7 +56,6 @@ async def _hl(ctx: lightbulb.Context) -> None:
 @lightbulb.command("add", "add a word to your highlights list", inherit_checks=True, aliases=["+", "a"])
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _add(ctx: lightbulb.Context) -> None:
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     word = ctx.options.word
     word = word.lower()
     user_id = ctx.event.message.author.id
@@ -103,7 +102,7 @@ async def _add(ctx: lightbulb.Context) -> None:
         highlight.insert_one(user_data)
     elif in_db == True:
         highlight.update_one({"_id":user_id}, {"$set":{"hl":user_data["hl"]}})
-    await ctx.respond(f"Successfully add **{word}** to your highlights list", reply=True)
+    await ctx.respond(f"""Successfully add "{word}" to your highlights list""", reply=True)
 
 @_hl.child
 @lightbulb.option("word", "the word to stop tracking", type=str)
@@ -131,7 +130,7 @@ async def _remove(ctx: lightbulb.Context) -> None:
     
     hl_list.pop(hl_list.index(word))
     highlight.update_one({"_id":user_id}, {"$set":{"hl":hl_list}})
-    await ctx.respond(f"Successfully remove **{word}** from your highlights list", reply=True)
+    await ctx.respond(f"""Successfully remove "{word}" from your highlights list""", reply=True)
 
 @_hl.child
 @lightbulb.command("list", "show your current highlight list", inherit_checks=True, aliases=["show", "l"])
@@ -205,6 +204,12 @@ async def _block(ctx: lightbulb.Context) -> None:
         elif blocks.startswith("<@!") and blocks.endswith(">") and channel == None:
             try:
                 m = int(blocks[3:][:-1])
+                member = await ctx.bot.rest.fetch_member(ctx.guild_id, m)
+            except:
+                pass
+        elif blocks.startswith("<@") and blocks.endswith(">") and channel == None:
+            try:
+                m = int(blocks[2:][:-1])
                 member = await ctx.bot.rest.fetch_member(ctx.guild_id, m)
             except:
                 pass
@@ -283,6 +288,12 @@ async def _unblock(ctx: lightbulb.Context) -> None:
         elif blocks.startswith("<@!") and blocks.endswith(">") and channel == None:
             try:
                 m = int(blocks[3:][:-1])
+                member = await ctx.bot.rest.fetch_member(ctx.guild_id, m)
+            except:
+                pass
+        elif blocks.startswith("<@") and blocks.endswith(">") and channel == None:
+            try:
+                m = int(blocks[2:][:-1])
                 member = await ctx.bot.rest.fetch_member(ctx.guild_id, m)
             except:
                 pass
