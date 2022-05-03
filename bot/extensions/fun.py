@@ -38,7 +38,7 @@ async def _noobrate(ctx: lightbulb.Context) -> None:
 
 @plugin.command()
 @lightbulb.option("text", "text", type=str, required=False, default=None, modifier=lightbulb.commands.base.OptionModifier(3))
-@lightbulb.command("progamer", "shows how noob you are", aliases=["gamer"])
+@lightbulb.command("progamer", "shows how much of a gamer you are", aliases=["gamer"])
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _progamer(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
@@ -50,7 +50,7 @@ async def _progamer(ctx: lightbulb.Context) -> None:
 
 @plugin.command()
 @lightbulb.option("text", "text", type=str, required=False, default=None, modifier=lightbulb.commands.base.OptionModifier(3))
-@lightbulb.command("prorate", "shows how noob you are", aliases=["pro"])
+@lightbulb.command("prorate", "shows how pro you are", aliases=["pro"])
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _prorate(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
