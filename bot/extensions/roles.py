@@ -6,15 +6,26 @@ import pymongo
 from pymongo import MongoClient
 import datetime
 from miru.ext import nav
+import json
 
 plugin = lightbulb.Plugin("donations")
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
-# with open("./secrets/db") as f:
-#     mongoclient = f.read().strip()
+numemojis = {
+    0: "<a:_0_:956584073084674049>",
+    1: "<a:_1_:956583838992187483>",
+    2: "<a:_2_:956583892951912488>",
+    3: "<a:_3_:956583961944023141>",
+    4: "<a:_4_:956583976733122570>",
+    5: "<a:_5_:956583995125157948>",
+    6: "<a:_6_:956584014758699079>",
+    7: "<a:_7_:956584029338091520>",
+    8: "<a:_8_:956584045087715418>",
+    9: "<a:_9_:956584058966650950>"
+}
 
 class pingroles(miru.View):
     def __init__(self) -> None:
