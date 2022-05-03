@@ -18,7 +18,7 @@ ephemeral = hikari.MessageFlag.EPHEMERAL
 
 bot = lightbulb.BotApp(
     token=os.getenv("TOKEN"),
-    prefix=lightbulb.when_mentioned_or(bot_config["prefix"]),
+    prefix=lightbulb.when_mentioned_or(bot_config["bot"]["prefix"]),
     # logs={
     #     "version": 1,
     #     "incremental": True,
