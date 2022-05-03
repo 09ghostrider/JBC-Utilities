@@ -4,6 +4,7 @@ import lightbulb
 import pathlib
 import random
 import miru
+import json
 from bot import extensions
 from . import STARTUP_CHANNEL
 from bot.extensions.roles import pingroles
@@ -12,14 +13,13 @@ from dotenv import load_dotenv
 from lightbulb.ext import tasks
 
 load_dotenv()
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
-
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 bot = lightbulb.BotApp(
     token=os.getenv("TOKEN"),
-    prefix=lightbulb.when_mentioned_or([prefix, "jbc ", "jbc"]),
+    prefix=lightbulb.when_mentioned_or(bot_config["prefix"]),
     # logs={
     #     "version": 1,
     #     "incremental": True,
@@ -29,7 +29,9 @@ bot = lightbulb.BotApp(
     #         "lightbulb": {"level": "DEBUG"},
     #     }
     # },
-    default_enabled_guilds=[881031368199524372, 832105614577631232],
+    default_enabled_guilds=bot_config["default_guilds"],
+    ignore_bots=True,
+    owner_ids=bot_config["owner_ids"],
     case_insensitive_prefix_commands=True
 )
 
@@ -40,7 +42,7 @@ tasks.load(bot)
 
 @bot.listen(hikari.StartedEvent)
 async def _on_started(event:hikari.StartedEvent) -> None:
-    channel = await bot.rest.fetch_channel(STARTUP_CHANNEL)
+    channel = await bot.rest.fetch_channel(bot_config["logging"]["startup"])
     await channel.send("Bot has started")
 
     view = pingroles()
@@ -51,7 +53,7 @@ async def _on_started(event:hikari.StartedEvent) -> None:
 
 @bot.listen(hikari.StoppingEvent)
 async def _on_ended(event:hikari.StoppingEvent) -> None:
-    channel = await bot.rest.fetch_channel(STARTUP_CHANNEL)
+    channel = await bot.rest.fetch_channel(bot_config["logging"]["startup"])
     await channel.send("Bot has Stopped")
 
 @bot.command()
@@ -60,13 +62,12 @@ async def _on_ended(event:hikari.StoppingEvent) -> None:
 @lightbulb.command("reload", "reload a bots extension")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _reload(ctx: lightbulb.Context) -> None:
-    color = random.randint(0x0, 0xFFFFFF)
     extension = ctx.options.extension
     try:
         ctx.bot.reload_extensions(f"bot.extensions.{extension}")
-        embed = hikari.Embed(description=f"Reloaded extention {extension}", color=color)
+        embed = hikari.Embed(description=f"Reloaded extention {extension}", color=bot_config["color"]["default"])
     except Exception as e:
-        embed = hikari.Embed(description=f"Reloading extention {extension} failed.\nError: {e}", color=color)
+        embed = hikari.Embed(description=f"Reloading extention {extension} failed.\nError: {e}", color=bot_config["color"]["default"])
     await ctx.respond(embed=embed, reply=True)
 
 @bot.command()
@@ -75,13 +76,12 @@ async def _reload(ctx: lightbulb.Context) -> None:
 @lightbulb.command("load", "load a bots extension")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _load(ctx: lightbulb.Context) -> None:
-    color = random.randint(0x0, 0xFFFFFF)
     extension = ctx.options.extension
     try:
         ctx.bot.load_extensions(f"bot.extensions.{extension}")
-        embed = hikari.Embed(description=f"Loaded extention {extension}", color=color)
+        embed = hikari.Embed(description=f"Loaded extention {extension}", color=bot_config["color"]["default"])
     except Exception as e:
-        embed = hikari.Embed(description=f"loading extention {extension} failed.\nError: {e}", color=color)
+        embed = hikari.Embed(description=f"loading extention {extension} failed.\nError: {e}", color=bot_config["color"]["default"])
     await ctx.respond(embed=embed, reply=True)
 
 @bot.command()
@@ -90,13 +90,12 @@ async def _load(ctx: lightbulb.Context) -> None:
 @lightbulb.command("unload", "Unload a bots extension")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _unload(ctx: lightbulb.Context) -> None:
-    color = random.randint(0x0, 0xFFFFFF)
     extension = ctx.options.extension
     try:
         ctx.bot.unload_extensions(f"bot.extensions.{extension}")
-        embed = hikari.Embed(description=f"Unloaded extention {extension}", color=color)
+        embed = hikari.Embed(description=f"Unloaded extention {extension}", color=bot_config["color"]["default"])
     except Exception as e:
-        embed = hikari.Embed(description=f"Unloading extention {extension} failed.\nError: {e}", color=color)
+        embed = hikari.Embed(description=f"Unloading extention {extension} failed.\nError: {e}", color=bot_config["color"]["default"])
     await ctx.respond(embed=embed, reply=True)
 
 if __name__ == "__main__":
@@ -107,7 +106,7 @@ if __name__ == "__main__":
     bot.run(
         status=hikari.Status.IDLE,
         activity=hikari.Activity(
-            name=f"with you",
-            type=hikari.ActivityType.PLAYING,
+            name=f"discord.gg/1vs | jbc help",
+            type=hikari.ActivityType.WATCHING,
         )
     )

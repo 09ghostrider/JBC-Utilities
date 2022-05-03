@@ -8,29 +8,17 @@ import datetime
 from miru.ext import nav
 from dotenv import load_dotenv
 import os
+import json
 
 plugin = lightbulb.Plugin("donations")
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 load_dotenv()
 mongoclient = os.getenv("DATABASE")
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
-donor_roles = {
-    "5000000": 851467779500802169,
-    "25000000": 851467810713632808,
-    "50000000": 851467811338321970,
-    "100000000": 851631415040671816,
-    "250000000": 851631453414359071,
-    "500000000": 851631177085222952,
-    "750000000": 851631180336070739,
-    "1000000000": 851631182776893482,
-    "2000000000": 954550639776657449,
-    "3000000000": 954550731921313792,
-    "4000000000": 954550735528419368,
-    "5000000000": 954550744390971492
-}
+donor_roles = bot_config['donos']['donor_roles']
 
 @lightbulb.Check
 def perms_check(ctx: lightbulb.Context) -> None:

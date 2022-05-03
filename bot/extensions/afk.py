@@ -7,14 +7,15 @@ from pymongo import MongoClient
 import datetime
 from dotenv import load_dotenv
 import os
+import json
 
 plugin = lightbulb.Plugin("afk")
 plugin.add_checks(lightbulb.guild_only)
 
 load_dotenv()
 mongoclient = os.getenv("DATABASE")
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
 @lightbulb.Check
 def perms_check(ctx: lightbulb.Context) -> None:
@@ -157,7 +158,7 @@ async def _ignored(ctx: lightbulb.Context) -> None:
         "guild": guild_id
     })
 
-    embed = hikari.Embed(color=random.randint(0x0, 0xffffff), title="AFK ignored channels")
+    embed = hikari.Embed(color=bot_config["color"]["default"], title="AFK ignored channels")
 
     if config == None or config["ignored"] == []:
         embed.description = "No ignored channels"

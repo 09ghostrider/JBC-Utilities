@@ -7,13 +7,14 @@ from pymongo import MongoClient
 import datetime
 import os
 from dotenv import load_dotenv
+import json
 
 plugin = lightbulb.Plugin("ar")
 
 load_dotenv()
 mongoclient = os.getenv("DATABASE")
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
 @lightbulb.Check
 def perms_check(ctx: lightbulb.Context) -> None:
@@ -169,11 +170,10 @@ async def _list(ctx: lightbulb.Context) -> None:
                 emoji = await ctx.app.rest.fetch_emoji(guild_id, x)
                 desc2 = desc2 + f"` - ` {emoji.mention}\n"
     
-    embed=hikari.Embed(title=f"{member.username}'s reacts", color=random.randint(0x0, 0xffffff), description=f"Total Reacts: {len(e)}")
+    embed=hikari.Embed(title=f"{member.username}'s reacts", color=bot_config["color"]["default"], description=f"Total Reacts: {len(e)}")
     embed.set_thumbnail(member.avatar_url)
     embed.set_footer(text=f"{member} ({member.id})", icon=member.avatar_url)
     embed.add_field(name="Reacts", value=desc2)
-
     await ctx.respond(embed=embed, reply=True)
 
 def load(bot):

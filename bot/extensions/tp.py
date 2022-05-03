@@ -8,20 +8,18 @@ import pymongo
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
+import json
 
 plugin = lightbulb.Plugin("teleport")
 
 load_dotenv()
 mongoclient = os.getenv("DATABASE")
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
 plugin = lightbulb.Plugin("teleport")
 plugin.add_checks(lightbulb.guild_only)
 ephemeral = hikari.MessageFlag.EPHEMERAL
-
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
 
 @lightbulb.Check
 def perms_check(ctx: lightbulb.Context) -> None:
@@ -151,7 +149,7 @@ async def _list(ctx: lightbulb.Context) -> None:
             for x in c:
                 desc2 = desc2 + f"**{x}** : <#{c[x]}>\n"
     
-    embed=hikari.Embed(title=f"{ctx.event.message.author.username}'s checkpoints", color=random.randint(0x0, 0xffffff), description=desc2)
+    embed=hikari.Embed(title=f"{ctx.event.message.author.username}'s checkpoints", color=bot_config['color']['default'], description=desc2)
     await ctx.respond(embed=embed, reply=True)
 
 def load(bot):

@@ -6,6 +6,7 @@ import pymongo
 from pymongo import MongoClient
 import datetime
 import os
+import json
 from dotenv import load_dotenv
 
 plugin = lightbulb.Plugin("serverconfig")
@@ -13,8 +14,8 @@ ephemeral = hikari.MessageFlag.EPHEMERAL
 
 load_dotenv()
 mongoclient = os.getenv("DATABASE")
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
@@ -66,7 +67,7 @@ async def _list(ctx: lightbulb.Context) -> None:
             val1 = ""
             for r in find["req"]:
                 val1 = val1 + f"` - ` <@&{r}> \n"
-    embed= hikari.Embed(title=f"Settings for {command}", color=random.randint(0x0, 0xffffff))
+    embed= hikari.Embed(title=f"Settings for {command}", color=bot_config["color"]["default"])
     embed.set_thumbnail(ctx.get_guild().icon_url)
     embed.add_field(name="Required Roles", value=val1)
     embed.add_field(name="Required Permissions", value="` - ` Administrator")

@@ -3,12 +3,13 @@ import lightbulb
 import random
 import asyncio
 import miru
+import json
 
 plugin = lightbulb.Plugin("utility")
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
 @plugin.command()
 @lightbulb.option("member", "the member to show", type=hikari.Member, required=False, default=None)
@@ -19,7 +20,7 @@ async def _av(ctx: lightbulb.Context) -> None:
     if member == None:
         member = ctx.event.message.member
     
-    embed = hikari.Embed(color=random.randint(0x0, 0xffffff), title=f"{member}'s avatar")
+    embed = hikari.Embed(color=bot_config['color']['default'], title=f"{member}'s avatar")
     embed.set_image(member.display_avatar_url)
     await ctx.respond(embed=embed, reply=True)
 
@@ -33,7 +34,7 @@ async def _banner(ctx: lightbulb.Context) -> None:
         user = ctx.event.message.author
     
     user = await ctx.app.rest.fetch_user(user.id)
-    embed = hikari.Embed(color=random.randint(0x0, 0xffffff), title=f"{user}'s banner")
+    embed = hikari.Embed(color=bot_config['color']['default'], title=f"{user}'s banner")
     if user.banner_url != None:
         embed.set_image(user.banner_url)
     else:

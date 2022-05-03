@@ -7,14 +7,15 @@ from pymongo import MongoClient
 import datetime
 import os
 from dotenv import load_dotenv
+import json
 
 plugin = lightbulb.Plugin("hl")
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 load_dotenv()
 mongoclient = os.getenv("DATABASE")
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
 @lightbulb.Check
 def perms_check(ctx: lightbulb.Context) -> None:
@@ -41,7 +42,7 @@ async def _hl(ctx: lightbulb.Context) -> None:
     embed=hikari.Embed(title="=== Command Help ===", description="""highlight - Highlighting means you will receive a message when your keyword is said in chat. It will only notify you if you haven't posted anything in chat for the past 5 minutes.
 
     Usage: -highlight [subcommand]
-    """, color=random.randint(0x0, 0xffffff))
+    """, color=bot_config["color"]["default"])
     embed.add_field(name="== Subcommands ==", value="""- add - add a word to your highlights list
     - remove - remove a word from your highlight list
     - list - show your current highlight list
@@ -160,7 +161,7 @@ async def _list(ctx: lightbulb.Context) -> None:
     hl_str = ""
     for x in user_data["hl"]:
         hl_str = hl_str + x + "\n"
-    embed = hikari.Embed(title="You're currently tracking the following words", description=f"{hl_str}" ,color=random.randint(0x0, 0xffffff))
+    embed = hikari.Embed(title="You're currently tracking the following words", description=f"{hl_str}" ,color=bot_config["color"]["default"])
     
     if user_data["block_channel"] != []:
         channel_str = ""

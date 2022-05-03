@@ -4,12 +4,13 @@ import random
 import asyncio
 import miru
 import requests
+import json
 
 plugin = lightbulb.Plugin("fun")
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
 @plugin.command()
 @lightbulb.option("text", "text", type=str, required=False, default=None, modifier=lightbulb.commands.base.OptionModifier(3))
@@ -17,10 +18,46 @@ with open("./secrets/prefix") as f:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _howgay(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
-    if text == None:
+    if text:
         text = ctx.event.message.author.username
     gayrate = random.randint(0, 100)
-    embed = hikari.Embed(color=random.randint(0x0, 0xffffff), title="Gay rate", description=f"{text} is {gayrate}% gay :gay_pride_flag:")
+    embed = hikari.Embed(color=bot_config["color"]["default"], title="Gay rate", description=f"{text} is {gayrate}% gay :gay_pride_flag:")
+    await ctx.respond(embed=embed)
+
+@plugin.command()
+@lightbulb.option("text", "text", type=str, required=False, default=None, modifier=lightbulb.commands.base.OptionModifier(3))
+@lightbulb.command("noobrate", "shows how noob you are", aliases=["noob"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _noobrate(ctx: lightbulb.Context) -> None:
+    text = ctx.options.text
+    if text:
+        text = ctx.event.message.author.username
+    noobrate = random.randint(0, 100)
+    embed = hikari.Embed(color=bot_config["color"]["default"], title="Noob rate", description=f"{text} is {noobrate}% noob")
+    await ctx.respond(embed=embed)
+
+@plugin.command()
+@lightbulb.option("text", "text", type=str, required=False, default=None, modifier=lightbulb.commands.base.OptionModifier(3))
+@lightbulb.command("progamer", "shows how noob you are", aliases=["gamer"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _progamer(ctx: lightbulb.Context) -> None:
+    text = ctx.options.text
+    if text:
+        text = ctx.event.message.author.username
+    progamer = random.randint(0, 100)
+    embed = hikari.Embed(color=bot_config["color"]["default"], title="Pro gamer", description=f"{text} is {progamer}% pro gamer")
+    await ctx.respond(embed=embed)
+
+@plugin.command()
+@lightbulb.option("text", "text", type=str, required=False, default=None, modifier=lightbulb.commands.base.OptionModifier(3))
+@lightbulb.command("prorate", "shows how noob you are", aliases=["pro"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _prorate(ctx: lightbulb.Context) -> None:
+    text = ctx.options.text
+    if text:
+        text = ctx.event.message.author.username
+    prorate = random.randint(0, 100)
+    embed = hikari.Embed(color=bot_config["color"]["default"], title="Pro rate", description=f"{text} is {prorate}% pro")
     await ctx.respond(embed=embed)
 
 @plugin.command()
@@ -29,10 +66,10 @@ async def _howgay(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _simprate(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
-    if text == None:
+    if text:
         text = ctx.event.message.author.username
     simprate = random.randint(0, 100)
-    embed = hikari.Embed(color=random.randint(0x0, 0xffffff), title="Simp rate", description=f"{text} is {simprate}% simp")
+    embed = hikari.Embed(color=bot_config["color"]["default"], title="Simp rate", description=f"{text} is {simprate}% simp")
     await ctx.respond(embed=embed)
 
 @plugin.command()
@@ -41,11 +78,11 @@ async def _simprate(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _penis(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
-    if text == None:
+    if text:
         text = ctx.event.message.author.username
     pp = random.randint(0, 15)
     size = "="*pp
-    embed = hikari.Embed(color=random.randint(0x0, 0xffffff), title="peepee size", description=f"{text}'s penis\n8{size}D")
+    embed = hikari.Embed(color=bot_config["color"]["default"], title="peepee size", description=f"{text}'s penis\n8{size}D")
     await ctx.respond(embed=embed)
 
 @plugin.command()
@@ -54,12 +91,11 @@ async def _penis(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _roast(ctx: lightbulb.Context) -> None:
     r = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=json").json()
-    roast = r['insult']
     user = ctx.options.user
-    if user is not None:
-        await ctx.respond(f"{user}: {roast}", reply=True)
+    if not user:
+        await ctx.respond(f"{user.mention}: {r['insult']}", reply=True)
     else:
-        await ctx.respond(f"{roast}", reply=True)
+        await ctx.respond(f"{r['insult']}", reply=True)
 
 @plugin.command()
 @lightbulb.command("joke", "want a joke?")
@@ -75,21 +111,19 @@ async def _fact(ctx: lightbulb.Context) -> None:
     r = (requests.get("https://api.popcat.xyz/fact").json())["fact"]
     await ctx.respond(f"{r}", reply=True)
 
-@plugin.command()
-@lightbulb.command("thought", "Thoughts")
-@lightbulb.implements(lightbulb.PrefixCommand)
-async def _thought(ctx: lightbulb.Context) -> None:
-    r = (requests.get("https://api.popcat.xyz/fact").json())["fact"]
-    await ctx.respond(f"{r}", reply=True)
+# @plugin.command()
+# @lightbulb.command("thought", "Thoughts")
+# @lightbulb.implements(lightbulb.PrefixCommand)
+# async def _thought(ctx: lightbulb.Context) -> None:
+#     r = (requests.get("https://api.popcat.xyz/fact").json())["fact"]
+#     await ctx.respond(f"{r}", reply=True)
 
 @plugin.command()
 @lightbulb.command("quote", "Famous quotes")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _quote(ctx: lightbulb.Context) -> None:
     r = requests.get("https://api.popcat.xyz/showerthoughts").json()
-    t = r["result"]
-    a = r["author"]
-    await ctx.respond(f""""{t}" - {a}""", reply=True)
+    await ctx.respond(f""""{r['result']}" - {r['author']}""", reply=True)
 
 @plugin.command()
 @lightbulb.command("meme", "get a meme at your will")

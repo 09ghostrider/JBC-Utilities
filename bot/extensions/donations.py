@@ -1,15 +1,14 @@
 import hikari
 import lightbulb
 import random
-import asyncio
 import miru
+import json
 
 plugin = lightbulb.Plugin("donations")
 ephemeral = hikari.MessageFlag.EPHEMERAL
-br_dot = "<a:br_dot:968570379113214072>"
 
-with open("./secrets/prefix") as f:
-    prefix = f.read().strip()
+with open("./configs/config.json") as f:
+    bot_config = json.load(f)
 
 @lightbulb.Check
 def dono_channel(ctx: lightbulb.Context) -> None:
@@ -17,7 +16,7 @@ def dono_channel(ctx: lightbulb.Context) -> None:
 
 class claim_button(miru.Button):
     def __init__(self, cmd) -> None:
-        super().__init__(label="Claim", emoji=hikari.Emoji.parse("<a:JBC_check:907203988468928522>"), style=hikari.ButtonStyle.SECONDARY)
+        super().__init__(label="Claim", emoji=hikari.Emoji.parse(bot_config['emoji']['check']), style=hikari.ButtonStyle.SECONDARY)
         self.cmd = cmd
     
     async def callback(self, ctx: miru.Context) -> None:
@@ -31,26 +30,25 @@ class claim_button(miru.Button):
 @lightbulb.command("gdonate", "donate for a giveaway")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _gdonate(ctx: lightbulb.Context) -> None:
-    c = random.randint(0x0, 0xffffff)
     options = ctx.options.options
     options = options.split("/", 4)
     if len(options) < 5:
-        return await ctx.respond("Please include all the options\nNote: U can use 'None' instead of leaving the blank empty", reply=True)
+        return await ctx.respond("Please include all the options\nUse 'None' instead of leaving the option empty", reply=True)
 
     try:
         await ctx.event.message.delete()
     except:
         pass
 
-    embed=hikari.Embed(title="New giveaway donation <a:JBC_moneygun:968522741839986708>", color=c)
-    embed.description = f"""**Duration:** {options[0]}
-**Prize:** {options[1]}
-**Winners:** {options[2]}
-**Requirements:** {options[3]}
-**Message:** {options[4]}
-**Donor:** {ctx.event.message.author}"""
+    embed=hikari.Embed(title="GIVEAWAY DONATION", color=bot_config["color"]["default"])
+    embed.description = f"""{bot_config['emoji']['reply2']} **Duration:** {options[0]}
+{bot_config['emoji']['reply2']} **Prize:** {options[1]}
+{bot_config['emoji']['reply2']} **Winners:** {options[2]}
+{bot_config['emoji']['reply2']} **Requirements:** {options[3]}
+{bot_config['emoji']['reply2']} **Message:** {options[4]}
+{bot_config['emoji']['reply']} **Donor:** {ctx.event.message.author}"""
 
-    embed2=hikari.Embed(color=c, title="Thank you for donating", description="Your donation has been recorded, and a giveaway manager will respond soon.\nPlease be patient.\nKindly do not ping giveaway managers.")
+    embed2=hikari.Embed(color=bot_config["color"]["default"], title="Thank you for donating", description="Your donation has been recorded, and a giveaway manager will respond soon.\nPlease be patient.\nKindly do not ping giveaway managers.")
     embed2.set_footer(text=ctx.get_guild().name, icon=ctx.get_guild().icon_url)
     msg = await ctx.respond(f"{ctx.event.message.author.mention}", embed=embed2, user_mentions=True)
 
@@ -61,30 +59,24 @@ async def _gdonate(ctx: lightbulb.Context) -> None:
     view = miru.View(timeout=None)
     view.add_item(claim_button(cmd))
     view.add_item(link)
-    msg2 = await ctx.app.rest.create_message(ctx.get_guild().get_channel(851346473370124309), "<@&832111569764352060> **NEW DONATION**", embed=embed, role_mentions=True, components=view.build())
+    msg2 = await ctx.app.rest.create_message(ctx.get_guild().get_channel(851346473370124309), "<@&832111569764352060>", embed=embed, role_mentions=True, components=view.build())
 
     view.start(msg2)
     await view.wait()
 
     view2 = miru.View()
-    view2.add_item(miru.Button(label="Claimed", emoji=hikari.Emoji.parse("<a:JBC_check:907203988468928522>"), disabled=True, style=hikari.ButtonStyle.SECONDARY))
+    view2.add_item(miru.Button(label="Claimed", emoji=hikari.Emoji.parse(bot_config['emoji']['check']), disabled=True, style=hikari.ButtonStyle.SECONDARY))
     view2.add_item(link2)
 
     embed.set_footer(text=f"Claimed by {view.gman}", icon=view.gman.avatar_url)
-    await msg2.edit(content="<@&832111569764352060> **CLAIMED**", embed=embed, components=view2.build())
+    await msg2.edit(content="<@&832111569764352060>", embed=embed, components=view2.build())
 
 @plugin.command()
 @lightbulb.command("ginfo", "shows information on how to donate")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _ginfo(ctx: lightbulb.Context) -> None:
-    try:
-        await ctx.event.message.delete()
-    except:
-        pass
-
-    c = random.randint(0x0, 0xffffff)
-    
-    embed=hikari.Embed(title="How to donate for giveaways <a:JBC_moneygun:968522741839986708>", color=c)
+    br_dot = bot_config["emoji"]["brown_dot"]
+    embed=hikari.Embed(title=f"How to donate for giveaways {bot_config['emoji']['moneygun']}", color=bot_config["color"]["default"])
     embed.description = f"""If you would like to donate to giveaways (we accept Dank, OwO, Bro, etc.) please use the command:
 
 **&gdonate duration/prize/winners/requirements/message**
@@ -102,6 +94,11 @@ eg: &gdonate 6h/1 tro 5 pem/level 15 5m donor/This is how to donate multiple ite
 {br_dot} If you wish to help support the server, you can also donate by just sending the items to <@!848196070437158912>. This will still count to your total donations."""
     embed.set_footer(text="Thank you for donating!", icon=ctx.get_guild().icon_url)
     await ctx.respond(embed=embed)
+
+    try:
+        await ctx.event.message.delete()
+    except:
+        pass
 
 def load(bot):
     bot.add_plugin(plugin)
