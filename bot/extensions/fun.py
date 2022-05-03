@@ -18,7 +18,7 @@ with open("./configs/config.json") as f:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _howgay(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
-    if text:
+    if not text:
         text = ctx.event.message.author.username
     gayrate = random.randint(0, 100)
     embed = hikari.Embed(color=bot_config["color"]["default"], title="Gay rate", description=f"{text} is {gayrate}% gay :gay_pride_flag:")
@@ -30,7 +30,7 @@ async def _howgay(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _noobrate(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
-    if text:
+    if not text:
         text = ctx.event.message.author.username
     noobrate = random.randint(0, 100)
     embed = hikari.Embed(color=bot_config["color"]["default"], title="Noob rate", description=f"{text} is {noobrate}% noob")
@@ -42,7 +42,7 @@ async def _noobrate(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _progamer(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
-    if text:
+    if not text:
         text = ctx.event.message.author.username
     progamer = random.randint(0, 100)
     embed = hikari.Embed(color=bot_config["color"]["default"], title="Pro gamer", description=f"{text} is {progamer}% pro gamer")
@@ -54,7 +54,7 @@ async def _progamer(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _prorate(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
-    if text:
+    if not text:
         text = ctx.event.message.author.username
     prorate = random.randint(0, 100)
     embed = hikari.Embed(color=bot_config["color"]["default"], title="Pro rate", description=f"{text} is {prorate}% pro")
@@ -66,7 +66,7 @@ async def _prorate(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _simprate(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
-    if text:
+    if not text:
         text = ctx.event.message.author.username
     simprate = random.randint(0, 100)
     embed = hikari.Embed(color=bot_config["color"]["default"], title="Simp rate", description=f"{text} is {simprate}% simp")
@@ -78,7 +78,7 @@ async def _simprate(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _penis(ctx: lightbulb.Context) -> None:
     text = ctx.options.text
-    if text:
+    if not text:
         text = ctx.event.message.author.username
     pp = random.randint(0, 15)
     size = "="*pp
@@ -92,8 +92,8 @@ async def _penis(ctx: lightbulb.Context) -> None:
 async def _roast(ctx: lightbulb.Context) -> None:
     r = requests.get("https://evilinsult.com/generate_insult.php?lang=en&type=json").json()
     user = ctx.options.user
-    if not user:
-        await ctx.respond(f"{user.mention}: {r['insult']}", reply=True)
+    if user:
+        await ctx.respond(f"{user.mention}: {r['insult']}", reply=True, user_mentions=True)
     else:
         await ctx.respond(f"{r['insult']}", reply=True)
 

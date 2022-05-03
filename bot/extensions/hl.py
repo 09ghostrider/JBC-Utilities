@@ -108,7 +108,7 @@ async def _add(ctx: lightbulb.Context) -> None:
 @_hl.child
 @lightbulb.option("word", "the word to stop tracking", type=str)
 @lightbulb.command("remove", "remove a word from your highlight list", inherit_checks=True, aliases=["-", "r"])
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _remove(ctx: lightbulb.Context) -> None:
     word = ctx.options.word
     word = word.lower()
@@ -135,7 +135,7 @@ async def _remove(ctx: lightbulb.Context) -> None:
 
 @_hl.child
 @lightbulb.command("list", "show your current highlight list", inherit_checks=True, aliases=["show", "l"])
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _list(ctx: lightbulb.Context) -> None:
     user_id = ctx.event.message.author.id
 
@@ -258,7 +258,7 @@ async def _block(ctx: lightbulb.Context) -> None:
 @_hl.child
 @lightbulb.option("blocks", "the member or channel to unblock", type=str)
 @lightbulb.command("unblock", "unblock a blocked channel or member", inherit_checks=True, aliases=["unb"])
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _unblock(ctx: lightbulb.Context) -> None:
     blocks = ctx.options.blocks
     channel = None
@@ -332,7 +332,7 @@ async def _unblock(ctx: lightbulb.Context) -> None:
 
 @_hl.child
 @lightbulb.command("clear", "clear all your highlights", inherit_checks=True, aliases=["c"])
-@lightbulb.implements(lightbulb.SlashSubCommand)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _clear(ctx: lightbulb.Context) -> None:
     cluster = MongoClient(mongoclient)
     highlight = cluster["highlight"]["highlight"]

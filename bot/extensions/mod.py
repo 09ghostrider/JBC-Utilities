@@ -67,7 +67,7 @@ async def _removemember(ctx: lightbulb.Context) -> None:
 @plugin.command()
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("text", "the text to echo", required=True, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
-@lightbulb.option("channel", "the channel to echo", required=True, type=hikari.GuildTextChannel)
+@lightbulb.option("channel", "the channel to echo", required=True, type=hikari.GuildChannel)
 @lightbulb.command("echo", "Makes the bot say something in the specified channel")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _echo(ctx: lightbulb.Context) -> None:
@@ -85,15 +85,15 @@ async def _echo(ctx: lightbulb.Context) -> None:
 @lightbulb.command("say", "speak as if u were the bot", aliases=["s"])
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _say(ctx: lightbulb.Context) -> None:
-    text = ctx.options.text
     try:
         await ctx.event.message.delete()
     except:
         pass
-
+    
+    text = ctx.options.text
     reply = ctx.event.message.referenced_message
     channel = await ctx.event.message.fetch_channel()
-    if reply:
+    if not reply:
         await ctx.app.rest.create_message(channel, text, user_mentions=True)
     else:
         await ctx.app.rest.create_message(channel, text, user_mentions=True, reply=reply, mentions_reply=True)
