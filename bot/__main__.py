@@ -28,9 +28,9 @@ bot = lightbulb.BotApp(
     #         "lightbulb": {"level": "DEBUG"},
     #     }
     # },
-    default_enabled_guilds=bot_config["default_guilds"],
+    default_enabled_guilds=bot_config["bot"]["default_guilds"],
     ignore_bots=True,
-    owner_ids=bot_config["owner_ids"],
+    owner_ids=bot_config["bot"]["owner_ids"],
     case_insensitive_prefix_commands=True
 )
 
