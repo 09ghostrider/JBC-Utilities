@@ -176,6 +176,49 @@ async def _list(ctx: lightbulb.Context) -> None:
     embed.add_field(name="Reacts", value=desc2)
     await ctx.respond(embed=embed, reply=True)
 
+@plugin.listener(hikari.MessageCreateEvent)
+async def _on_message(message: hikari.MessageCreateEvent) -> None:
+    if message.is_human == False:
+        return
+    
+    guild_id = message.message.guild_id
+    mentions = message.message.mentions.users
+    reference = message.message.referenced_message
+    if mentions == {}:
+        return
+
+    cluster = MongoClient(mongoclient)
+    reacts = cluster["ar"]["react"]
+
+    counter = 0
+    while True:
+        try:
+            member_id = list(mentions.items())[counter][0]
+        except:
+            return
+        
+        if reference != None:
+            if member_id == reference.author.id:
+                try:
+                    member_id = list(mentions.items())[counter+1][0]
+                except:
+                    return
+
+        react = reacts.find_one({"guild": {"$eq": guild_id}, "member": {"$eq": member_id}})
+        if react != None:
+            e = react["react"]
+            if e != []:
+                for x in e:
+                    emoji = await message.app.rest.fetch_emoji(guild_id, x)
+                    try:
+                        await message.message.add_reaction(emoji)
+                    except:
+                        pass
+            return
+
+        else:
+            counter += 1
+
 def load(bot):
     bot.add_plugin(plugin)
 
