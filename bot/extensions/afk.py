@@ -198,6 +198,63 @@ async def _clear(ctx: lightbulb.Context) -> None:
     afk.delete_one({"id": user_id, "guild": guild_id})
     await ctx.respond(f"Cleared AFK status of {member}", reply=True)
 
+@plugin.listener(hikari.MessageCreateEvent)
+async def _on_message(message: hikari.MessageCreateEvent) -> None:
+    if message.is_human == False:
+        return
+
+    if message.content == None or message.content == "":
+        return
+    
+    guild_id = message.message.guild_id
+    channel_id = message.message.channel_id
+
+    cluster = MongoClient(mongoclient)
+    configs = cluster["afk"]["server_configs"]
+
+    config = configs.find_one({
+        "guild": guild_id
+    })
+
+    if config != None:
+        if channel_id in config["ignored"]:
+            return
+
+    afk = cluster["afk"]["afk"]
+    user_data = afk.find_one({
+        "id": {"$eq": message.message.author.id},
+        "guild": {"$eq": message.message.guild_id}
+    })
+    c = await message.app.rest.fetch_channel(message.message.channel_id)
+    if user_data != None:
+        if (round(datetime.datetime.now(tz=datetime.timezone.utc).timestamp())) - user_data["timestamp"] > 30:
+            afk.delete_one({"id": message.message.author.id, "guild": message.message.guild_id})
+            await c.send(f"Welcome back {message.message.author.mention}, I removed your AFK", user_mentions=True)
+
+            try:
+                nick = message.message.member.nickname
+                if nick != None:
+                    if nick.startswith("[AFK] "):
+                        nick = nick[6:]
+                    else:
+                        return
+                    await message.message.member.edit(nick=nick, reason="Member returned from being AFK")
+            except:
+                pass
+
+    mentions = message.message.mentions.users
+    if mentions == {}:
+        return
+    for m in mentions.values():
+        user_data = afk.find_one({
+            "id": {"$eq": m.id},
+            "guild": {"$eq": message.message.guild_id}
+        })
+        if user_data != None:
+            s = user_data["status"]
+            t = user_data["timestamp"]
+            await c.send(f"**{m.username}** is AFK: {s} - <t:{t}:R>", user_mentions=True)
+
 def load(bot):
     bot.add_plugin(plugin)
 

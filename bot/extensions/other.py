@@ -14,7 +14,7 @@ with open("./configs/config.json") as f:
 
 @plugin.command()
 @lightbulb.command("ping", "Check the latency of the bot")
-@lightbulb.implements(lightbulb.PrefixCommand)
+@lightbulb.implements(lightbulb.PrefixCommand, lightbulb.SlashCommand)
 async def _ping(ctx: lightbulb.Context) -> None:
     await ctx.respond(f"Latency: `{ctx.bot.heartbeat_latency*1000:.2f} ms`", reply=True)
 
