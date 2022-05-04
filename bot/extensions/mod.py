@@ -98,6 +98,8 @@ async def _say(ctx: lightbulb.Context) -> None:
     else:
         await ctx.app.rest.create_message(channel, text, user_mentions=True, reply=reply, mentions_reply=True)
 
+silenced = []
+
 @plugin.command()
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("member", "member", required=True, type=hikari.Member)
@@ -105,7 +107,6 @@ async def _say(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _shut(ctx: lightbulb.Context) -> None:
     member = ctx.options.member
-    guild_id = ctx.event.message.guild_id
     
     owner_role = ctx.app.cache.get_role(832107331265232909)
     if owner_role in member.get_roles():
@@ -114,25 +115,24 @@ async def _shut(ctx: lightbulb.Context) -> None:
     # if member.id in bot_config["bot"]["owner_ids"]:
     #     return await ctx.respond("No", reply=True)
 
-    cluster = MongoClient(mongoclient)
-    silenced = cluster["mod"]["silenced"]
-    data = silenced.find_one({"guild": {"$eq": guild_id}})
-    if data == None:
-        data = {
-            "guild": guild_id,
-            "silenced": [member.id]
-        }
-        silenced.insert_one(data)
-        await ctx.respond(f"{member.mention} has been silenced", reply=True, user_mentions=True)
-
+    if member.id not in silenced:
+        silenced.append(member.id)
+        await ctx.respond(f"{member.mention} has been silenced", reply=True, user_mentions=False)
     else:
-        if member.id in data["silenced"]:
-            data["silenced"].pop(data["silenced"].index(member.id))
-            await ctx.respond(f"{member.mention} has been unsilenced", reply=True, user_mentions=True)
-        else:
-            data["silenced"].append(member.id)
-            await ctx.respond(f"{member.mention} has been silenced", reply=True, user_mentions=True)
-        silenced.update_one({"guild": {"$eq": guild_id}}, {"$set": {"silenced": data["silenced"]}})
+        silenced.pop(silenced.index(member.id))
+        await ctx.respond(f"{member.mention} has been unsilenced", reply=True, user_mentions=False)
+
+@plugin.listener(hikari.MessageCreateEvent)
+async def _on_message(message: hikari.MessageCreateEvent) -> None:
+    if message.is_human == False:
+        return
+    
+    member = message.message.member
+    if member.id in silenced:
+        try:
+            await message.message.delete()
+        except:
+            pass
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MODERATE_MEMBERS) | lightbulb.owner_only)
