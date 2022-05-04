@@ -170,7 +170,7 @@ async def _settings_view(ctx: lightbulb.Context) -> None:
     else:
         l3 = censor_list['whitelist']['member'][:-1]
         for r3 in l3:
-            f3 += f"\n{bot_config['emoji']['reply2']} <@!{r1}>"
+            f3 += f"\n{bot_config['emoji']['reply2']} <@!{r3}>"
         f3 += f"\n{bot_config['emoji']['reply']} <@!{censor_list['whitelist']['member'][-1:][0]}>"
     embed.add_field(name=f"Members ({len(censor_list['whitelist']['member'])}):", value=f3, inline=True)
 
