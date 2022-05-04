@@ -365,6 +365,87 @@ async def _clear(ctx: lightbulb.Context) -> None:
             raise e
         await ctx.respond("Cleared all your highlights", reply=True)
 
+last_seen = {}
+
+@plugin.listener(hikari.MessageCreateEvent)
+async def _on_message(message: hikari.MessageCreateEvent) -> None:
+    if message.is_human == False:
+        return
+
+    if message.content == None or message.content == "":
+        return
+    
+    user_id = message.author.id
+
+    global last_seen
+    
+    while True:
+        try:
+            last_seen[str(message.message.guild_id)][str(message.message.channel_id)][str(user_id)] = datetime.datetime.now()
+            break
+        except KeyError:
+            try:
+                dummy1 = last_seen[str(message.message.guild_id)]
+            except KeyError:
+                last_seen[str(message.message.guild_id)] = {}
+            try:
+                dummy2 =last_seen[str(message.message.guild_id)][str(message.message.channel_id)]
+            except KeyError:
+                last_seen[str(message.message.guild_id)][str(message.message.channel_id)] = {}
+    
+    cluster = MongoClient(mongoclient)
+    highlight = cluster["highlight"]["highlight"]
+
+    words = (message.content).split(" ")
+    dmed_users = []
+
+    channel = await message.message.app.rest.fetch_channel(message.message.channel_id)
+    t = (message.message.created_at) + datetime.timedelta(0,1)
+    history = await channel.fetch_history(before=t).limit(5)
+    description = ""
+
+    for h in reversed(history):
+        try:
+            if len(h.content) > 200:
+                hc = h.content[:200]
+            else:
+                hc = h.content
+        except:
+            hc = ""
+        description = description + "\n" + f"**[<t:{round(h.created_at.timestamp())}:T>] {h.author.username}:** {hc}"
+
+    matches = highlight.find(
+            # {"hl": {"$in": word}},
+            # {"block_member": {"nin": message.author.id}},
+            # {"block_channel": {"nin": message.channel_id}},
+            {"_id": {"$ne": user_id}}
+        )
+
+    for word in words:
+        if matches is not None:
+            for match in matches:
+                if word.lower() in match["hl"]:
+                    if user_id not in match["block_member"] and message.message.channel_id not in match["block_channel"]:
+                        if hikari.Permissions.VIEW_CHANNEL in lightbulb.utils.permissions_in(channel, message.message.member, False):
+                            if int(match["_id"]) not in dmed_users:
+                                last_seen_check = False
+                                try:
+                                    local_last_seen = last_seen[str(message.message.guild_id)][str(message.message.channel_id)][str(match["_id"])]
+                                    if (datetime.datetime.now() - local_last_seen).total_seconds() > 300:
+                                        last_seen_check = True
+                                except KeyError:
+                                    last_seen_check = True
+                                if last_seen_check == True:
+                                    embed=hikari.Embed(title=word, description=description, color=random.randint(0x0, 0xffffff))
+                                    view = miru.View()
+                                    view.add_item(miru.Button(label="Message", url=f"https://discord.com/channels/{message.message.guild_id}/{message.message.channel_id}/{message.message.id}"))
+                                    content = f"""In **{(await message.message.app.rest.fetch_guild(message.message.guild_id)).name}** {channel.mention}, you were mentioned with highlight word "{word}"
+                                    """
+                                    user = await message.message.app.rest.fetch_user(int(match["_id"]))
+                                    userdm = await user.fetch_dm_channel()
+                                    await userdm.send(content, embed=embed, components=view.build())
+                                    dmed_users.append(int(match["_id"]))
+
 def load(bot):
     bot.add_plugin(plugin)
 
