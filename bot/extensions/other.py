@@ -3,7 +3,6 @@ import lightbulb
 import random
 import asyncio
 import json
-
 from requests import request
 
 plugin = lightbulb.Plugin("other")
