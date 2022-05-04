@@ -169,7 +169,7 @@ async def _settings_view(ctx: lightbulb.Context) -> None:
         f3 = f"{bot_config['emoji']['reply']} <@!{censor_list['whitelist']['member'][0]}>"
     else:
         l3 = censor_list['whitelist']['member'][:-1]
-        for r3 in l1:
+        for r3 in l3:
             f3 += f"\n{bot_config['emoji']['reply2']} <@!{r1}>"
         f3 += f"\n{bot_config['emoji']['reply']} <@!{censor_list['whitelist']['member'][-1:][0]}>"
     embed.add_field(name=f"Members ({len(censor_list['whitelist']['member'])}):", value=f3, inline=True)
@@ -426,7 +426,8 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
             return
 
     for word in censor_list['censored']:
-        if word in message.message.content.lower():
+        msg = message.message.content.lower().replace(" ", "")
+        if word in msg:
             try:
                 await message.message.delete()
             except:
@@ -456,7 +457,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
 {bot_config['emoji']['blue_arrow']} **Action:** {action}
 {bot_config['emoji']['blue_arrow']} **Duration:** {datetime.timedelta(seconds=int(censor_list['punishment']['duration']))}
 {bot_config['emoji']['blue_arrow']} **Reason:** {reason}
-{bot_config['emoji']['blue_arrow']} **Message:** {message.message.content}"""
+{bot_config['emoji']['blue_arrow']} **Message:** {message.message.content[:200]}"""
                 embed.add_field(name="More info:", value=f"""{bot_config['emoji']['blue_arrow']} Member DM: {member_dm}
 {bot_config['emoji']['blue_arrow']} Action taken: {action_taken}""")
 
@@ -479,7 +480,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
                 embed.description = f"""{bot_config['emoji']['blue_arrow']} **Member:** {member.mention} ({member.id})
 {bot_config['emoji']['blue_arrow']} **Action:** {action}
 {bot_config['emoji']['blue_arrow']} **Reason:** {reason}
-{bot_config['emoji']['blue_arrow']} **Message:** {message.message.content}"""
+{bot_config['emoji']['blue_arrow']} **Message:** {message.message.content[:200]}"""
                 embed.add_field(name="More info:", value=f"""{bot_config['emoji']['blue_arrow']} Member DM: {member_dm}
 {bot_config['emoji']['blue_arrow']} Action taken: {action_taken}""")
 
@@ -502,7 +503,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
                 embed.description = f"""{bot_config['emoji']['blue_arrow']} **Member:** {member.mention} ({member.id})
 {bot_config['emoji']['blue_arrow']} **Action:** {action}
 {bot_config['emoji']['blue_arrow']} **Reason:** {reason}
-{bot_config['emoji']['blue_arrow']} **Message:** {message.message.content}"""
+{bot_config['emoji']['blue_arrow']} **Message:** {message.message.content[:200]}"""
                 embed.add_field(name="More info:", value=f"""{bot_config['emoji']['blue_arrow']} Member DM: {member_dm}
 {bot_config['emoji']['blue_arrow']} Action taken: {action_taken}""")
 
