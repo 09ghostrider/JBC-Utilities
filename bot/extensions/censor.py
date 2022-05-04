@@ -397,6 +397,9 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     guild_id = message.message.guild_id
     channel_id = message.message.channel_id
 
+    if member.id in bot_config['bot']['owner_ids']:
+        return
+
     perms = lightbulb.utils.permissions.permissions_for(member)
     if hikari.Permissions.ADMINISTRATOR in perms:
         return
@@ -452,7 +455,8 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
                 embed.description = f"""{bot_config['emoji']['blue_arrow']} **Member:** {member.mention} ({member.id})
 {bot_config['emoji']['blue_arrow']} **Action:** {action}
 {bot_config['emoji']['blue_arrow']} **Duration:** {datetime.timedelta(seconds=int(censor_list['punishment']['duration']))}
-{bot_config['emoji']['blue_arrow']} **Reason:** {reason}"""
+{bot_config['emoji']['blue_arrow']} **Reason:** {reason}
+{bot_config['emoji']['blue_arrow']} **Message:** {message.message.content}"""
                 embed.add_field(name="More info:", value=f"""{bot_config['emoji']['blue_arrow']} Member DM: {member_dm}
 {bot_config['emoji']['blue_arrow']} Action taken: {action_taken}""")
 
@@ -474,7 +478,8 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
                 embed.set_author(name=str(member), icon=str(member.avatar_url))
                 embed.description = f"""{bot_config['emoji']['blue_arrow']} **Member:** {member.mention} ({member.id})
 {bot_config['emoji']['blue_arrow']} **Action:** {action}
-{bot_config['emoji']['blue_arrow']} **Reason:** {reason}"""
+{bot_config['emoji']['blue_arrow']} **Reason:** {reason}
+{bot_config['emoji']['blue_arrow']} **Message:** {message.message.content}"""
                 embed.add_field(name="More info:", value=f"""{bot_config['emoji']['blue_arrow']} Member DM: {member_dm}
 {bot_config['emoji']['blue_arrow']} Action taken: {action_taken}""")
 
@@ -496,7 +501,8 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
                 embed.set_author(name=str(member), icon=str(member.avatar_url))
                 embed.description = f"""{bot_config['emoji']['blue_arrow']} **Member:** {member.mention} ({member.id})
 {bot_config['emoji']['blue_arrow']} **Action:** {action}
-{bot_config['emoji']['blue_arrow']} **Reason:** {reason}"""
+{bot_config['emoji']['blue_arrow']} **Reason:** {reason}
+{bot_config['emoji']['blue_arrow']} **Message:** {message.message.content}"""
                 embed.add_field(name="More info:", value=f"""{bot_config['emoji']['blue_arrow']} Member DM: {member_dm}
 {bot_config['emoji']['blue_arrow']} Action taken: {action_taken}""")
 
