@@ -424,9 +424,10 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     for word in words:
         if matches is not None:
             for match in matches:
+                user = await message.message.app.rest.fetch_user(int(match["_id"]))
                 if word.lower() in match["hl"]:
                     if user_id not in match["block_member"] and message.message.channel_id not in match["block_channel"]:
-                        if hikari.Permissions.VIEW_CHANNEL in lightbulb.utils.permissions_in(channel, message.message.member, False):
+                        if hikari.Permissions.VIEW_CHANNEL in lightbulb.utils.permissions_in(channel, user):
                             if int(match["_id"]) not in dmed_users:
                                 last_seen_check = False
                                 try:
@@ -439,13 +440,13 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
                                     embed=hikari.Embed(title=word, description=description, color=random.randint(0x0, 0xffffff))
                                     view = miru.View()
                                     view.add_item(miru.Button(label="Message", url=f"https://discord.com/channels/{message.message.guild_id}/{message.message.channel_id}/{message.message.id}"))
-                                    content = f"""In **{(await message.message.app.rest.fetch_guild(message.message.guild_id)).name}** {channel.mention}, you were mentioned with highlight word "{word}"
-                                    """
-                                    user = await message.message.app.rest.fetch_user(int(match["_id"]))
-                                    userdm = await user.fetch_dm_channel()
-                                    await userdm.send(content, embed=embed, components=view.build())
-                                    dmed_users.append(int(match["_id"]))
-
+                                    content = f"""In **{(await message.message.app.rest.fetch_guild(message.message.guild_id)).name}** {channel.mention}, you were mentioned with highlight word "{word}" """
+                                    try:
+                                        userdm = await user.fetch_dm_channel()
+                                        await userdm.send(content, embed=embed, components=view.build())
+                                        dmed_users.append(int(match["_id"]))
+                                    except:
+                                        pass
 def load(bot):
     bot.add_plugin(plugin)
 

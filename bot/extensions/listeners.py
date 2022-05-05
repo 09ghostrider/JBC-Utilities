@@ -26,7 +26,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     if match == None:
         return
     
-    link_split = match.split("/")
+    link_split = (match.group()).split("/")
     guild_id = link_split[4]
     channel_id = link_split[5]
     message_id = link_split[6]
