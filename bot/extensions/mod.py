@@ -127,12 +127,12 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     if message.is_human == False:
         return
     
-    member = message.message.member
-    if member.id in silenced:
-        try:
+    try:
+        member = message.message.member
+        if member.id in silenced:
             await message.message.delete()
-        except:
-            pass
+    except:
+        pass
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MODERATE_MEMBERS) | lightbulb.owner_only)
