@@ -41,7 +41,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     view.add_item(miru.Button(label="Message", url=str(match.group())))
 
     # New webhook
-    webhook = await message.message.app.rest.create_webhook(channel_id, f"{msg.author.username}", avatar=str(msg.author.avatar_url), reason="Message Preview")
+    webhook = await message.message.app.rest.create_webhook(message.message.channel_id, f"{msg.author.username}", avatar=str(msg.author.avatar_url), reason="Message link preview")
 
     # Execute webhook
     if msg.embeds != []:
