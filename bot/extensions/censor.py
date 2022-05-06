@@ -393,9 +393,9 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     if message.message.content is None:
         return
 
-    member = message.message.member
     guild_id = message.message.guild_id
     channel_id = message.message.channel_id
+    member = await message.message.app.rest.fetch_member(guild_id, message.message.author.id)
 
     if member.id in bot_config['bot']['owner_ids']:
         return

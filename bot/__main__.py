@@ -42,7 +42,7 @@ tasks.load(bot)
 @bot.listen(hikari.StartedEvent)
 async def _on_started(event:hikari.StartedEvent) -> None:
     channel = await bot.rest.fetch_channel(bot_config["logging"]["startup"])
-    await channel.send("Bot has started")
+    await channel.send("Bot has Started")
 
     view = pingroles()
     view.start_listener()
