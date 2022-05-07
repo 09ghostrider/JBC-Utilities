@@ -183,7 +183,7 @@ async def _pingrole(ctx: lightbulb.Context) -> None:
 @lightbulb.command("verify", "shows the verify embed")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _verify(ctx: lightbulb.Context) -> None:
-    if ctx.event.message.channel_id == 834009679553101854:
+    if ctx.event.message.channel_id != 834009679553101854:
         return await ctx.respond(f"This command can only be used in <#834009679553101854>", reply=True)
     
     try:
