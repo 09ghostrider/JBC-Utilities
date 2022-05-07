@@ -427,7 +427,8 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
 
     for word in censor_list['censored']:
         msg = message.message.content.lower().replace(" ", "")
-        if word in msg or word in message.message.content.lower():
+        w = word.lower().replace(" ", "")
+        if word in msg or word in message.message.content.lower() or w in msg or w in message.message.content.lower():
             try:
                 await message.message.delete()
             except:
