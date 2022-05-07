@@ -31,7 +31,8 @@ bot = lightbulb.BotApp(
     default_enabled_guilds=bot_config["bot"]["default_guilds"],
     ignore_bots=True,
     owner_ids=bot_config["bot"]["owner_ids"],
-    case_insensitive_prefix_commands=True
+    case_insensitive_prefix_commands=True,
+    intents=hikari.Intents.ALL
 )
 
 bot.load_extensions_from(pathlib.Path(os.path.realpath(extensions.__file__)).parent, must_exist=True)
