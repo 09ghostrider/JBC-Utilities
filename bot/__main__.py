@@ -6,7 +6,7 @@ import random
 import miru
 import json
 from bot import extensions
-from bot.extensions.roles import pingroles
+from bot.extensions.selfroles import pingroles
 # from bot.extensions.giveaway import giveaway_view
 from dotenv import load_dotenv
 from lightbulb.ext import tasks
