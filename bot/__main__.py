@@ -7,6 +7,7 @@ import miru
 import json
 from bot import extensions
 from bot.extensions.selfroles import pingroles
+from bot.extensions.selfroles import verify
 # from bot.extensions.giveaway import giveaway_view
 from dotenv import load_dotenv
 from lightbulb.ext import tasks
@@ -48,8 +49,11 @@ async def _on_started(event:hikari.StartedEvent) -> None:
     view = pingroles()
     view.start_listener()
 
-    # view2 = giveaway_view()
-    # view2.start_listener()
+    view2 = verify()
+    view2.start_listener()
+
+    # view3 = giveaway_view()
+    # view3.start_listener()
 
 @bot.listen(hikari.StoppingEvent)
 async def _on_ended(event:hikari.StoppingEvent) -> None:

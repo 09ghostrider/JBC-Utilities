@@ -37,7 +37,8 @@
         "exit": "<a:JBC_exit:951107886606614549>",
         "check": "<a:JBC_check:907203988468928522>",
         "moneygun": "<a:JBC_moneygun:968522741839986708>",
-        "peepoyeet": "<a:peepoyeet:950600338078048308>"
+        "peepoyeet": "<a:peepoyeet:950600338078048308>",
+        "tickmark": "<:JBC_checkmark:848552871561396225>"
     },
     "bot": {
         "prefix": ["jbc ", "&"],

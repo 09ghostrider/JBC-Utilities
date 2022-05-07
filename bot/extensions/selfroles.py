@@ -1,3 +1,4 @@
+from operator import le
 import hikari
 import lightbulb
 import random
@@ -26,6 +27,21 @@ numemojis = {
     8: "<a:_8_:956584045087715418>",
     9: "<a:_9_:956584058966650950>"
 }
+
+class verify(miru.View):
+    def __init__(self) -> None:
+        super().__init__(timeout=None)
+    
+    @miru.button(emoji=hikari.Emoji.parse(bot_config['emoji']['tickmark']), label="Verify", style=hikari.ButtonStyle.SUCCESS, custom_id="verify")
+    async def verify_button(self, button: miru.Button, ctx: miru.Context) -> None:
+        await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+        role = self.app.cache.get_role(832108400129212438)
+        if role not in ctx.member.get_roles():
+            await ctx.respond("You are now verified", flags=ephemeral)
+            await ctx.member.add_role(role)
+        else:
+            await ctx.respond("You are already verified", flags=ephemeral)
+        
 
 class pingroles(miru.View):
     def __init__(self) -> None:
@@ -159,6 +175,25 @@ async def _pingrole(ctx: lightbulb.Context) -> None:
     )
     embed.set_thumbnail(ctx.get_guild().icon_url)
     view = pingroles()
+    msg = await ctx.respond(embed=embed, components=view.build())
+    view.start(await msg.message())
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.command("verify", "shows the verify embed")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _verify(ctx: lightbulb.Context) -> None:
+    if ctx.event.message.channel_id == 834009679553101854:
+        return await ctx.respond(f"This command can only be used in <#834009679553101854>", reply=True)
+    
+    try:
+        await ctx.event.message.delete()
+    except:
+        pass
+
+    embed = hikari.Embed(title="Verification", description="Make sure to read <#832107000589844491> before verifying", color=bot_config['color']['default'])
+    embed.set_thumbnail(ctx.get_guild().icon_url)
+    view = verify()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
 
