@@ -191,7 +191,7 @@ async def _verify(ctx: lightbulb.Context) -> None:
     except:
         pass
 
-    embed = hikari.Embed(title="Verification", description="Make sure to read <#832107000589844491> before verifying", color=bot_config['color']['default'])
+    embed = hikari.Embed(title="Verification", description="Make sure to read <#832107000589844491> before verifying.\nClick the button below to verify.\nEnjoy your stay here!!", color=bot_config['color']['default'])
     embed.set_thumbnail(ctx.get_guild().icon_url)
     view = verify()
     msg = await ctx.respond(embed=embed, components=view.build())
