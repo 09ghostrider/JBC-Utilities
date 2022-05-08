@@ -41,6 +41,12 @@ async def _banner(ctx: lightbulb.Context) -> None:
         embed.description = "No banner set"
     await ctx.respond(embed=embed, reply=True)
 
+@plugin.command()
+@lightbulb.command("appeal", "link to the appeal server", aliases=['banappeal', 'appealserver'])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _appeal(ctx: lightbulb.Context) -> None:
+    await ctx.respond("https://discord.gg/d4BwBUgSZK")
+
 def load(bot):
     bot.add_plugin(plugin)
 

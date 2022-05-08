@@ -58,73 +58,44 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     await message.message.app.rest.delete_webhook(webhook)
     
 @plugin.listener(hikari.PresenceUpdateEvent)
-async def _status(ctx: hikari.PresenceUpdateEvent) -> None:
+async def _status_update(ctx: hikari.PresenceUpdateEvent) -> None:
     status_log = 942621300394975232
     status_role = 942621461695324180
     if ctx.guild_id != 832105614577631232:
         return
     
-    old_presence = ctx.old_presence
+    status_list = ['discord.gg/1vs', '.gg/1vs', 'https://discord.com/1vs', 'https://discord.com/invite/1vs', 'discord.com/invite/1vs']
+
     presence = ctx.presence
+    status = presence.activities[0].state
+    member = await ctx.app.rest.fetch_member(ctx.guild_id, ctx.user_id)
+    role = ctx.app.cache.get_role(status_role)
+    roles = member.get_roles()
 
-    old = None
-    if old_presence:
-        for x in old_presence.activities:
-            if x.type == hikari.ActivityType.CUSTOM:
-                old = x.state
-    
-    new = None
-    for x in presence.activities:
-        if x.type == hikari.ActivityType.CUSTOM:
-            new = x.state
-
-    if not old or not new:
+    if member.is_bot == True or member.is_system == True:
         return
 
-    if old == new:
-        return
-    
-    if not new:
-        role = ctx.app.cache.get_role(status_role)
-        member = await ctx.app.rest.fetch_member(ctx.guild_id, ctx.user_id)
-        roles = member.get_roles()
-        if role in roles:
+    if role in roles:
+        count = 0
+        for s in status_list:
+            if s not in status:
+                count += 1
+            else:
+                return
+        
+        if count == len(status_list):
             await member.remove_role(role)
             channel = await ctx.app.rest.fetch_channel(status_log)
-            embed=hikari.Embed(color=bot_config['color']['red'], description=f"StatusRole {role.mention} removed from {member.mention}\n**New Status:** {new}")
-            await channel.send(embed=embed)
-            return
+            embed=hikari.Embed(color=bot_config['color']['red'], description=f"Removed {role.mention} from {member.mention}\n**New Status:** {status}")
+            return await channel.send(embed=embed)
 
-    if not old:
-        old = "None"
-    if not new:
-        new = "None"
-
-    status_list = ['discord.gg/1vs', '.gg/1vs', 'https://discord.com/1vs', 'https://discord.com/invite/1vs', 'discord.com/invite/1vs']
-    for status in status_list:
-        if status in new:
-            if status not in old:
-                role = ctx.app.cache.get_role(status_role)
-                member = await ctx.app.rest.fetch_member(ctx.guild_id, ctx.user_id)
-                roles = member.get_roles()
-                if role not in roles:
-                    await member.add_role(role)
-                    channel = await ctx.app.rest.fetch_channel(status_log)
-                    embed=hikari.Embed(color=bot_config['color']['green'], description=f"StatusRole {role.mention} added to {member.mention}\n**New Status:** {new}")
-                    await channel.send(embed=embed)
-                    return
-
-        elif status not in new:
-            if status in old:
-                role = ctx.app.cache.get_role(status_role)
-                member = await ctx.app.rest.fetch_member(ctx.guild_id, ctx.user_id)
-                roles = member.get_roles()
-                if role in roles:
-                    await member.remove_role(role)
-                    channel = await ctx.app.rest.fetch_channel(status_log)
-                    embed=hikari.Embed(color=bot_config['color']['red'], description=f"StatusRole {role.mention} removed from {member.mention}\n**New Status:** {new}")
-                    await channel.send(embed=embed)
-                    return
+    elif role not in roles:
+        for s in status_list:
+            if s in status:
+                await member.add_role(role)
+                channel = await ctx.app.rest.fetch_channel(status_log)
+                embed=hikari.Embed(color=bot_config['color']['green'], description=f"Added {role.mention} to {member.mention}\n**New Status:** {status}")
+                return await channel.send(embed=embed)
 
 def load(bot):
     bot.add_plugin(plugin)
