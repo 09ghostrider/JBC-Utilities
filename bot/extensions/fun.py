@@ -12,6 +12,29 @@ ephemeral = hikari.MessageFlag.EPHEMERAL
 with open("./configs/config.json") as f:
     bot_config = json.load(f)
 
+eight_ball_responses = [
+    "It is certain",
+    "It is decidedly so",
+    "Without a doubt",
+    "Yes, definitely",
+    "You may rely on it",
+    "As I see it, yes",
+    "Most likely",
+    "Outlook good",
+    "Yes",
+    "Signs point to yes",
+    "Reply hazy try again",
+    "Ask again later",
+    "Better not tell you now",
+    "Cannot predict now",
+    "Concentrate and ask again",
+    "Don't count on it",
+    "My reply is no",
+    "My sources say no",
+    "Outlook not so good",
+    "Very doubtful"
+]
+
 @plugin.command()
 @lightbulb.option("text", "text", type=str, required=False, default=None, modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.command("howgay", "shows how gay you are", aliases=["gayrate"])
@@ -194,6 +217,33 @@ async def _meme(ctx: lightbulb.Context) -> None:
 #         color = random.randint(0x0, 0xFFFFFF)
 #     )
 #     await ctx.app.rest.create_message((await ctx.event.message.fetch_channel()), reply=answer, embed=embed3, mentions_reply=True)
+
+@plugin.command()
+@lightbulb.command("8ball", "this command gives 100% accurate results")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _8ball(ctx: lightbulb.Context) -> None:
+    ball = random.choice(eight_ball_responses)
+    await ctx.respond(f":8ball: | {ball}", reply=True)
+
+@plugin.command()
+@lightbulb.command("flip", "flip a coin")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _flip(ctx: lightbulb.Context) -> None:
+    coin = random.choice(["heads", "tails"])
+    await ctx.respond(f":coin: | You flipped {coin}", reply=True)
+
+@plugin.command()
+@lightbulb.option("choices", "the choices to choose from", required=True, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
+@lightbulb.command("choose", "Chooses a random element from the supplied choices, use a comma (,) for multi word selects", aliases=['pick', 'select', 'choice'])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _choose(ctx: lightbulb.Context) -> None:
+    choices = ctx.options.choices
+    if "," in choices:
+        cList = choices.split(",")
+    else:
+        cList = choices.split(" ")
+    choice = random.choice(cList)
+    await ctx.respond(f"{choice}")
 
 def load(bot):
     bot.add_plugin(plugin)
