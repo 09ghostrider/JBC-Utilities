@@ -69,6 +69,8 @@ async def _status_update(ctx: hikari.PresenceUpdateEvent) -> None:
     presence = ctx.presence
     try:
         status = presence.activities[0].state
+        if not status:
+            status = ""
     except IndexError:
         return
     member = await ctx.app.rest.fetch_member(ctx.guild_id, ctx.user_id)
