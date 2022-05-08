@@ -67,10 +67,17 @@ async def _status(ctx: hikari.PresenceUpdateEvent) -> None:
     old_presence = ctx.old_presence
     presence = ctx.presence
 
-    try:
-        old = old_presence.activities[0].state
-        new = presence.activities[0].state
-    except:
+    old == None
+    for x in old_presence.activities:
+        if x.type == hikari.ActivityType.CUSTOM:
+            old = x.state
+    
+    new == None
+    for x in presence.activities:
+        if x.type == hikari.ActivityType.CUSTOM:
+            new = x.state
+
+    if not old or not new:
         return
 
     if old == new:
