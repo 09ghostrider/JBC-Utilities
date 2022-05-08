@@ -57,6 +57,66 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     # Delete webhook
     await message.message.app.rest.delete_webhook(webhook)
     
+@plugin.listener(hikari.PresenceUpdateEvent)
+async def _status(ctx: hikari.PresenceUpdateEvent) -> None:
+    status_log = 942621300394975232
+    status_role = 942621461695324180
+    if ctx.guild_id != 832105614577631232:
+        return
+    
+    old_presence = ctx.old_presence
+    presence = ctx.presence
+
+    try:
+        old = old_presence.activities[0].state
+        new = presence.activities[0].state
+    except:
+        return
+
+    if old == new:
+        return
+    
+    if not new:
+        role = ctx.app.cache.get_role(status_role)
+        member = await ctx.app.rest.fetch_member(ctx.guild_id, ctx.user_id)
+        roles = member.get_roles()
+        if role in roles:
+            await member.remove_role(role)
+            channel = await ctx.app.rest.fetch_channel(status_log)
+            embed=hikari.Embed(color=bot_config['color']['red'], description=f"StatusRole {role.mention} removed from {member.mention}\n**New Status:** {new}")
+            await channel.send(embed=embed)
+            return
+
+    if not old:
+        old = "None"
+    if not new:
+        new = "None"
+
+    status_list = ['discord.gg/1vs', '.gg/1vs', 'https://discord.com/1vs', 'https://discord.com/invite/1vs', 'discord.com/invite/1vs']
+    for status in status_list:
+        if status in new:
+            if status not in old:
+                role = ctx.app.cache.get_role(status_role)
+                member = await ctx.app.rest.fetch_member(ctx.guild_id, ctx.user_id)
+                roles = member.get_roles()
+                if role not in roles:
+                    await member.add_role(role)
+                    channel = await ctx.app.rest.fetch_channel(status_log)
+                    embed=hikari.Embed(color=bot_config['color']['green'], description=f"StatusRole {role.mention} added to {member.mention}\n**New Status:** {new}")
+                    await channel.send(embed=embed)
+                    return
+
+        elif status not in new:
+            if status in old:
+                role = ctx.app.cache.get_role(status_role)
+                member = await ctx.app.rest.fetch_member(ctx.guild_id, ctx.user_id)
+                roles = member.get_roles()
+                if role in roles:
+                    await member.remove_role(role)
+                    channel = await ctx.app.rest.fetch_channel(status_log)
+                    embed=hikari.Embed(color=bot_config['color']['red'], description=f"StatusRole {role.mention} removed from {member.mention}\n**New Status:** {new}")
+                    await channel.send(embed=embed)
+                    return
 
 def load(bot):
     bot.add_plugin(plugin)
