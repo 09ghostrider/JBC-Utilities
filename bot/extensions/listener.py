@@ -67,7 +67,10 @@ async def _status_update(ctx: hikari.PresenceUpdateEvent) -> None:
     status_list = ['discord.gg/1vs', '.gg/1vs', 'https://discord.com/1vs', 'https://discord.com/invite/1vs', 'discord.com/invite/1vs']
 
     presence = ctx.presence
-    status = presence.activities[0].state
+    try:
+        status = presence.activities[0].state
+    except IndexError:
+        return
     member = await ctx.app.rest.fetch_member(ctx.guild_id, ctx.user_id)
     role = ctx.app.cache.get_role(status_role)
     roles = member.get_roles()
@@ -76,18 +79,13 @@ async def _status_update(ctx: hikari.PresenceUpdateEvent) -> None:
         return
 
     if role in roles:
-        count = 0
         for s in status_list:
-            if s not in status:
-                count += 1
-            else:
+            if s in status:
                 return
-        
-        if count == len(status_list):
-            await member.remove_role(role)
-            channel = await ctx.app.rest.fetch_channel(status_log)
-            embed=hikari.Embed(color=bot_config['color']['red'], description=f"Removed {role.mention} from {member.mention}\n**New Status:** {status}")
-            return await channel.send(embed=embed)
+        await member.remove_role(role)
+        channel = await ctx.app.rest.fetch_channel(status_log)
+        embed=hikari.Embed(color=bot_config['color']['red'], description=f"Removed {role.mention} from {member.mention}\n**New Status:** {status}")
+        return await channel.send(embed=embed)
 
     elif role not in roles:
         for s in status_list:
