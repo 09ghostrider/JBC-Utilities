@@ -6,9 +6,11 @@ import json
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from bot.utils.checks import botban_check
 
 load_dotenv()
 plugin = lightbulb.Plugin("stickyroles")
+plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 mongoclient = os.getenv("DATABASE")

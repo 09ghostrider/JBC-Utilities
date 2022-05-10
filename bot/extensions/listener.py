@@ -3,8 +3,10 @@ import lightbulb
 import json
 import miru
 import re
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("listener")
+plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 lregex = r"https:\/\/discord\.com\/channels\/\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\/\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\/\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d\d"
 link_regex = re.compile(lregex)

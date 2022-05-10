@@ -8,9 +8,11 @@ import datetime
 from dotenv import load_dotenv
 import os
 import json
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("afk")
 plugin.add_checks(lightbulb.guild_only)
+plugin.add_checks(botban_check)
 
 load_dotenv()
 mongoclient = os.getenv("DATABASE")

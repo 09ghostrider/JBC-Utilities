@@ -8,6 +8,7 @@ import datetime
 import os
 from dotenv import load_dotenv
 import json
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("ar")
 

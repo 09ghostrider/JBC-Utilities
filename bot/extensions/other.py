@@ -4,8 +4,10 @@ import random
 import asyncio
 import json
 from requests import request
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("other")
+plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 with open("./configs/config.json") as f:

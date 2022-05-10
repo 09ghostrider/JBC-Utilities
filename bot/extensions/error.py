@@ -16,11 +16,13 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
     exception = event.exception.__cause__ or event.exception
 
     if isinstance(exception, lightbulb.NotOwner):
-        embed.description = f"> You are not the owner of this bot."
+        # embed.description = f"> You are not the owner of this bot."
+        return
     elif isinstance(exception, lightbulb.CommandIsOnCooldown):
         embed.description = f"> This command is on cooldown. Retry in `{exception.retry_after:.2f}` seconds."
     elif isinstance(exception, lightbulb.errors.CheckFailure):
-        embed.description = f"> You do not have the right permissions to use this command"
+        # embed.description = f"> You do not have the right permissions to use this command"
+        return
     elif isinstance(exception, lightbulb.errors.NotEnoughArguments):
         args = ""
         for arg in exception.missing_options:

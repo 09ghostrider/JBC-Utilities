@@ -8,9 +8,11 @@ import datetime
 import os
 from dotenv import load_dotenv
 import json
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("mod")
 plugin.add_checks(lightbulb.guild_only)
+plugin.add_checks(botban_check)
 
 load_dotenv()
 mongoclient = os.getenv("DATABASE")
@@ -105,15 +107,21 @@ silenced = []
 @lightbulb.option("member", "member", required=True, type=hikari.Member)
 @lightbulb.command("silence", "make a member stfu", aliases=["shutup", "stfu", "shut"])
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _shut(ctx: lightbulb.Context) -> None:
+async def _silence(ctx: lightbulb.Context) -> None:
     member = ctx.options.member
     
+    if member.id == ctx.app.application.id:
+        return await ctx.respond(".....")
+
+    if member.id == ctx.event.message.author.id:
+        return await ctx.respond("You cant silence/unsilence yourself", reply=True)
+
+    # if member.id in bot_config["bot"]["owner_ids"]:
+    #     return await ctx.respond("No", reply=True)
+
     owner_role = ctx.app.cache.get_role(832107331265232909)
     if owner_role in member.get_roles():
         return await ctx.respond("You can't silence owners", reply=True)
-    
-    # if member.id in bot_config["bot"]["owner_ids"]:
-    #     return await ctx.respond("No", reply=True)
 
     if member.id not in silenced:
         silenced.append(member.id)

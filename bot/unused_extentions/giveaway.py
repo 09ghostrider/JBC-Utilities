@@ -9,8 +9,10 @@ from pymongo import MongoClient
 import datetime
 from lightbulb.ext import tasks
 import json
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("giveaway")
+plugin.add_checks(botban_check)
 plugin.add_checks(lightbulb.guild_only)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 

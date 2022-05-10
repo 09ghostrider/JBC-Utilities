@@ -9,8 +9,10 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
 import json
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("teleport")
+plugin.add_checks(botban_check)
 
 load_dotenv()
 mongoclient = os.getenv("DATABASE")

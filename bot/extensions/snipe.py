@@ -2,8 +2,10 @@ import datetime
 import hikari
 import lightbulb
 import json
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("snipe")
+plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 with open("./configs/config.json") as f:

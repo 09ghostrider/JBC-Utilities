@@ -8,8 +8,10 @@ from pymongo import MongoClient
 import datetime
 from miru.ext import nav
 import json
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("donations")
+plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 with open("./configs/config.json") as f:

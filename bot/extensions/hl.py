@@ -8,8 +8,10 @@ import datetime
 import os
 from dotenv import load_dotenv
 import json
+from bot.utils.checks import botban_checks
 
 plugin = lightbulb.Plugin("hl")
+plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 load_dotenv()

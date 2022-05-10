@@ -9,8 +9,10 @@ from miru.ext import nav
 from dotenv import load_dotenv
 import os
 import json
+from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("donations")
+plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 load_dotenv()
