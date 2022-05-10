@@ -124,12 +124,9 @@ async def _shut(ctx: lightbulb.Context) -> None:
 
 @plugin.listener(hikari.MessageCreateEvent)
 async def _on_message(message: hikari.MessageCreateEvent) -> None:
-    if message.is_human == False:
-        return
-    
     try:
-        member = message.message.member
-        if member.id in silenced:
+        id = message.message.author.id
+        if id in silenced:
             await message.message.delete()
     except:
         pass

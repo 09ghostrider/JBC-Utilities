@@ -223,14 +223,14 @@ async def _meme(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _8ball(ctx: lightbulb.Context) -> None:
     ball = random.choice(eight_ball_responses)
-    await ctx.respond(f":8ball: | {ball}", reply=True)
+    await ctx.respond(f":8ball: **|** {ball}", reply=True)
 
 @plugin.command()
 @lightbulb.command("flip", "flip a coin")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _flip(ctx: lightbulb.Context) -> None:
-    coin = random.choice(["heads", "tails"])
-    await ctx.respond(f":coin: | You flipped {coin}", reply=True)
+    coin = random.choice(["head", "tail"])
+    await ctx.respond(f":coin: **|** You flipped a {coin}", reply=True)
 
 @plugin.command()
 @lightbulb.option("choices", "the choices to choose from", required=True, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
