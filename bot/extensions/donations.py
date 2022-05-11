@@ -3,11 +3,12 @@ import lightbulb
 import random
 import miru
 import json
-from bot.utils.checks import botban_check
+from bot.utils.checks import botban_check, jbc_server_check
 
 plugin = lightbulb.Plugin("donations")
 plugin.add_checks(lightbulb.guild_only)
 plugin.add_checks(botban_check)
+plugin.add_checks(jbc_server_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
 with open("./configs/config.json") as f:

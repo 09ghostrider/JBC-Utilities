@@ -8,7 +8,7 @@ import datetime
 import os
 from dotenv import load_dotenv
 import json
-from bot.utils.checks import botban_check
+from bot.utils.checks import botban_check, jbc_server_check
 
 plugin = lightbulb.Plugin("mod")
 plugin.add_checks(lightbulb.guild_only)
@@ -209,149 +209,145 @@ async def _sm(ctx: lightbulb.Context) -> None:
     await ctx.get_guild().get_channel(ctx.event.message.channel_id).edit(rate_limit_per_user=duration)
     await ctx.respond(f"Set the slowmode to {datetime.timedelta(seconds = int(duration))}", reply=True)
 
-# @plugin.command()
-# @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
-# @lightbulb.option("role", "the role to lock the channel for (default = @everyone)", type=hikari.Role, default=None, required=False)
-# @lightbulb.option("channel", "the channel to lock (default = current channel)", type=hikari.GuildChannel, default=None, required=False)
-# @lightbulb.command("lock", "locks a channel", aliases=["lockdown"])
-# @lightbulb.implements(lightbulb.PrefixCommand)
-# async def _lock(ctx: lightbulb.Context) -> None:
-#     channel = ctx.options.channel
-#     role = ctx.options.role
+async def lockdown_unlockdown(ctx:lightbulb.Context, lorul:str, channels:list, role:int):
+    p = hikari.Permissions.SEND_MESSAGES
 
-#     if channel is None:
-#         channel = await ctx.event.message.fetch_channel()
-#     if role is None:
-#         role = ctx.app.cache.get_role(ctx.event.message.guild_id)
+    if lorul == "lock":
+        reason = f"Lockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
+        embed = hikari.Embed(title="Lockdown :lock:", description="This category has been locked. Please be patient and do not DM staff as we sort out the issues that may be occurring. Thanks.", color=bot_config['color']['default'])
+    else:
+        reason = f"Unlockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
+        embed = hikari.Embed(title="Unlockdown :unlock:", description="This category has been unlocked. The issues have been solved, so feel free to use the channels. Thanks.", color=bot_config['color']['default'])
+    embed.set_footer(text=str(ctx.get_guild().name), icon=str(ctx.get_guild().icon_url))
 
-#     old_perms = channel.permission_overwrites()
-#     print(old_perms)
+    for cid in channels:
+        c = await ctx.app.rest.fetch_channel(cid)
+        perms = c.permission_overwrites
+        try:
+            perm = perms[role]
+            allow = perm.allow
+            deny = perm.deny
+        except KeyError:
+            allow = hikari.Permissions.NONE
+            deny = hikari.Permissions.NONE
 
-#     await ctx.bot.rest.edit_permission_overwrites(channel=channel, )
-
-# @plugin.command()
-# @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
-# @lightbulb.command("lockdown", "lockdown the server or a part of the server")
-# @lightbulb.implements(lightbulb.PrefixCommandGroup)
-# async def _lockdown(ctx: lightbulb.Context) -> None:
-#     pass
-
-# @_lockdown.child
-# @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-# @lightbulb.command("server", "lockdown the entire server", aliases=['all', 'full'], inherit_checks=True)
-# @lightbulb.implements(lightbulb.PrefixSubCommand)
-# async def _server(ctx: lightbulb.Context) -> None:
-#     pass
-
-# @_lockdown.child
-# @lightbulb.command("dank", "lockdown the entire server", aliases=['dankmemer'], inherit_checks=True)
-# @lightbulb.implements(lightbulb.PrefixSubCommand)
-# async def _dank(ctx: lightbulb.Context) -> None:
-#     pass
-
-# @_lockdown.child
-# @lightbulb.command("karuta", "lockdown the entire server", inherit_checks=True)
-# @lightbulb.implements(lightbulb.PrefixSubCommand)
-# async def _karuta(ctx: lightbulb.Context) -> None:
-#     await ctx.respond("Locking karuta category")   
-
-#     channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
-#     role = 973792910774509698
-#     p = hikari.Permissions.SEND_MESSAGES
-#     reason = f"Lockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
-
-#     embed = hikari.Embed(title="Lockdown :lock:", description="This category has been locked. Please be patient and do not DM staff as we sort out the issues that may be occurring. Thanks.", color=bot_config['color']['default'])
-#     embed.set_footer(text=str(ctx.get_guild().name), icon=str(ctx.get_guild().icon_url))
-
-#     for cid in channels:
-#         c = await ctx.app.rest.fetch_channel(cid)
-#         perms = c.permission_overwrites
-#         try:
-#             perm = perms[role]
-#             allow = list(perm.allow)
-#             deny = list(perm.deny)
-#         except KeyError:
-#             allow = []
-#             deny = []
-
-#         if p in allow:
-#             allow.pop(allow.index(p))
-#         if p not in deny:
-#             deny.append(p)
+        if lorul == "lock":
+            allow &= ~p
+            deny |= p
+        else:
+            deny &= ~p
+            allow |= p
         
-#         await c.edit_overwrite(
-#             target = role,
-#             allow = allow,
-#             deny = deny,
-#             reason = reason,
-#             target_type = 0
-#         )
+        await ctx.app.rest.edit_permission_overwrites(
+            channel = cid,
+            target = role,
+            allow = allow,
+            deny = deny,
+            reason = reason,
+            target_type = hikari.PermissionOverwriteType.ROLE
+        )
 
-#         c.send(embed=embed)
+        await c.send(embed=embed)
+
+@plugin.command()
+@lightbulb.add_checks(jbc_server_check)
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
+@lightbulb.command("lockdown", "lockdown the server or a part of the server")
+@lightbulb.implements(lightbulb.PrefixCommandGroup)
+async def _lockdown(ctx: lightbulb.Context) -> None:
+    await ctx.respond("Include the category to lockdown or `server` or full server lockdown\nCategories: dank, karuta")
+
+@_lockdown.child
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.command("server", "lockdown the entire server", aliases=['all', 'full'], inherit_checks=True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _server(ctx: lightbulb.Context) -> None:
+    await ctx.respond("Locking entire server")
+
+    channels = [851333787094745099, 834011997917413386, 868810579664597042, 897504251645943818, 834264185953058877, 841259536294608907, 886108586768478238, 924243183209185280, 973788657486020648, 973791488469245952, 972472890077351996, 851315417334677514, 834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 834266718569496596, 926122207141306438, 845305881015877662, 896595923730333736, 889661750650208307, 926534852990357555, 960037267651588166]
+    role = 832105614577631232
+
+    await lockdown_unlockdown(ctx, "lock", channels, role)
     
-#     await ctx.respond("Lockdown complete")
+    await ctx.respond("Lockdown complete")
 
-# @plugin.command()
-# @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
-# @lightbulb.command("unlockdown", "unlockdown the server or a part of the server")
-# @lightbulb.implements(lightbulb.PrefixCommandGroup)
-# async def _unlockdown(ctx: lightbulb.Context) -> None:
-#     pass
 
-# @_unlockdown.child
-# @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-# @lightbulb.command("server", "unlockdown the entire server", aliases=['all', 'full'], inherit_checks=True)
-# @lightbulb.implements(lightbulb.PrefixSubCommand)
-# async def _server(ctx: lightbulb.Context) -> None:
-#     pass
+@_lockdown.child
+@lightbulb.command("dank", "lockdown the dank category", aliases=['dankmemer'], inherit_checks=True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _dank(ctx: lightbulb.Context) -> None:
+    await ctx.respond("Locking dank memer category")
 
-# @_unlockdown.child
-# @lightbulb.command("dank", "unlockdown the entire server", aliases=['dankmemer'], inherit_checks=True)
-# @lightbulb.implements(lightbulb.PrefixSubCommand)
-# async def _dank(ctx: lightbulb.Context) -> None:
-#     pass
+    channels = [834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 851315417334677514]
+    role = 888028007783100426
 
-# @_unlockdown.child
-# @lightbulb.command("karuta", "unlockdown the entire server", inherit_checks=True)
-# @lightbulb.implements(lightbulb.PrefixSubCommand)
-# async def _karuta(ctx: lightbulb.Context) -> None:
-#     await ctx.respond("Unlocking karuta category")   
-
-#     channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
-#     role = 973792910774509698
-#     p = hikari.Permissions.SEND_MESSAGES
-#     reason = f"Unlockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
-
-#     embed = hikari.Embed(title="Unlockdown :unlock:", description="This category has been unlocked. The issues have been solved, so feel free to use the channels. Thanks.", color=bot_config['color']['default'])
-#     embed.set_footer(text=str(ctx.get_guild().name), icon=str(ctx.get_guild().icon_url))
-
-#     for cid in channels:
-#         c = await ctx.app.rest.fetch_channel(cid)
-#         perms = c.permission_overwrites
-#         try:
-#             perm = perms[role]
-#             allow = list(perm.allow)
-#             deny = list(perm.deny)
-#         except KeyError:
-#             allow = []
-#             deny = []
-
-#         if p in deny:
-#             deny.pop(deny.index(p))
-#         if p not in allow:
-#             allow.append(p)
-        
-#         await c.edit_overwrite(
-#             target = role,
-#             allow = allow,
-#             deny = deny,
-#             reason = reason,
-#             target_type = 0
-#         )
-
-#         c.send(embed=embed)
+    await lockdown_unlockdown(ctx, "lock", channels, role)
     
-#     await ctx.respond("Unlockdown complete")
+    await ctx.respond("Lockdown complete")
+
+
+@_lockdown.child
+@lightbulb.command("karuta", "lockdown the karuta category", inherit_checks=True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _karuta(ctx: lightbulb.Context) -> None:
+    await ctx.respond("Locking karuta category")
+
+    channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
+    role = 973792910774509698
+
+    await lockdown_unlockdown(ctx, "lock", channels, role)
+    
+    await ctx.respond("Lockdown complete")
+
+@plugin.command()
+@lightbulb.add_checks(jbc_server_check)
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
+@lightbulb.command("unlockdown", "unlockdown the server or a part of the server")
+@lightbulb.implements(lightbulb.PrefixCommandGroup)
+async def _unlockdown(ctx: lightbulb.Context) -> None:
+    await ctx.respond("Include the category to unlockdown or `server` or full server unlockdown\nCategories: dank, karuta")
+
+@_unlockdown.child
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.command("server", "unlockdown the entire server", aliases=['all', 'full'], inherit_checks=True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _server(ctx: lightbulb.Context) -> None:
+    await ctx.respond("Unlocking entire server")
+
+    channels = [851333787094745099, 834011997917413386, 868810579664597042, 897504251645943818, 834264185953058877, 841259536294608907, 886108586768478238, 924243183209185280, 973788657486020648, 973791488469245952, 972472890077351996, 851315417334677514, 834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 834266718569496596, 926122207141306438, 845305881015877662, 896595923730333736, 889661750650208307, 926534852990357555, 960037267651588166]
+    role = 832105614577631232
+
+    await lockdown_unlockdown(ctx, "unlock", channels, role)
+    
+    await ctx.respond("Unlockdown complete")
+
+
+@_lockdown.child
+@lightbulb.command("dank", "unlockdown the dank category", aliases=['dankmemer'], inherit_checks=True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _dank(ctx: lightbulb.Context) -> None:
+    await ctx.respond("Unlocking dank memer category")
+
+    channels = [834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 851315417334677514]
+    role = 888028007783100426
+
+    await lockdown_unlockdown(ctx, "unlock", channels, role)
+    
+    await ctx.respond("Unlockdown complete")
+
+
+@_lockdown.child
+@lightbulb.command("karuta", "unlockdown the karuta category", inherit_checks=True)
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _karuta(ctx: lightbulb.Context) -> None:
+    await ctx.respond("Unlocking karuta category")
+
+    channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
+    role = 973792910774509698
+
+    await lockdown_unlockdown(ctx, "unlock", channels, role)
+    
+    await ctx.respond("Unlockdown complete")
 
 def load(bot):
     bot.add_plugin(plugin)

@@ -22,5 +22,12 @@ def botban_check(ctx: lightbulb.Context) -> None:
 
     if not banned:
         return True
-    else:
-        return False
+    return False
+
+@lightbulb.Check
+def jbc_server_check(ctx: lightbulb.Context) -> None:
+    return ctx.guild_id == 832105614577631232
+
+@lightbulb.Check
+def testing_server_check(ctx: lightbulb.Context) -> None:
+    return ctx.guild_id == 881031368199524372
