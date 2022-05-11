@@ -163,11 +163,13 @@ eg: &gdonate 24h/lv73mx/none/I love donating to JBC!
 {br_dot} Minimum donation amounts:
 {bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 2+ tickets :tickets:
 {bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 15+ gems :gem:
-{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 100+ whitelist per card :black_joker:
+{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 100+ wishlist per card :black_joker:
 {bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 1,000+ bits :ice_cube:
 {bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 1+ frame(s) :frame_photo:
-{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 1+ dye(s) :red_circle:
-{br_dot} Note that / will end your argument. For donating multiple items, refrain from using a /.
+{bot_config['emoji']['space']}{bot_config['emoji']['reply']} 1+ dye(s) :red_circle:
+{br_dot} Note: Items will be noted in ticket value, the amount will depend on what it’s being sold for on the market.
+
+{br_dot} Note: that / will end your argument. For donating multiple items, refrain from using a /.
 {br_dot} All fields are required. Use a None instead of leaving it empty.
 {br_dot} A karuta manager will then respond as soon as possible, please do not ping them.
 {br_dot} If you would like to leave an area blank, just type **None**."""
