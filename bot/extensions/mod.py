@@ -209,14 +209,12 @@ async def _sm(ctx: lightbulb.Context) -> None:
     await ctx.get_guild().get_channel(ctx.event.message.channel_id).edit(rate_limit_per_user=duration)
     await ctx.respond(f"Set the slowmode to {datetime.timedelta(seconds = int(duration))}", reply=True)
 
-async def lockdown_unlockdown(ctx:lightbulb.Context, lorul:str, channels:list, role:int):
-    p = hikari.Permissions.SEND_MESSAGES
-
+async def lockdown_unlockdown(ctx:lightbulb.Context, lorul:str, channels:list, role:int, p):
     if lorul == "lock":
-        reason = f"Lockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
+        reason = f"Lockdown issued by {ctx.event.message.author} ({ctx.event.message.author.id})"
         embed = hikari.Embed(title="Lockdown :lock:", description="This category has been locked. Please be patient and do not DM staff as we sort out the issues that may be occurring. Thanks.", color=bot_config['color']['default'])
     else:
-        reason = f"Unlockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
+        reason = f"Unlockdown issued by {ctx.event.message.author} ({ctx.event.message.author.id})"
         embed = hikari.Embed(title="Unlockdown :unlock:", description="This category has been unlocked. The issues have been solved, so feel free to use the channels. Thanks.", color=bot_config['color']['default'])
     embed.set_footer(text=str(ctx.get_guild().name), icon=str(ctx.get_guild().icon_url))
 
@@ -249,6 +247,134 @@ async def lockdown_unlockdown(ctx:lightbulb.Context, lorul:str, channels:list, r
 
         await c.send(embed=embed)
 
+async def perms(ctx:lightbulb.Context, lorul:str, cid:int, rid:int, p):
+    if lorul == "lock":
+        reason = f"Action requested by {ctx.event.message.author} ({ctx.event.message.author.id})"
+    elif lorul == "unlock":
+        reason = f"Action requested by {ctx.event.message.author} ({ctx.event.message.author.id})"
+
+    c = await ctx.app.rest.fetch_channel(cid)
+    perms = c.permission_overwrites
+    try:
+        perm = perms[rid]
+        allow = perm.allow
+        deny = perm.deny
+    except KeyError:
+        allow = hikari.Permissions.NONE
+        deny = hikari.Permissions.NONE
+
+    if lorul == "lock":
+        allow &= ~p
+        deny |= p
+    elif lorul == "unlock":
+        deny &= ~p
+        allow |= p
+    
+    await ctx.app.rest.edit_permission_overwrites(
+        channel = cid,
+        target = rid,
+        allow = allow,
+        deny = deny,
+        reason = reason,
+        target_type = hikari.PermissionOverwriteType.ROLE
+    )
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
+@lightbulb.option("role", "the role lock the channel for", type=hikari.Role, required=False, default=None)
+@lightbulb.option("channel", "the channel to lock", type=hikari.GuildChannel, required=False, default=None)
+@lightbulb.command("lock", "lock a channel for a perticular role")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _lock(ctx: lightbulb.Context) -> None:
+    role = ctx.options.role
+    channel = ctx.options.channel
+
+    if not role:
+        role_id = ctx.event.message.guild_id
+    else:
+        role_id = role.id
+    
+    if not channel:
+        channel_id = ctx.event.message.channel_id
+    else:
+        channel_id = channel.id
+    
+    await perms(ctx, "lock", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
+
+    await ctx.respond(f"Locked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
+@lightbulb.option("role", "the role unlock the channel for", type=hikari.Role, required=False, default=None)
+@lightbulb.option("channel", "the channel to unlock", type=hikari.GuildChannel, required=False, default=None)
+@lightbulb.command("unlock", "unlock a channel for a perticular role")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _unlock(ctx: lightbulb.Context) -> None:
+    role = ctx.options.role
+    channel = ctx.options.channel
+
+    if not role:
+        role_id = ctx.event.message.guild_id
+    else:
+        role_id = role.id
+    
+    if not channel:
+        channel_id = ctx.event.message.channel_id
+    else:
+        channel_id = channel.id
+    
+    await perms(ctx, "unlock", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
+
+    await ctx.respond(f"Unlocked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
+@lightbulb.option("role", "the role lock the channel for", type=hikari.Role, required=False, default=None)
+@lightbulb.option("channel", "the channel to lock", type=hikari.GuildChannel, required=False, default=None)
+@lightbulb.command("viewlock", "lock a channel for a perticular role", aliases=["vlock"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _viewlock(ctx: lightbulb.Context) -> None:
+    role = ctx.options.role
+    channel = ctx.options.channel
+
+    if not role:
+        role_id = ctx.event.message.guild_id
+    else:
+        role_id = role.id
+    
+    if not channel:
+        channel_id = ctx.event.message.channel_id
+    else:
+        channel_id = channel.id
+    
+    await perms(ctx, "lock", channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
+
+    await ctx.respond(f"View locked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
+@lightbulb.option("role", "the role unlock the channel for", type=hikari.Role, required=False, default=None)
+@lightbulb.option("channel", "the channel to unlock", type=hikari.GuildChannel, required=False, default=None)
+@lightbulb.command("viewunlock", "unlock a channel for a perticular role", aliases=["vunlock"])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _viewunlock(ctx: lightbulb.Context) -> None:
+    role = ctx.options.role
+    channel = ctx.options.channel
+
+    if not role:
+        role_id = ctx.event.message.guild_id
+    else:
+        role_id = role.id
+    
+    if not channel:
+        channel_id = ctx.event.message.channel_id
+    else:
+        channel_id = channel.id
+    
+    await perms(ctx, "unlock", channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
+
+    await ctx.respond(f"View unlocked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
+
 @plugin.command()
 @lightbulb.add_checks(jbc_server_check)
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
@@ -267,7 +393,7 @@ async def _server(ctx: lightbulb.Context) -> None:
     channels = [851333787094745099, 834011997917413386, 868810579664597042, 897504251645943818, 834264185953058877, 841259536294608907, 886108586768478238, 924243183209185280, 973788657486020648, 973791488469245952, 972472890077351996, 851315417334677514, 834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 834266718569496596, 926122207141306438, 845305881015877662, 896595923730333736, 889661750650208307, 926534852990357555, 960037267651588166]
     role = 832105614577631232
 
-    await lockdown_unlockdown(ctx, "lock", channels, role)
+    await lockdown_unlockdown(ctx, "lock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
     await ctx.respond("Lockdown complete")
 
@@ -281,7 +407,7 @@ async def _dank(ctx: lightbulb.Context) -> None:
     channels = [834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 851315417334677514]
     role = 888028007783100426
 
-    await lockdown_unlockdown(ctx, "lock", channels, role)
+    await lockdown_unlockdown(ctx, "lock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
     await ctx.respond("Lockdown complete")
 
@@ -295,7 +421,7 @@ async def _karuta(ctx: lightbulb.Context) -> None:
     channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
     role = 973792910774509698
 
-    await lockdown_unlockdown(ctx, "lock", channels, role)
+    await lockdown_unlockdown(ctx, "lock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
     await ctx.respond("Lockdown complete")
 
@@ -317,7 +443,7 @@ async def _server(ctx: lightbulb.Context) -> None:
     channels = [851333787094745099, 834011997917413386, 868810579664597042, 897504251645943818, 834264185953058877, 841259536294608907, 886108586768478238, 924243183209185280, 973788657486020648, 973791488469245952, 972472890077351996, 851315417334677514, 834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 834266718569496596, 926122207141306438, 845305881015877662, 896595923730333736, 889661750650208307, 926534852990357555, 960037267651588166]
     role = 832105614577631232
 
-    await lockdown_unlockdown(ctx, "unlock", channels, role)
+    await lockdown_unlockdown(ctx, "unlock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
     await ctx.respond("Unlockdown complete")
 
@@ -331,7 +457,7 @@ async def _dank(ctx: lightbulb.Context) -> None:
     channels = [834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 851315417334677514]
     role = 888028007783100426
 
-    await lockdown_unlockdown(ctx, "unlock", channels, role)
+    await lockdown_unlockdown(ctx, "unlock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
     await ctx.respond("Unlockdown complete")
 
@@ -345,7 +471,7 @@ async def _karuta(ctx: lightbulb.Context) -> None:
     channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
     role = 973792910774509698
 
-    await lockdown_unlockdown(ctx, "unlock", channels, role)
+    await lockdown_unlockdown(ctx, "unlock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
     await ctx.respond("Unlockdown complete")
 
