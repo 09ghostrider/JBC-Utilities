@@ -322,7 +322,7 @@ async def _server(ctx: lightbulb.Context) -> None:
     await ctx.respond("Unlockdown complete")
 
 
-@_lockdown.child
+@_unlockdown.child
 @lightbulb.command("dank", "unlockdown the dank category", aliases=['dankmemer'], inherit_checks=True)
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _dank(ctx: lightbulb.Context) -> None:
@@ -336,7 +336,7 @@ async def _dank(ctx: lightbulb.Context) -> None:
     await ctx.respond("Unlockdown complete")
 
 
-@_lockdown.child
+@_unlockdown.child
 @lightbulb.command("karuta", "unlockdown the karuta category", inherit_checks=True)
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _karuta(ctx: lightbulb.Context) -> None:
