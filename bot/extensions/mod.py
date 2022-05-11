@@ -283,7 +283,8 @@ async def _karuta(ctx: lightbulb.Context) -> None:
             target = role,
             allow = allow,
             deny = deny,
-            reason = reason
+            reason = reason,
+            target_type = 0
         )
 
         c.send(embed=embed)
@@ -344,7 +345,8 @@ async def _karuta(ctx: lightbulb.Context) -> None:
             target = role,
             allow = allow,
             deny = deny,
-            reason = reason
+            reason = reason,
+            target_type = 0
         )
 
         c.send(embed=embed)
