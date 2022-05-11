@@ -38,7 +38,8 @@
         "check": "<a:JBC_check:907203988468928522>",
         "moneygun": "<a:JBC_moneygun:968522741839986708>",
         "peepoyeet": "<a:peepoyeet:950600338078048308>",
-        "tickmark": "<:JBC_checkmark:848552871561396225>"
+        "tickmark": "<:JBC_checkmark:848552871561396225>",
+        "space": "<:space:973807855067078716>"
     },
     "bot": {
         "prefix": ["jbc ", "&"],

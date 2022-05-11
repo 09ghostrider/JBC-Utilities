@@ -97,7 +97,7 @@ async def _gdonate(ctx: lightbulb.Context) -> None:
 {bot_config['emoji']['reply2']} **Message:** {options[3]}
 {bot_config['emoji']['reply']} **Donor:** {ctx.event.message.author}"""
 
-    embed2=hikari.Embed(color=bot_config["color"]["default"], title="Thank you for donating", description="Your donation has been recorded, and a karuta manager will respond soon.\nPlease be patient.\nKindly do not ping giveaway managers.")
+    embed2=hikari.Embed(color=bot_config["color"]["default"], title="Thank you for donating", description="Your donation has been recorded, and a karuta manager will respond soon.\nPlease be patient.\nKindly do not ping karuta managers.")
     embed2.set_footer(text=ctx.get_guild().name, icon=ctx.get_guild().icon_url)
     msg = await ctx.respond(f"{ctx.event.message.author.mention}", embed=embed2, user_mentions=True)
 
@@ -132,7 +132,7 @@ async def _ginfo(ctx: lightbulb.Context) -> None:
 eg: &gdonate 1h/1 tro/1w/level 5/I love donating to JBC!
 eg: &gdonate 6h/1 tro 5 pem/level 15 5m donor/This is how to donate multiple items or multiple requirements.
 
-{br_dot} Minimum donation for all is **500k.**
+{br_dot} Minimum donation amount is **500k**.
 {br_dot} Note that / will end your argument. For donating multiple items, refrain from using a /.
 {br_dot} All fields are required. Use a None instead of leaving it empty.
 {br_dot} A giveaway manager will then respond as soon as possible, please do not ping them.
@@ -158,8 +158,15 @@ async def _ginfo(ctx: lightbulb.Context) -> None:
     embed.description = f"""If you would like to donate to karuta giveaways please use the command:
 
 **&kdonate duration/card/requirements/message**
-eg: &gdonate 24h/l16dkz/none/I love donating to JBC!
+eg: &gdonate 24h/lv73mx/none/I love donating to JBC!
 
+{br_dot} Minimum donation amounts:
+{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 2+ tickets :tickets:
+{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 15+ gems :gem:
+{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 100+ whitelist per card :black_joker:
+{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 1,000+ bits :ice_cube:
+{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 1+ frame(s) :frame_photo:
+{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 1+ dye(s) :red_circle:
 {br_dot} Note that / will end your argument. For donating multiple items, refrain from using a /.
 {br_dot} All fields are required. Use a None instead of leaving it empty.
 {br_dot} A karuta manager will then respond as soon as possible, please do not ping them.
