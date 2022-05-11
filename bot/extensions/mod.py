@@ -229,129 +229,129 @@ async def _sm(ctx: lightbulb.Context) -> None:
 
 #     await ctx.bot.rest.edit_permission_overwrites(channel=channel, )
 
-@plugin.command()
-@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
-@lightbulb.command("lockdown", "lockdown the server or a part of the server")
-@lightbulb.implements(lightbulb.PrefixCommandGroup)
-async def _lockdown(ctx: lightbulb.Context) -> None:
-    pass
+# @plugin.command()
+# @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
+# @lightbulb.command("lockdown", "lockdown the server or a part of the server")
+# @lightbulb.implements(lightbulb.PrefixCommandGroup)
+# async def _lockdown(ctx: lightbulb.Context) -> None:
+#     pass
 
-@_lockdown.child
-@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-@lightbulb.command("server", "lockdown the entire server", aliases=['all', 'full'], inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
-async def _server(ctx: lightbulb.Context) -> None:
-    pass
+# @_lockdown.child
+# @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+# @lightbulb.command("server", "lockdown the entire server", aliases=['all', 'full'], inherit_checks=True)
+# @lightbulb.implements(lightbulb.PrefixSubCommand)
+# async def _server(ctx: lightbulb.Context) -> None:
+#     pass
 
-@_lockdown.child
-@lightbulb.command("dank", "lockdown the entire server", aliases=['dankmemer'], inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
-async def _dank(ctx: lightbulb.Context) -> None:
-    pass
+# @_lockdown.child
+# @lightbulb.command("dank", "lockdown the entire server", aliases=['dankmemer'], inherit_checks=True)
+# @lightbulb.implements(lightbulb.PrefixSubCommand)
+# async def _dank(ctx: lightbulb.Context) -> None:
+#     pass
 
-@_lockdown.child
-@lightbulb.command("karuta", "lockdown the entire server", inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
-async def _karuta(ctx: lightbulb.Context) -> None:
-    await ctx.respond("Locking karuta category")   
+# @_lockdown.child
+# @lightbulb.command("karuta", "lockdown the entire server", inherit_checks=True)
+# @lightbulb.implements(lightbulb.PrefixSubCommand)
+# async def _karuta(ctx: lightbulb.Context) -> None:
+#     await ctx.respond("Locking karuta category")   
 
-    channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
-    role = 973792910774509698
-    p = hikari.Permissions.SEND_MESSAGES
-    reason = f"Lockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
+#     channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
+#     role = 973792910774509698
+#     p = hikari.Permissions.SEND_MESSAGES
+#     reason = f"Lockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
 
-    embed = hikari.Embed(title="Lockdown :lock:", description="This category has been locked. Please be patient and do not DM staff as we sort out the issues that may be occurring. Thanks.", color=bot_config['color']['default'])
-    embed.set_footer(text=str(ctx.get_guild().name), icon=str(ctx.get_guild().icon_url))
+#     embed = hikari.Embed(title="Lockdown :lock:", description="This category has been locked. Please be patient and do not DM staff as we sort out the issues that may be occurring. Thanks.", color=bot_config['color']['default'])
+#     embed.set_footer(text=str(ctx.get_guild().name), icon=str(ctx.get_guild().icon_url))
 
-    for cid in channels:
-        c = await ctx.app.rest.fetch_channel(cid)
-        perms = c.permission_overwrites
-        try:
-            perm = perms[role]
-            allow = list(perm.allow)
-            deny = list(perm.deny)
-        except KeyError:
-            allow = []
-            deny = []
+#     for cid in channels:
+#         c = await ctx.app.rest.fetch_channel(cid)
+#         perms = c.permission_overwrites
+#         try:
+#             perm = perms[role]
+#             allow = list(perm.allow)
+#             deny = list(perm.deny)
+#         except KeyError:
+#             allow = []
+#             deny = []
 
-        if p in allow:
-            allow.pop(allow.index(p))
-        if p not in deny:
-            deny.append(p)
+#         if p in allow:
+#             allow.pop(allow.index(p))
+#         if p not in deny:
+#             deny.append(p)
         
-        await c.edit_overwrite(
-            target = role,
-            allow = allow,
-            deny = deny,
-            reason = reason,
-            target_type = 0
-        )
+#         await c.edit_overwrite(
+#             target = role,
+#             allow = allow,
+#             deny = deny,
+#             reason = reason,
+#             target_type = 0
+#         )
 
-        c.send(embed=embed)
+#         c.send(embed=embed)
     
-    await ctx.respond("Lockdown complete")
+#     await ctx.respond("Lockdown complete")
 
-@plugin.command()
-@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
-@lightbulb.command("unlockdown", "unlockdown the server or a part of the server")
-@lightbulb.implements(lightbulb.PrefixCommandGroup)
-async def _unlockdown(ctx: lightbulb.Context) -> None:
-    pass
+# @plugin.command()
+# @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
+# @lightbulb.command("unlockdown", "unlockdown the server or a part of the server")
+# @lightbulb.implements(lightbulb.PrefixCommandGroup)
+# async def _unlockdown(ctx: lightbulb.Context) -> None:
+#     pass
 
-@_unlockdown.child
-@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-@lightbulb.command("server", "unlockdown the entire server", aliases=['all', 'full'], inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
-async def _server(ctx: lightbulb.Context) -> None:
-    pass
+# @_unlockdown.child
+# @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+# @lightbulb.command("server", "unlockdown the entire server", aliases=['all', 'full'], inherit_checks=True)
+# @lightbulb.implements(lightbulb.PrefixSubCommand)
+# async def _server(ctx: lightbulb.Context) -> None:
+#     pass
 
-@_unlockdown.child
-@lightbulb.command("dank", "unlockdown the entire server", aliases=['dankmemer'], inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
-async def _dank(ctx: lightbulb.Context) -> None:
-    pass
+# @_unlockdown.child
+# @lightbulb.command("dank", "unlockdown the entire server", aliases=['dankmemer'], inherit_checks=True)
+# @lightbulb.implements(lightbulb.PrefixSubCommand)
+# async def _dank(ctx: lightbulb.Context) -> None:
+#     pass
 
-@_unlockdown.child
-@lightbulb.command("karuta", "unlockdown the entire server", inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
-async def _karuta(ctx: lightbulb.Context) -> None:
-    await ctx.respond("Unlocking karuta category")   
+# @_unlockdown.child
+# @lightbulb.command("karuta", "unlockdown the entire server", inherit_checks=True)
+# @lightbulb.implements(lightbulb.PrefixSubCommand)
+# async def _karuta(ctx: lightbulb.Context) -> None:
+#     await ctx.respond("Unlocking karuta category")   
 
-    channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
-    role = 973792910774509698
-    p = hikari.Permissions.SEND_MESSAGES
-    reason = f"Unlockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
+#     channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
+#     role = 973792910774509698
+#     p = hikari.Permissions.SEND_MESSAGES
+#     reason = f"Unlockdown issued by {ctx.event.message.author} (ID: {ctx.event.message.author.id})"
 
-    embed = hikari.Embed(title="Unlockdown :unlock:", description="This category has been unlocked. The issues have been solved, so feel free to use the channels. Thanks.", color=bot_config['color']['default'])
-    embed.set_footer(text=str(ctx.get_guild().name), icon=str(ctx.get_guild().icon_url))
+#     embed = hikari.Embed(title="Unlockdown :unlock:", description="This category has been unlocked. The issues have been solved, so feel free to use the channels. Thanks.", color=bot_config['color']['default'])
+#     embed.set_footer(text=str(ctx.get_guild().name), icon=str(ctx.get_guild().icon_url))
 
-    for cid in channels:
-        c = await ctx.app.rest.fetch_channel(cid)
-        perms = c.permission_overwrites
-        try:
-            perm = perms[role]
-            allow = list(perm.allow)
-            deny = list(perm.deny)
-        except KeyError:
-            allow = []
-            deny = []
+#     for cid in channels:
+#         c = await ctx.app.rest.fetch_channel(cid)
+#         perms = c.permission_overwrites
+#         try:
+#             perm = perms[role]
+#             allow = list(perm.allow)
+#             deny = list(perm.deny)
+#         except KeyError:
+#             allow = []
+#             deny = []
 
-        if p in deny:
-            deny.pop(deny.index(p))
-        if p not in allow:
-            allow.append(p)
+#         if p in deny:
+#             deny.pop(deny.index(p))
+#         if p not in allow:
+#             allow.append(p)
         
-        await c.edit_overwrite(
-            target = role,
-            allow = allow,
-            deny = deny,
-            reason = reason,
-            target_type = 0
-        )
+#         await c.edit_overwrite(
+#             target = role,
+#             allow = allow,
+#             deny = deny,
+#             reason = reason,
+#             target_type = 0
+#         )
 
-        c.send(embed=embed)
+#         c.send(embed=embed)
     
-    await ctx.respond("Unlockdown complete")
+#     await ctx.respond("Unlockdown complete")
 
 def load(bot):
     bot.add_plugin(plugin)
