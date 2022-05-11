@@ -232,7 +232,7 @@ async def _sm(ctx: lightbulb.Context) -> None:
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
 @lightbulb.command("lockdown", "lockdown the server or a part of the server")
-@lightbulb.implements(lightbulb.PrefixSubGroup)
+@lightbulb.implements(lightbulb.PrefixCommandGroup)
 async def _lockdown(ctx: lightbulb.Context) -> None:
     pass
 
@@ -293,7 +293,7 @@ async def _karuta(ctx: lightbulb.Context) -> None:
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD) | lightbulb.owner_only)
 @lightbulb.command("unlockdown", "unlockdown the server or a part of the server")
-@lightbulb.implements(lightbulb.PrefixSubGroup)
+@lightbulb.implements(lightbulb.PrefixCommandGroup)
 async def _unlockdown(ctx: lightbulb.Context) -> None:
     pass
 
