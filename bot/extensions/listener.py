@@ -99,6 +99,24 @@ async def _status_update(ctx: hikari.PresenceUpdateEvent) -> None:
                 embed=hikari.Embed(color=bot_config['color']['green'], description=f"Added {role.mention} to {member.mention}\n**New Status:** {status}")
                 return await channel.send(embed=embed)
 
+# @plugin.listener(hikari.MessageCreateEvent)
+# async def _on_message(message: hikari.MessageCreateEvent) -> None:
+#     if message.author_id != 270904126974590976:
+#         return
+    
+#     e = message.message.embeds
+#     if e == []:
+#         return
+    
+#     e1 = e[0]
+#     if not e1.title:
+#         return
+    
+#     if e1.title == "Successful Trade!":
+#         trade = e1
+#         user1 = e1.fields[0].name
+#         user2 = e1.fields[1].name
+
 def load(bot):
     bot.add_plugin(plugin)
 

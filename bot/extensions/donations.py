@@ -108,7 +108,7 @@ async def _gdonate(ctx: lightbulb.Context) -> None:
     view = miru.View(timeout=None)
     view.add_item(claim_button(cmd))
     view.add_item(link)
-    msg2 = await ctx.app.rest.create_message(ctx.get_guild().get_channel(851346473370124309), "<@&832111569764352060>", embed=embed, role_mentions=True, components=view.build())
+    msg2 = await ctx.app.rest.create_message(ctx.get_guild().get_channel(851346473370124309), "<@&973792877882785793>", embed=embed, role_mentions=True, components=view.build())
 
     view.start(msg2)
     await view.wait()
@@ -118,7 +118,7 @@ async def _gdonate(ctx: lightbulb.Context) -> None:
     view2.add_item(link2)
 
     embed.set_footer(text=f"Claimed by {view.gman}", icon=view.gman.avatar_url)
-    await msg2.edit(content="<@&832111569764352060>", embed=embed, components=view2.build())
+    await msg2.edit(content="<@&973792877882785793>", embed=embed, components=view2.build())
 
 @plugin.command()
 @lightbulb.command("ginfo", "shows information on how to donate")
@@ -159,13 +159,11 @@ async def _ginfo(ctx: lightbulb.Context) -> None:
 
 **&kdonate duration/card/requirements/message**
 eg: &gdonate 24h/l16dkz/none/I love donating to JBC!
-eg: &gdonate 6h/l16dkz/level 15 & 5m donor/This is how to donate with multiple requirements.
 
 {br_dot} Note that / will end your argument. For donating multiple items, refrain from using a /.
 {br_dot} All fields are required. Use a None instead of leaving it empty.
-{br_dot} A giveaway manager will then respond as soon as possible, please do not ping them.
-{br_dot} If you would like to leave an area blank, just type **None**.
-{br_dot} If you would like to donate for nitro giveaways, please dm <@!488132046087258112>"""
+{br_dot} A karuta manager will then respond as soon as possible, please do not ping them.
+{br_dot} If you would like to leave an area blank, just type **None**."""
     embed.set_footer(text="Thank you for donating!", icon=ctx.get_guild().icon_url)
     await ctx.respond(embed=embed)
 
