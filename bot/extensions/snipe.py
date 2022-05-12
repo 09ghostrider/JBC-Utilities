@@ -2,18 +2,39 @@ import datetime
 import hikari
 import lightbulb
 import json
+from pymongo import MongoClient
 from bot.utils.checks import botban_check
+from dotenv import load_dotenv
 
 plugin = lightbulb.Plugin("snipe")
 plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
+load_dotenv()
+mongoclient = os.getenv("DATABASE")
 with open("./configs/config.json") as f:
     bot_config = json.load(f)
 
 snipe_data = {}
 
+@lightbulb.Check
+def perms_check(ctx: lightbulb.Context) -> None:
+    cluster = MongoClient(mongoclient)
+    configs = cluster["snipe"]["server_configs"]
+
+    config = configs.find_one({"guild": ctx.event.message.guild_id})
+    if config == None:
+        return False
+    
+    roles = ctx.event.message.member.get_roles()
+    for r in config["req"]:
+        role = ctx.app.cache.get_role(r)
+        if role in roles:
+            return True
+    return False
+
 @plugin.command()
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
 @lightbulb.option("index", "the index of the message to snipe", required=False, default=1, type=int)
 @lightbulb.option("channel", "the channel to snipe messages from", required=False, default=None, type=hikari.GuildChannel)
 @lightbulb.command("snipe", "snipe a deleted message", aliases=['sniper'])
