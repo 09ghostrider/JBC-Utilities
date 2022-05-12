@@ -27,10 +27,10 @@ Thank you for donating or investing in this server."""
     )
 
     view = miru.View()
-    view.add_item(miru.Button(label="Investor Perks", url="https://discord.com/channels/832105614577631232/926112960315793458/974139563977089095"))
-    view.add_item(miru.Button(label="Donor Perks", url="https://discord.com/channels/832105614577631232/926112960315793458/974139867904737322"))
-    view.add_item(miru.Button(label="Booster Perks", url="https://discord.com/channels/832105614577631232/926112960315793458/974141050249703454"))
-    view.add_item(miru.Button(label="Level Perks", url="https://discord.com/channels/832105614577631232/926112960315793458/974141249336537088"))
+    view.add_item(miru.Button(label="Investor Perks", url="https://discord.com/channels/832105614577631232/926112960315793458/974157215772602388"))
+    view.add_item(miru.Button(label="Donor Perks", url="https://discord.com/channels/832105614577631232/926112960315793458/974157235603259402"))
+    view.add_item(miru.Button(label="Booster Perks", url="https://discord.com/channels/832105614577631232/926112960315793458/974157254444073021"))
+    view.add_item(miru.Button(label="Level Perks", url="https://discord.com/channels/832105614577631232/926112960315793458/974157268549521448"))
 
     await ctx.respond(embed=embed, components=view.build())
     
