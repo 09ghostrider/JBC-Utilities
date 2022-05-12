@@ -103,7 +103,7 @@ async def _dperks(ctx: lightbulb.Context) -> None:
 
 <@&954550639776657449> - Personal role with up to 10 people
 
-<@&954550731921313792> - `&hl perms`
+<@&954550731921313792> - `&hl` perms
 
 Note: All perks last until you leave"""
     )
