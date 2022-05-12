@@ -262,6 +262,7 @@ async def _dankaccess(ctx: lightbulb.Context) -> None:
         pass
 
     embed = hikari.Embed(title="Karuta access", description=f"""Click the {bot_config['emoji']['karuta']} button to gain access to the channels.\nBe sure to read the rules.""", color=bot_config['color']['default'])
+    embed.set_thumbnail(ctx.get_guild().icon_url)
     view = karutaaccess()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
