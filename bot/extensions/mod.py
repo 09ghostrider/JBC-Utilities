@@ -232,9 +232,11 @@ async def lockdown_unlockdown(ctx:lightbulb.Context, lorul:str, channels:list, r
         if lorul == "lock":
             allow &= ~p
             deny |= p
-        else:
+        elif lorul == "unlock":
             deny &= ~p
             allow |= p
+        elif lorul == "reset":
+            deny &= ~p
         
         await ctx.app.rest.edit_permission_overwrites(
             channel = cid,
@@ -264,11 +266,13 @@ async def perms(ctx:lightbulb.Context, lorul:str, cid:int, rid:int, p):
         deny = hikari.Permissions.NONE
 
     if lorul == "lock":
-        allow &= ~p
-        deny |= p
+            allow &= ~p
+            deny |= p
     elif lorul == "unlock":
         deny &= ~p
         allow |= p
+    elif lorul == "reset":
+        deny &= ~p
     
     await ctx.app.rest.edit_permission_overwrites(
         channel = cid,
@@ -323,7 +327,7 @@ async def _unlock(ctx: lightbulb.Context) -> None:
     else:
         channel_id = channel.id
     
-    await perms(ctx, "unlock", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
+    await perms(ctx, "reset", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
 
     await ctx.respond(f"Unlocked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
 
@@ -390,7 +394,7 @@ async def _lockdown(ctx: lightbulb.Context) -> None:
 async def _server(ctx: lightbulb.Context) -> None:
     await ctx.respond("Locking entire server")
 
-    channels = [851333787094745099, 834011997917413386, 868810579664597042, 897504251645943818, 834264185953058877, 841259536294608907, 886108586768478238, 924243183209185280, 973788657486020648, 973791488469245952, 972472890077351996, 851315417334677514, 834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 834266718569496596, 926122207141306438, 845305881015877662, 896595923730333736, 889661750650208307, 926534852990357555, 960037267651588166]
+    channels = [834011997917413386, 868810579664597042, 897504251645943818, 834264185953058877, 841259536294608907, 886108586768478238, 924243183209185280, 973788657486020648, 973791488469245952, 972472890077351996, 851315417334677514, 834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 834266718569496596, 926122207141306438, 845305881015877662, 896595923730333736, 889661750650208307, 926534852990357555, 960037267651588166]
     role = 832105614577631232
 
     await lockdown_unlockdown(ctx, "lock", channels, role, hikari.Permissions.SEND_MESSAGES)
@@ -440,10 +444,10 @@ async def _unlockdown(ctx: lightbulb.Context) -> None:
 async def _server(ctx: lightbulb.Context) -> None:
     await ctx.respond("Unlocking entire server")
 
-    channels = [851333787094745099, 834011997917413386, 868810579664597042, 897504251645943818, 834264185953058877, 841259536294608907, 886108586768478238, 924243183209185280, 973788657486020648, 973791488469245952, 972472890077351996, 851315417334677514, 834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 834266718569496596, 926122207141306438, 845305881015877662, 896595923730333736, 889661750650208307, 926534852990357555, 960037267651588166]
+    channels = [834011997917413386, 868810579664597042, 897504251645943818, 834264185953058877, 841259536294608907, 886108586768478238, 924243183209185280, 973788657486020648, 973791488469245952, 972472890077351996, 851315417334677514, 834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 834266718569496596, 926122207141306438, 845305881015877662, 896595923730333736, 889661750650208307, 926534852990357555, 960037267651588166]
     role = 832105614577631232
 
-    await lockdown_unlockdown(ctx, "unlock", channels, role, hikari.Permissions.SEND_MESSAGES)
+    await lockdown_unlockdown(ctx, "reset", channels, role, hikari.Permissions.SEND_MESSAGES)
     
     await ctx.respond("Unlockdown complete")
 
@@ -457,7 +461,7 @@ async def _dank(ctx: lightbulb.Context) -> None:
     channels = [834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 851315417334677514]
     role = 832105614577631232
 
-    await lockdown_unlockdown(ctx, "unlock", channels, role, hikari.Permissions.SEND_MESSAGES)
+    await lockdown_unlockdown(ctx, "reset", channels, role, hikari.Permissions.SEND_MESSAGES)
     
     await ctx.respond("Unlockdown complete")
 
@@ -471,7 +475,7 @@ async def _karuta(ctx: lightbulb.Context) -> None:
     channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
     role = 832105614577631232
 
-    await lockdown_unlockdown(ctx, "unlock", channels, role, hikari.Permissions.SEND_MESSAGES)
+    await lockdown_unlockdown(ctx, "reset", channels, role, hikari.Permissions.SEND_MESSAGES)
     
     await ctx.respond("Unlockdown complete")
 
