@@ -64,11 +64,14 @@ async def _embed(ctx: lightbulb.Context) -> None:
     else:
         cid = channel.id
     
-    title, description = text.split("|", 1)
+    try:
+        title, description = text.split("|", 1)
 
-    embed = hikari.Embed(title=title, description=description, color=bot_config['color']['default'])
-    await ctx.app.rest.create_message(cid, embed=embed)
-
+        embed = hikari.Embed(title=title, description=description, color=bot_config['color']['default'])
+        await ctx.app.rest.create_message(cid, embed=embed)
+        await ctx.event.message.add_reaction("✅")
+    except:
+        await ctx.event.message.add_reaction("❌")
 
 def load(bot):
     bot.add_plugin(plugin)
