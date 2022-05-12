@@ -5,6 +5,7 @@ import json
 from pymongo import MongoClient
 from bot.utils.checks import botban_check
 from dotenv import load_dotenv
+import os
 
 plugin = lightbulb.Plugin("snipe")
 plugin.add_checks(botban_check)

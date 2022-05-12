@@ -27,7 +27,7 @@ async def _botban(ctx: lightbulb.Context) -> None:
     reason = ctx.options.reason
 
     if user.id in bot_config['bot']['owner_ids']:
-        return await ctx.respond("Why would u want to ban yourself....")
+        return await ctx.respond("Why would u want to ban yourself ...", reply=True)
 
     cluster = MongoClient(mongoclient)
     banned_users = cluster["owner"]["botban"]
