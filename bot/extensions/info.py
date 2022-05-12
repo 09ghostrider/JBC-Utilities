@@ -176,6 +176,30 @@ Note: All perks last until you leave."""
     except:
         pass
 
+@plugin.command()
+@lightbulb.command("dkrules", "rules and information for dank and karuta categories")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _dkrules(ctx: lightbulb.Context) -> None:
+    embed = hikari.Embed(
+        title = "Level Perks",
+        color = bot_config['color']['default'],
+        description = """This is a list of the rules and information needed in order to get access to this category. Please comply with them. You must also follow the rules of the server in <#832107000589844491>"""
+    )
+
+    embed.add_field(name="No scamming", value="""Scamming will not be tolerated in this server. However, if you are scammed, you will not be refunded. Although we will punish the scammer accordingly, your possessions will not be refunded unless the scammer voluntarily returns them.""")
+    embed.add_field(name="No toxicity", value="""No toxicity will be allowed anywhere in the channels.""")
+    embed.add_field(name="No spamming", value="""Do not spam the commands. Our antispam will kick in and you will be warned/muted.""")
+    embed.add_field(name="Fight Fairly", value="""When using the fight channels, you must always have what you are fighting for on you. You must give what you lost immediately if you lose, or you will be punished accordingly.""")
+    embed.add_field(name="Use Middleman", value="""Ping a moderator or above and get them to be a middleman for you when doing big trades.""")
+    embed.add_field(name="Follow TOS", value="""Follow bot and discord TOS. You will be reported if you break any TOS.""")
+
+    await ctx.respond(embed=embed)
+    
+    try:
+        await ctx.event.message.delete()
+    except:
+        pass
+
 def load(bot):
     bot.add_plugin(plugin)
 

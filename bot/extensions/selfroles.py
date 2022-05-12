@@ -8,9 +8,10 @@ from pymongo import MongoClient
 import datetime
 from miru.ext import nav
 import json
-from bot.utils.checks import botban_check
+from bot.utils.checks import botban_check, jbc_server_check
 
 plugin = lightbulb.Plugin("donations")
+plugin.add_checks(jbc_server_check)
 plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
 
@@ -43,7 +44,36 @@ class verify(miru.View):
             await ctx.member.add_role(role)
         else:
             await ctx.respond("You are already verified", flags=ephemeral)
-        
+
+class dankaccess(miru.View):
+    def __init__(self) -> None:
+        super().__init__(timeout=None)
+    
+    @miru.button(emoji=hikari.Emoji.parse(bot_config['emoji']['clap']), label="Gain Access", style=hikari.ButtonStyle.SUCCESS, custom_id="dankaccess")
+    async def verify_button(self, button: miru.Button, ctx: miru.Context) -> None:
+        await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+        role = self.app.cache.get_role(888028007783100426)
+        if role not in ctx.member.get_roles():
+            await ctx.respond("You now have access to dank memer channels", flags=ephemeral)
+            await ctx.member.add_role(role)
+        else:
+            await ctx.respond("You dont have access to dank memer channels anymore", flags=ephemeral)
+            await ctx.member.remove_role(role)
+
+class karutaaccess(miru.View):
+    def __init__(self) -> None:
+        super().__init__(timeout=None)
+    
+    @miru.button(emoji=hikari.Emoji.parse(bot_config['emoji']['karuta']), label="Gain Access", style=hikari.ButtonStyle.SUCCESS, custom_id="karutaaccess")
+    async def verify_button(self, button: miru.Button, ctx: miru.Context) -> None:
+        await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
+        role = self.app.cache.get_role(973792910774509698)
+        if role not in ctx.member.get_roles():
+            await ctx.respond("You now have access to karuta channels", flags=ephemeral)
+            await ctx.member.add_role(role)
+        else:
+            await ctx.respond("You dont have access to karuta channels anymore", flags=ephemeral)
+            await ctx.member.remove_role(role)
 
 class pingroles(miru.View):
     def __init__(self) -> None:
@@ -173,7 +203,7 @@ async def _pingrole(ctx: lightbulb.Context) -> None:
 {numemojis[6]}: <@&850991787593302016>
 {numemojis[7]}: <@&913265617254105128>
 {numemojis[8]}: <@&951694220345880596>""",
-        color = "2f3136"
+        color = bot_config['color']['default']
     )
     embed.set_thumbnail(ctx.get_guild().icon_url)
     view = pingroles()
@@ -196,6 +226,43 @@ async def _verify(ctx: lightbulb.Context) -> None:
     embed = hikari.Embed(title="Verification", description="Make sure to read <#832107000589844491> before verifying.\nClick the button below to verify.\nEnjoy your stay here!!", color=bot_config['color']['default'])
     embed.set_thumbnail(ctx.get_guild().icon_url)
     view = verify()
+    msg = await ctx.respond(embed=embed, components=view.build())
+    view.start(await msg.message())
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.command("dankaccess", "sends the dank access embed")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _dankaccess(ctx: lightbulb.Context) -> None:
+    if ctx.event.message.channel_id != 852396608440107048:
+        return await ctx.respond("This command can only be used in <#852396608440107048>", reply=True)
+
+    try:
+        await ctx.event.message.delete()
+    except:
+        pass
+
+    embed = hikari.Embed(title="Dank Memer access", description=f"""Click the {bot_config['emoji']['clap']} button to gain access to the channels.\nBe sure to read the rules.\nDank channels also include <#851315401459892245>, <#933855270826807308> and <#945812242857865276>""", color=bot_config['color']['default'])
+    embed.set_thumbnail(ctx.get_guild().icon_url)
+    view = dankaccess()
+    msg = await ctx.respond(embed=embed, components=view.build())
+    view.start(await msg.message())
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.command("karutaaccess", "sends the dank access embed")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _dankaccess(ctx: lightbulb.Context) -> None:
+    if ctx.event.message.channel_id != 974227197181173760:
+        return await ctx.respond("This command can only be used in <#974227197181173760>", reply=True)
+
+    try:
+        await ctx.event.message.delete()
+    except:
+        pass
+
+    embed = hikari.Embed(title="Karuta access", description=f"""Click the {bot_config['emoji']['karuta']} button to gain access to the channels.\nBe sure to read the rules.""", color=bot_config['color']['default'])
+    view = karutaaccess()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
 

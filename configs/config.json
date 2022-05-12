@@ -39,7 +39,9 @@
         "moneygun": "<a:JBC_moneygun:968522741839986708>",
         "peepoyeet": "<a:peepoyeet:950600338078048308>",
         "tickmark": "<:JBC_checkmark:848552871561396225>",
-        "space": "<:space:973807855067078716>"
+        "space": "<:space:973807855067078716>",
+        "clap": "<a:JBC_PepeClap:844895436455149608>",
+        "karuta": "<:karuta:974102394277363772>"
     },
     "bot": {
         "prefix": ["jbc ", "&"],
