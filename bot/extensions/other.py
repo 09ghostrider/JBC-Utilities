@@ -4,7 +4,7 @@ import random
 import asyncio
 import json
 from requests import request
-from bot.utils.checks import botban_check
+from bot.utils.checks import botban_check, jbc_server_check
 
 plugin = lightbulb.Plugin("other")
 plugin.add_checks(botban_check)
@@ -27,9 +27,10 @@ async def _prefix(ctx: lightbulb.Context) -> None:
     await ctx.respond(embed=embed, reply=True)
 
 @plugin.command()
+@lightbulb.add_checks(jbc_server_check)
 @lightbulb.command("vote", "vote for the server")
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _vote(ctx:lightbulb.Context) -> None:
+async def _vote(ctx: lightbulb.Context) -> None:
     blue_arrow = bot_config["emoji"]["blue_arrow"]
     embed=hikari.Embed(color=bot_config["color"]["default"], title=f"Voting for **{ctx.get_guild().name}**",description=f"""{blue_arrow} You can vote every **12h** on [**top.gg**](https://top.gg/servers/832105614577631232/vote)
 {blue_arrow} Perks: <@&857221234373558273> (+1 amari multiplier)
@@ -42,34 +43,20 @@ async def _vote(ctx:lightbulb.Context) -> None:
         pass
 
 @plugin.command()
-@lightbulb.command("enter", "indicates that u entered the chat")
+@lightbulb.command("info", "info about this bot")
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _enter(ctx: lightbulb.Context) -> None:
-    await ctx.respond(f"**{ctx.event.message.author.username}** has entered the chat {bot_config['emoji']['enter']}")
-    try:
-        await ctx.event.message.delete()
-    except:
-        pass
-
-@plugin.command()
-@lightbulb.command("exit", "indicates that u left the chat")
-@lightbulb.implements(lightbulb.PrefixCommand)
-async def _exit(ctx: lightbulb.Context) -> None:
-    await ctx.respond(f"**{ctx.event.message.author.username}** has left the chat {bot_config['emoji']['exit']}")
-    try:
-        await ctx.event.message.delete()
-    except:
-        pass
-
-@plugin.command()
-@lightbulb.option("member", "the member to yeet", default=None, required=False, type=hikari.Member)
-@lightbulb.command("yeet", "yeet someone out from the server")
-@lightbulb.implements(lightbulb.PrefixCommand)
-async def _yeet(ctx: lightbulb.Context) -> None:
-    member = ctx.options.member
-    if not member:
-        member = ctx.event.message.member
-    await ctx.respond(f"yeeted **{member.username}** out of **{ctx.get_guild().name}** {bot_config['emoji']['peepoyeet']}", reply=True)
+async def _info(ctx: lightbulb.Context) -> None:
+    embed = hikari.Embed(
+        title = "Information",
+        color = bot_config['color']['default'],
+        description = """➪ **Developer:** 09ghostrider#9999
+➪ **Server:** https://discord.gg/1vs
+➪ **Prefix:** `&`, `jbc `
+➪ **Language:** Python
+➪ **Library:** Hikari
+➪ **GitHub:** https://github.com/09ghostrider/JBC-Utilities"""
+    )
+    await ctx.respond(embed=embed)
 
 def load(bot):
     bot.add_plugin(plugin)

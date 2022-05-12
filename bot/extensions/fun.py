@@ -247,6 +247,36 @@ async def _choose(ctx: lightbulb.Context) -> None:
     choice = random.choice(cList)
     await ctx.respond(f"{choice}")
 
+@plugin.command()
+@lightbulb.command("enter", "indicates that u entered the chat")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _enter(ctx: lightbulb.Context) -> None:
+    await ctx.respond(f"**{ctx.event.message.author.username}** has entered the chat {bot_config['emoji']['enter']}")
+    try:
+        await ctx.event.message.delete()
+    except:
+        pass
+
+@plugin.command()
+@lightbulb.command("exit", "indicates that u left the chat")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _exit(ctx: lightbulb.Context) -> None:
+    await ctx.respond(f"**{ctx.event.message.author.username}** has left the chat {bot_config['emoji']['exit']}")
+    try:
+        await ctx.event.message.delete()
+    except:
+        pass
+
+@plugin.command()
+@lightbulb.option("member", "the member to yeet", default=None, required=False, type=hikari.Member)
+@lightbulb.command("yeet", "yeet someone out from the server")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _yeet(ctx: lightbulb.Context) -> None:
+    member = ctx.options.member
+    if not member:
+        member = ctx.event.message.member
+    await ctx.respond(f"yeeted **{member.username}** out of **{ctx.get_guild().name}** {bot_config['emoji']['peepoyeet']}", reply=True)
+
 def load(bot):
     bot.add_plugin(plugin)
 
