@@ -405,7 +405,7 @@ async def _dank(ctx: lightbulb.Context) -> None:
     await ctx.respond("Locking dank memer category")
 
     channels = [834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 851315417334677514]
-    role = 888028007783100426
+    role = 832105614577631232
 
     await lockdown_unlockdown(ctx, "lock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
@@ -419,7 +419,7 @@ async def _karuta(ctx: lightbulb.Context) -> None:
     await ctx.respond("Locking karuta category")
 
     channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
-    role = 973792910774509698
+    role = 832105614577631232
 
     await lockdown_unlockdown(ctx, "lock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
@@ -455,7 +455,7 @@ async def _dank(ctx: lightbulb.Context) -> None:
     await ctx.respond("Unlocking dank memer category")
 
     channels = [834266950720290848, 834266997025406996, 927064797219000330, 927065062672306176, 851315417334677514]
-    role = 888028007783100426
+    role = 832105614577631232
 
     await lockdown_unlockdown(ctx, "unlock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
@@ -469,7 +469,7 @@ async def _karuta(ctx: lightbulb.Context) -> None:
     await ctx.respond("Unlocking karuta category")
 
     channels = [973789884722606080, 924243183209185280, 972472890077351996, 973788657486020648, 973791488469245952]
-    role = 973792910774509698
+    role = 832105614577631232
 
     await lockdown_unlockdown(ctx, "unlock", channels, role, hikari.Permissions.SEND_MESSAGES)
     
