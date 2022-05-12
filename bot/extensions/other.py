@@ -47,7 +47,7 @@ async def _vote(ctx: lightbulb.Context) -> None:
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _info(ctx: lightbulb.Context) -> None:
     embed = hikari.Embed(
-        title = "Information",
+        title = "Information about this bot",
         color = bot_config['color']['default'],
         description = """➪ **Developer:** 09ghostrider#9999
 ➪ **Server:** https://discord.gg/1vs
