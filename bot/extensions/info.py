@@ -181,7 +181,7 @@ Note: All perks last until you leave."""
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _dkrules(ctx: lightbulb.Context) -> None:
     embed = hikari.Embed(
-        title = "Level Perks",
+        title = "Rules and Information",
         color = bot_config['color']['default'],
         description = """This is a list of the rules and information needed in order to get access to this category. Please comply with them. You must also follow the rules of the server in <#832107000589844491>"""
     )
