@@ -49,6 +49,27 @@ async def _banner(ctx: lightbulb.Context) -> None:
 async def _appeal(ctx: lightbulb.Context) -> None:
     await ctx.respond("https://discord.gg/d4BwBUgSZK")
 
+@plugin.command()
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD))
+@lightbulb.option("text", "the embed content", required=True, modifier=lightbulb.commands.base.OptionModifier(3))
+@lightbulb.option("channel", "the channel to send the embed in", type=hikari.GuildChannel, required=False, default=None)
+@lightbulb.command("embed", "Creates an embed with the specified color in the specified channel, separate the title from the description with |")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _embed(ctx: lightbulb.Context) -> None:
+    channel = ctx.options.channel
+    text = ctx.options.text
+
+    if not channel:
+        cid = ctx.event.message.channel_id
+    else:
+        cid = channel.id
+    
+    title, description = text.split("|", 1)
+
+    embed = hikari.Embed(title=title, description=description, color=bot_config['color']['default'])
+    await ctx.app.rest.create_message(cid, embed=embed)
+
+
 def load(bot):
     bot.add_plugin(plugin)
 
