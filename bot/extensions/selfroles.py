@@ -250,9 +250,9 @@ async def _dankaccess(ctx: lightbulb.Context) -> None:
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-@lightbulb.command("karutaaccess", "sends the dank access embed")
+@lightbulb.command("karutaaccess", "sends the karuta access embed")
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _dankaccess(ctx: lightbulb.Context) -> None:
+async def _karutaccess(ctx: lightbulb.Context) -> None:
     if ctx.event.message.channel_id != 974227197181173760:
         return await ctx.respond("This command can only be used in <#974227197181173760>", reply=True)
 

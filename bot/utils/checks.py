@@ -16,9 +16,14 @@ with open("./configs/config.json") as f:
 
 @lightbulb.Check
 def botban_check(ctx: lightbulb.Context) -> None:
+    try:
+        user_id = int(ctx.event.message.author.id)
+    except:
+        user_id = int(ctx.interaction.user.id)
+
     cluster = MongoClient(mongoclient)
     banned_users = cluster["owner"]["botban"]
-    banned = banned_users.find_one({"user_id": int(ctx.event.message.author.id)})
+    banned = banned_users.find_one({"user_id": user_id})
 
     if not banned:
         return True
