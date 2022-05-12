@@ -95,7 +95,7 @@ async def _dperks(ctx: lightbulb.Context) -> None:
 
 <@&851631453414359071> - Access to the `&snipe` and `&afk` command.
 
-<@&851631177085222952 > - Private channel with 3 people.
+<@&851631177085222952> - Private channel with 3 people.
 
 <@&851631180336070739> - Auto react
 
