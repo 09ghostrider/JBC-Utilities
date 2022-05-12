@@ -60,83 +60,23 @@ async def _snipe(ctx: lightbulb.Context) -> None:
     if snipe_list == []:
         return await ctx.respond("Nothing was deleted recently", reply=True)
     
-    try:
-        data = snipe_list[(index - 1)]
-    except:
-        return await ctx.respond("Nothing was deleted recently", reply=True)
-    
-    embed = hikari.Embed(
-        color = bot_config['color']['default']
-    )
-    embed.set_author(name=f"{data['user']} ({data['id']})", icon=data['avatar'])
-    embed.timestamp = data['time']
-    embed.set_footer(text = f"# {channel.name}")
-
-    if data['content'] != None:
-        embed.description = data['content']
-    
-    if data['attachment'] != None:
-        embed.set_image(data['attachment'])
-
-    await ctx.respond(embed=embed)
-
-@_snipe.child
-@lightbulb.option("channel", "the channel to snipe messages from", required=False, default=None, type=hikari.GuildChannel)
-@lightbulb.command("list", "shows a lost of deleted messages in the channel", inherit_checks=True)
-@lightbulb.implements(lightbulb.PrefixSubCommand)
-async def _list(ctx: lightbulb.Context) -> None:
-    channel = ctx.options.channel
-
-    if not channel:
-        channel_id = ctx.event.message.channel_id
-        channel = ctx.get_channel()
-    else:
-        channel_id = channel.id
-    
-    try:
-        snipe_list = snipe_data[str(channel_id)]
-    except:
-        return await ctx.respond("Nothing was deleted recently", reply=True)
-    
-    if snipe_list == []:
-        return await ctx.respond("Nothing was deleted recently", reply=True)
-    
     pages = []
-    page_limit = 10
-    count = 0
+    for data in snipe_list:
+        embed = hikari.Embed(
+            color = bot_config['color']['default']
+        )
+        embed.set_author(name=f"{data['user']} ({data['id']})", icon=data['avatar'])
+        embed.timestamp = data['time']
+        embed.set_footer(text = f"# {channel.name}")
 
-    total_pages1 = len(snipe_list) % page_limit
-    if total_pages1 == 0:
-        total_pages = round(len(snipe_list) / page_limit)
-    else:
-        total_pages = round((len(snipe_list) // page_limit) + 1)
-    
-    for n1 in range(0, total_pages):
-        embed=hikari.Embed(color=bot_config['color']['default'])
-        embed.set_footer(text=f"# {channel.name}")
-        for n2 in range(0, page_limit):
-            try:
-                c = snipe_list[count]['content']
-                a = snipe_list[count]['attachment']
-                
-                if not a:
-                    value = c
-                else:
-                    if not c:
-                        value = f"[attachment]({a})"
-                    else:
-                        value = f"{c} + [attachment]({a})"
-
-                value += f" - <t:{round((snipe_list[count]['time']).timestamp())}:R>"
-
-                embed.add_field(name=f"{snipe_list[count]['user']} ({snipe_list[count]['id']})", value=value, inline=False)
-                count += 1
-                
-            except:
-                pass
+        if data['content'] != None:
+            embed.description = data['content']
+        
+        if data['attachment'] != None:
+            embed.set_image(data['attachment'])
         pages.append(embed)
 
-    navigator = nav.NavigatorView(pages=pages, buttons=[miru.ext.nav.buttons.NextButton(style=hikari.ButtonStyle.PRIMARY, emoji=hikari.Emoji.parse(bot_config['emoji']['blue_arrowL'])), miru.ext.nav.buttons.StopButton(style=hikari.ButtonStyle.PRIMARY, emoji=hikari.Emoji.parse(bot_config['emoji']['cross'])), miru.ext.nav.buttons.PrevButton(style=hikari.ButtonStyle.PRIMARY, emoji=hikari.Emoji.parse(bot_config['emoji']['blue_arrowR']))])
+    navigator = nav.NavigatorView(pages=pages, buttons=[miru.ext.nav.buttons.NextButton(style=hikari.ButtonStyle.PRIMARY, emoji=hikari.Emoji.parse(bot_config['emoji']['blue_arrowL'])), miru.ext.nav.buttons.StopButton(style=hikari.ButtonStyle.DANGER, emoji=hikari.Emoji.parse(bot_config['emoji']['cross'])), miru.ext.nav.buttons.PrevButton(style=hikari.ButtonStyle.PRIMARY, emoji=hikari.Emoji.parse(bot_config['emoji']['blue_arrowR']))])
     await navigator.send(channel_id)
 
 
