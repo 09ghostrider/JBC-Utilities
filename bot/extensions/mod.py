@@ -250,10 +250,7 @@ async def lockdown_unlockdown(ctx:lightbulb.Context, lorul:str, channels:list, r
         await c.send(embed=embed)
 
 async def perms(ctx:lightbulb.Context, lorul:str, cid:int, rid:int, p):
-    if lorul == "lock":
-        reason = f"Action requested by {ctx.event.message.author} ({ctx.event.message.author.id})"
-    elif lorul == "unlock":
-        reason = f"Action requested by {ctx.event.message.author} ({ctx.event.message.author.id})"
+    reason = f"Action requested by {ctx.event.message.author} ({ctx.event.message.author.id})"
 
     c = await ctx.app.rest.fetch_channel(cid)
     perms = c.permission_overwrites
