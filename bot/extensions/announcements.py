@@ -130,7 +130,6 @@ async def _heist(ctx: lightbulb.Context) -> None:
         pass
 
     await ctx.respond(f"{ctx.event.message.author.mention} please begin the heist", user_mentions=True)
-    start_time = datetime.datetime.now(tz=datetime.timezone.utc)
 
     try:
         event = await ctx.app.wait_for(hikari.GuildMessageCreateEvent, timeout=300, predicate=heist_check(ctx))
