@@ -121,7 +121,7 @@ async def _heist(ctx: lightbulb.Context) -> None:
     try:
         event = await ctx.app.wait_for(
             hikari.GuildMessageCreateEvent, 
-            timeout = 5, 
+            timeout = 300, 
             predicate = lambda event: (
                 event.guild_id == ctx.event.message.guild_id 
                 and event.message.channel_id == ctx.event.message.channel_id
