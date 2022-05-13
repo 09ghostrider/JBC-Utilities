@@ -34,21 +34,8 @@ async def _gping(ctx: lightbulb.Context) -> None:
     text = "" if not ctx.options.message else f": {ctx.options.message}"
     await ctx.respond(f"<@&850991787593302016>{text}", role_mentions=True)
 
-def heist_check(event: hikari.GuildMessageCreateEvent, ctx: lightbulb.Context) -> None:
-    if event.message.guild_id != ctx.event.message.guild_id and event.message.channel_id != ctx.event.message.channel_id:
-        return False
-    if event.message.author.id != 270904126974590976:
-        return False
-    embeds = ctx.event.message.embeds
-    if embeds == []:
-        return False
-    
-    e1 = embeds[0]
-    if e1.title == f"**{ctx.event.message.author.username}** is starting a bank robbery":
-        return True
-    return False
-
 @plugin.command()
+@lightbulb.add_cooldown(300, 1, lightbulb.cooldowns.GuildBucket)
 @lightbulb.add_checks(lightbulb.has_roles(901767319716524085, 832108259221307392, mode=any) | lightbulb.owner_only)
 @lightbulb.option("message", "donors message", required=True, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.option("requirements", "the requirements for this giveaway", required=False, type=hikari.Role, modifier=lightbulb.commands.base.OptionModifier(2))
@@ -132,7 +119,18 @@ async def _heist(ctx: lightbulb.Context) -> None:
     await ctx.respond(f"{ctx.event.message.author.mention} please begin the heist", user_mentions=True)
 
     try:
-        event = await ctx.app.wait_for(hikari.GuildMessageCreateEvent, timeout=300, predicate=heist_check(ctx))
+        event = await ctx.app.wait_for(
+            hikari.GuildMessageCreateEvent, 
+            timeout = 5, 
+            predicate = lambda event: (
+                event.guild_id == ctx.event.message.guild_id 
+                and event.message.channel_id == ctx.event.message.channel_id
+                and event.author_id == 270904126974590976
+                and ctx.event.message.embeds != []
+                and ctx.event.message.embeds[0].title == f"**{ctx.event.message.author.username}** is starting a bank robbery"
+            )
+        )
+
     except asyncio.TimeoutError:
         await ctx.respond("No heist delected, resettings channel.")
         if reqs != []:
