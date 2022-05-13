@@ -17,7 +17,7 @@ with open("./configs/config.json") as f:
     bot_config = json.load(f)
 
 @plugin.command()
-@lightbulb.add_cooldown(300, 1, lightbulb.cooldowns.GuildBucket())
+# @lightbulb.add_cooldown(300, 1, lightbulb.cooldowns.GuildBucket())
 @lightbulb.add_checks(lightbulb.has_roles(832111569764352060) | lightbulb.owner_only)
 @lightbulb.option("message", "message to include while pinging", required=False, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.command("gping", "ping the giveaway ping role")
