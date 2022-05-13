@@ -118,26 +118,29 @@ async def _heist(ctx: lightbulb.Context) -> None:
 
     await ctx.respond(f"{ctx.event.message.author.mention} please begin the heist", user_mentions=True)
 
-    try:
-        event = await ctx.app.wait_for(
-            hikari.GuildMessageCreateEvent, 
-            timeout = 300, 
-            predicate = lambda event: (
-                event.guild_id == ctx.event.message.guild_id 
-                and event.message.channel_id == ctx.event.message.channel_id
-                and event.author_id == 270904126974590976
-                and ctx.event.message.embeds != []
-                # and ctx.event.message.embeds[0].title.endswith(" is starting a bank robbery")
+    while True:
+        try:
+            event = await ctx.app.wait_for(
+                hikari.GuildMessageCreateEvent, 
+                timeout = 300, 
+                predicate = lambda event: (
+                    event.guild_id == ctx.event.message.guild_id 
+                    and event.message.channel_id == ctx.event.message.channel_id
+                    and event.author_id == 270904126974590976
+                )
             )
-        )
-    
-    except asyncio.TimeoutError:
-        await ctx.respond("No heist delected, resettings channel.")
-        if reqs != []:
-            await edit_perms(ctx, "unlock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
-            for r in reqs:
-                await ctx.bot.rest.delete_permission_overwrite(channel=ctx.event.message.channel_id, target=r)
-        return await ctx.respond("Channel reset comepete, ready for next heist.")
+            msg = await ctx.app.rest.fetch_message(ctx.channel_id, event.message.id)
+            if msg.embeds != []:
+                if msg.embeds[0].title == f"**{ctx.event.message.author.username}** is starting a bank robbery":
+                    break
+
+        except asyncio.TimeoutError:
+            await ctx.respond("No heist delected, resettings channel.")
+            if reqs != []:
+                await edit_perms(ctx, "unlock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
+                for r in reqs:
+                    await edit_perms(ctx, "reset", ctx.event.message.channel_id, r.id, hikari.Permissions.VIEW_CHANNEL)
+            return await ctx.respond("Channel reset comepete, ready for next heist.")
     
     await ctx.respond("Heist detected!")
     await asyncio.sleep(90)
