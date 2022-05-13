@@ -38,13 +38,11 @@ def perms_check(ctx: lightbulb.Context) -> None:
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR) | perms_check)
-@lightbulb.option("index", "the index of the message to snipe", required=False, default=1, type=int)
 @lightbulb.option("channel", "the channel to snipe messages from", required=False, default=None, type=hikari.GuildChannel)
 @lightbulb.command("snipe", "snipe a deleted message", aliases=['sniper'])
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _snipe(ctx: lightbulb.Context) -> None:
     channel = ctx.options.channel
-    index = ctx.options.index
 
     if not channel:
         channel_id = ctx.event.message.channel_id
@@ -77,7 +75,7 @@ async def _snipe(ctx: lightbulb.Context) -> None:
         pages.append(embed)
 
     navigator = nav.NavigatorView(pages=pages, buttons=[miru.ext.nav.buttons.PrevButton(style=hikari.ButtonStyle.PRIMARY, emoji=hikari.Emoji.parse(bot_config['emoji']['blue_arrowL'])), miru.ext.nav.buttons.StopButton(style=hikari.ButtonStyle.DANGER, emoji=hikari.Emoji.parse(bot_config['emoji']['cross'])), miru.ext.nav.buttons.NextButton(style=hikari.ButtonStyle.PRIMARY, emoji=hikari.Emoji.parse(bot_config['emoji']['blue_arrowR']))])
-    await navigator.send(channel_id)
+    await navigator.send(ctx.event.message.channel_id)
 
 
 @plugin.listener(hikari.GuildMessageDeleteEvent)
