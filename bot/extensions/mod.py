@@ -9,6 +9,7 @@ import os
 from dotenv import load_dotenv
 import json
 from bot.utils.checks import botban_check, jbc_server_check
+from bot.utils.funcs import edit_perms
 
 plugin = lightbulb.Plugin("mod")
 plugin.add_checks(lightbulb.guild_only)
@@ -249,37 +250,6 @@ async def lockdown_unlockdown(ctx:lightbulb.Context, lorul:str, channels:list, r
 
         await c.send(embed=embed)
 
-async def perms(ctx:lightbulb.Context, lorul:str, cid:int, rid:int, p):
-    reason = f"Action requested by {ctx.event.message.author} ({ctx.event.message.author.id})"
-
-    c = await ctx.app.rest.fetch_channel(cid)
-    perms = c.permission_overwrites
-    try:
-        perm = perms[rid]
-        allow = perm.allow
-        deny = perm.deny
-    except KeyError:
-        allow = hikari.Permissions.NONE
-        deny = hikari.Permissions.NONE
-
-    if lorul == "lock":
-            allow &= ~p
-            deny |= p
-    elif lorul == "unlock":
-        deny &= ~p
-        allow |= p
-    elif lorul == "reset":
-        deny &= ~p
-    
-    await ctx.app.rest.edit_permission_overwrites(
-        channel = cid,
-        target = rid,
-        allow = allow,
-        deny = deny,
-        reason = reason,
-        target_type = hikari.PermissionOverwriteType.ROLE
-    )
-
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
 @lightbulb.option("role", "the role lock the channel for", type=hikari.Role, required=False, default=None)
@@ -300,7 +270,7 @@ async def _lock(ctx: lightbulb.Context) -> None:
     else:
         channel_id = channel.id
     
-    await perms(ctx, "lock", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
+    await edit_perms(ctx, "lock", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
 
     await ctx.respond(f"Locked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
 
@@ -324,7 +294,7 @@ async def _unlock(ctx: lightbulb.Context) -> None:
     else:
         channel_id = channel.id
     
-    await perms(ctx, "reset", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
+    await edit_perms(ctx, "reset", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
 
     await ctx.respond(f"Unlocked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
 
@@ -348,7 +318,7 @@ async def _viewlock(ctx: lightbulb.Context) -> None:
     else:
         channel_id = channel.id
     
-    await perms(ctx, "lock", channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
+    await edit_perms(ctx, "lock", channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
 
     await ctx.respond(f"View locked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
 
@@ -372,7 +342,7 @@ async def _viewunlock(ctx: lightbulb.Context) -> None:
     else:
         channel_id = channel.id
     
-    await perms(ctx, "unlock", channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
+    await edit_perms(ctx, "unlock", channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
 
     await ctx.respond(f"View unlocked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
 

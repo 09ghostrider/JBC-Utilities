@@ -21,7 +21,7 @@ async def _perks(ctx: lightbulb.Context) -> None:
     embed = hikari.Embed(
         title = "Server Perks",
         color = bot_config['color']['default'],
-        description = """<#926112960315793458> contains all of the perks for donating/invensting in the server.
+        description = """<#926112960315793458> contains all of the perks in the server.
 Click the buttons below to jump to the respective perks.
 Thank you for donating or investing in this server."""
     )
@@ -177,7 +177,7 @@ Note: All perks last until you leave."""
         pass
 
 @plugin.command()
-@lightbulb.command("dkrules", "rules and information for dank and karuta categories")
+@lightbulb.command("drules", "rules and information for dank memer")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _dkrules(ctx: lightbulb.Context) -> None:
     embed = hikari.Embed(

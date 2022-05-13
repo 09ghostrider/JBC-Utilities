@@ -37,6 +37,8 @@ async def on_error(event: lightbulb.CommandErrorEvent) -> None:
         embed.description = f"> This command can only be used in a guild"
     # elif isinstance(exception, TypeError):
     #     embed.description = "> Invalid option type"
+    elif isinstance(exception, hikari.BadRequestError):
+        return
     else:
         embed.description = f">>> There was a error with this command\n{exception}"
         e = True
