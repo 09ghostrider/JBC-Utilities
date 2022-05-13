@@ -64,7 +64,7 @@ async def _snipe(ctx: lightbulb.Context) -> None:
         embed = hikari.Embed(
             color = bot_config['color']['default']
         )
-        embed.set_author(name=f"{data['user']} ({data['id']})", icon=data['avatar'])
+        embed.set_author(name=f"{data['user']}", icon=data['avatar'])
         embed.timestamp = data['time']
         embed.set_footer(text = f"# {channel.name}")
 
@@ -105,13 +105,12 @@ async def _snipe(ctx: lightbulb.Context) -> None:
         embed = hikari.Embed(
             color = bot_config['color']['default']
         )
-        embed.set_author(name=f"{data['user']} ({data['id']})", icon=data['avatar'])
+        embed.set_author(name=f"{data['user']}", icon=data['avatar'])
         embed.timestamp = data['time']
         embed.set_footer(text = f"# {channel.name}")
-        embed.add_field(name="Old message", value=str(data['old']))
-        embed.add_field(name="New message", value=str(data['new']))
-        embed.description = f"[Jump to message]({data['url']})"
-
+        embed.add_field(name="Old content", value=str(data['old']))
+        embed.add_field(name="New content", value=str(data['new']))
+        embed.description = f"[Jump To Message]({data['url']})"
         pages.append(embed)
 
     navigator = nav.NavigatorView(pages=pages, buttons=[miru.ext.nav.buttons.PrevButton(style=hikari.ButtonStyle.PRIMARY, emoji=hikari.Emoji.parse(bot_config['emoji']['blue_arrowL'])), miru.ext.nav.buttons.StopButton(style=hikari.ButtonStyle.DANGER, emoji=hikari.Emoji.parse(bot_config['emoji']['cross'])), miru.ext.nav.buttons.NextButton(style=hikari.ButtonStyle.PRIMARY, emoji=hikari.Emoji.parse(bot_config['emoji']['blue_arrowR']))])
