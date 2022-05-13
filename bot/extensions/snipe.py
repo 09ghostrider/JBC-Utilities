@@ -106,7 +106,7 @@ async def _snipe(ctx: lightbulb.Context) -> None:
             color = bot_config['color']['default']
         )
         embed.set_author(name=f"{data['user']} ({data['id']})", icon=data['avatar'])
-        embed.timestamp = datetime.datetime.fromtimestamp(int(data['time']), tz=datetime.datetime.utc)
+        embed.timestamp = data['time']
         embed.set_footer(text = f"# {channel.name}")
         embed.add_field(name="Old message", value=str(data['old']))
         embed.add_field(name="New message", value=str(data['new']))
