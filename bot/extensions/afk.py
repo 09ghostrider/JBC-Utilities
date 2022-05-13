@@ -108,7 +108,7 @@ async def _set(ctx: lightbulb.Context) -> None:
 @_afk.child
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS))
 @lightbulb.option("channel", "The channel to ignore", modifier=lightbulb.commands.base.OptionModifier(3), type=hikari.GuildChannel, required=False, default=None)
-@lightbulb.command("ignore", "Use in a channel to not return from AFK when talking in that channel.", inherit_checks=False, aliases=["i"])
+@lightbulb.command("ignore", "Use in a channel to not return from AFK when talking in that channel.", inherit_checks=False)
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _ignore(ctx: lightbulb.Context) -> None:
     c = ctx.options.channel
@@ -177,7 +177,7 @@ async def _ignored(ctx: lightbulb.Context) -> None:
 @_afk.child
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS))
 @lightbulb.option("member", "The member to clear AFK status", type=hikari.Member)
-@lightbulb.command("clear", "Remove the AFK status of a member.", inherit_checks=False, aliases=["c"])
+@lightbulb.command("clear", "Remove the AFK status of a member.", inherit_checks=False)
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _clear(ctx: lightbulb.Context) -> None:
     await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
