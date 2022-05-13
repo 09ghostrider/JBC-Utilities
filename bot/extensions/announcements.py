@@ -127,7 +127,7 @@ async def _heist(ctx: lightbulb.Context) -> None:
                 and event.message.channel_id == ctx.event.message.channel_id
                 and event.author_id == 270904126974590976
                 and ctx.event.message.embeds != []
-                and (ctx.event.message.embeds[0].title).endswith(" is starting a bank robbery")
+                # and ctx.event.message.embeds[0].title.endswith(" is starting a bank robbery")
             )
         )
     
