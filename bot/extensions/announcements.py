@@ -65,9 +65,9 @@ async def _heist(ctx: lightbulb.Context) -> None:
     reqs = ctx.options.requirements
     message = ctx.options.message
 
-    dankaccess = ctx.event.message.guild_id
-    heistping = 910708265426513951
-    duration = 5
+    dankaccess = 888028007783100426
+    heistping = 951694220345880596
+    duration = 60
 
     try:
         amount = int(amount)
