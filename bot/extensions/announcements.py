@@ -127,16 +127,16 @@ async def _heist(ctx: lightbulb.Context) -> None:
                 and event.message.channel_id == ctx.event.message.channel_id
                 and event.author_id == 270904126974590976
                 and ctx.event.message.embeds != []
-                and ctx.event.message.embeds[0].title == f"**{ctx.event.message.author.username}** is starting a bank robbery"
+                and (ctx.event.message.embeds[0].title).endswith(" is starting a bank robbery")
             )
         )
-
+    
     except asyncio.TimeoutError:
         await ctx.respond("No heist delected, resettings channel.")
         if reqs != []:
             await edit_perms(ctx, "unlock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
             for r in reqs:
-                await edit_perms(ctx, "reset", ctx.event.message.channel_id, r.id, hikari.Permissions.VIEW_CHANNEL)
+                await ctx.bot.rest.delete_permission_overwrite(channel=ctx.event.message.channel_id, target=r)
         return await ctx.respond("Channel reset comepete, ready for next heist.")
     
     await ctx.respond("Heist detected!")
@@ -145,7 +145,7 @@ async def _heist(ctx: lightbulb.Context) -> None:
     if reqs != []:
         await edit_perms(ctx, "unlock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
         for r in reqs:
-            await edit_perms(ctx, "reset", ctx.event.message.channel_id, r.id, hikari.Permissions.VIEW_CHANNEL)
+            await ctx.bot.rest.delete_permission_overwrite(channel=ctx.event.message.channel_id, target=r)
     await ctx.respond("Channel reset comepete, ready for next heist.")
 
 def load(bot):
