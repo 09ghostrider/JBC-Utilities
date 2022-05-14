@@ -369,7 +369,7 @@ async def _show(ctx: lightbulb.Context) -> None:
 
 @_donation.child
 @lightbulb.option("item", "the item to check the value of", required=True, type=str)
-@lightbulb.command("value", "check the item value")
+@lightbulb.command("value", "check the item value", aliases=['check', 'price'])
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _value(ctx: lightbulb.Context) -> None:
     item = ctx.options.item.lower()
@@ -401,7 +401,7 @@ async def _value(ctx: lightbulb.Context) -> None:
 @lightbulb.option("aliases", "aliases for this item", type=str, modifier=lightbulb.commands.base.OptionModifier(2))
 @lightbulb.option("value", "the value of the item", type=str)
 @lightbulb.option("item", "the item to add", type=str)
-@lightbulb.command("add", "add a item to the item list", aliases=['+'])
+@lightbulb.command("itemadd", "add a item to the item list", aliases=['ia'])
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _add(ctx: lightbulb.Context) -> None:
     newitem = ctx.options.item.lower()
@@ -471,7 +471,7 @@ async def _add(ctx: lightbulb.Context) -> None:
     
 @_donation.child
 @lightbulb.option("item", "the item to remove", required=True, type=str)
-@lightbulb.command("remove", "remove a item from item list", aliases=['-'])
+@lightbulb.command("itemremove", "remove a item from item list", aliases=['ir'])
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _remove(ctx: lightbulb.Context) -> None:
     item = ctx.options.item.lower()
