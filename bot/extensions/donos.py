@@ -367,6 +367,125 @@ async def _show(ctx: lightbulb.Context) -> None:
 
     await ctx.respond(embed=embed, reply=True)
 
+@_donation.child
+@lightbulb.option("item", "the item to check the value of", required=True, type=str)
+@lightbulb.command("value", "check the item value")
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _value(ctx: lightbulb.Context) -> None:
+    item = ctx.options.item.lower()
+
+    cluster = MongoClient(mongoclient)
+    itemlist = cluster["donations"]["itemlist"]
+
+    itemdata = itemlist.find_one({"name": item})
+
+    if not itemdata:
+        items = itemlist.find()
+        for item in items:
+            if item in item['aliases']:
+                itemdata = item
+                break
+        return await ctx.respond(hikari.Embed(description=f"""Item with name or aliase "{item}" not found.""", color=bot_config['color']['default']), reply=True)
+    
+    embed = hikari.Embed(
+        title = f"Item Value",
+        color = bot_config['color']['default'],
+        description = f"""{bot_config['emoji']['blue_arrow2']} **Item:** `{itemdata['name']}`
+{bot_config['emoji']['blue_arrow2']} **Value:** `⏣ {int(itemdata['value']):,}`
+{bot_config['emoji']['blue_arrow2']} **Aliases: {(str(itemdata['aliases'])[1:][:-1]).replace("'", "`")}"""
+    )
+    await ctx.respond(embed=embed)
+
+@_donation.child
+@lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.option("aliases", "aliases for this item", type=str, modifier=lightbulb.commands.base.OptionModifier(2))
+@lightbulb.option("value", "the value of the item", type=str)
+@lightbulb.option("item", "the item to add", type=str)
+@lightbulb.command("add", "add a item to the item list", aliases=['+'])
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _add(ctx: lightbulb.Context) -> None:
+    newitem = ctx.options.item.lower()
+    value = ctx.options.value
+    aliases = ctx.options.aliases
+
+    try:
+        value = int(value)
+    except:
+        try:
+            if "e" in value:
+                first_digit, how_many_zeros = value.split("e")
+                value = int(f"{first_digit}{'0' * int(how_many_zeros)}")
+            else:
+                await ctx.respond("Invalid value", reply=True, flags=ephemeral)
+                return
+        except:
+            await ctx.respond("Invalid value", reply=True, flags=ephemeral)
+            return
+
+    if value <= 0:
+        await ctx.respond("Invalid value", reply=True, flags=ephemeral)
+        return
+    
+    if newitem in aliases:
+        aliases.pop(aliases.index(newitem))
+    
+    cluster = MongoClient(mongoclient)
+    itemlist = cluster["donations"]["itemlist"]
+
+    itemdata = itemlist.find_one({"name": newitem})
+
+    if itemdata:
+        return await ctx.respond(hikari.Embed(description=f"""Item with name or aliase "{newitem}" already exists.""", color=bot_config['color']['default']), reply=True)
+
+    
+    items = itemlist.find()
+    item_l = []
+    for item in items:
+        item_l.append(item['name'])
+        for i in item['aliases']:
+            item_l.append(i)
+    
+    if newitem in item_l:
+        return await ctx.respond(hikari.Embed(description=f"""Item with name or aliase "{newitem}" already exists.""", color=bot_config['color']['default']), reply=True)
+    
+    for item in aliases:
+        if item in item_l:
+            return await ctx.respond(hikari.Embed(description=f"""Item with name or aliase "{item}" already exists.""", color=bot_config['color']['default']), reply=True)
+
+    itemdata = {
+        "name": newitem,
+        "value": value,
+        "aliases": aliases
+    }
+
+    itemlist.insert_one(itemdata)
+
+    embed = hikari.Embed(
+        title = f"New Item Value",
+        color = bot_config['color']['default'],
+        description = f"""{bot_config['emoji']['blue_arrow2']} **Item:** `{itemdata['name']}`
+{bot_config['emoji']['blue_arrow2']} **Value:** `⏣ {int(itemdata['value']):,}`
+{bot_config['emoji']['blue_arrow2']} **Aliases: {(str(itemdata['aliases'])[1:][:-1]).replace("'", "`")}"""
+    )
+    await ctx.respond(embed=embed)
+    
+@_donation.child
+@lightbulb.option("item", "the item to remove", required=True, type=str)
+@lightbulb.command("remove", "remove a item from item list", aliases=['-'])
+@lightbulb.implements(lightbulb.PrefixSubCommand)
+async def _remove(ctx: lightbulb.Context) -> None:
+    item = ctx.options.item.lower()
+
+    cluster = MongoClient(mongoclient)
+    itemlist = cluster["donations"]["itemlist"]
+    
+    itemdata = itemlist.find_one({"name": item})
+
+    if not itemdata:
+        return await ctx.respond(hikari.Embed(description=f"""Item with name "{item}" not found.""", color=bot_config['color']['default']), reply=True)
+
+    itemlist.delete_one({"name": item})
+    return await ctx.respond(hikari.Embed(description=f"""Deleted "{item}".""", color=bot_config['color']['default']), reply=True)
 
 def load(bot):
     bot.add_plugin(plugin)
