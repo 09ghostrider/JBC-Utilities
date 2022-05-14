@@ -47,9 +47,13 @@ async def _donation(ctx: lightbulb.Context) -> None:
 
 Usage: -donation [subcommand]
     """, color=random.randint(0x0, 0xffffff))
-    embed.add_field(name="== Subcommands ==", value="""- remove - remove a members donation note
-- show - check the notes of a member
-- add - add amount to a members donation""")
+    embed.add_field(name="== Subcommands ==", value="""- show - check the notes of a member
+- value - check the item value
+- itemadd - add a item to the item list
+- itemremove - remove a item from item list
+- remove - remove a members donation note
+- add - add amount to a members donation
+- edit - edit a note of a member""")
     await ctx.respond(embed=embed)
 
 @_donation.child
@@ -381,9 +385,9 @@ async def _value(ctx: lightbulb.Context) -> None:
 
     if not itemdata:
         items = itemlist.find()
-        for item in items:
-            if item in item['aliases']:
-                itemdata = item
+        for i in items:
+            if item in i['aliases']:
+                itemdata = i
                 break
         return await ctx.respond(hikari.Embed(description=f"""Item with name or aliase "{item}" not found.""", color=bot_config['color']['default']), reply=True)
     
@@ -392,13 +396,13 @@ async def _value(ctx: lightbulb.Context) -> None:
         color = bot_config['color']['default'],
         description = f"""{bot_config['emoji']['blue_arrow2']} **Item:** `{itemdata['name']}`
 {bot_config['emoji']['blue_arrow2']} **Value:** `⏣ {int(itemdata['value']):,}`
-{bot_config['emoji']['blue_arrow2']} **Aliases: {(str(itemdata['aliases'])[1:][:-1]).replace("'", "`")}"""
+{bot_config['emoji']['blue_arrow2']} **Aliases:** {(str(itemdata['aliases'])[1:][:-1]).replace("'", "`")}"""
     )
     await ctx.respond(embed=embed)
 
 @_donation.child
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-@lightbulb.option("aliases", "aliases for this item", type=str, modifier=lightbulb.commands.base.OptionModifier(2))
+@lightbulb.option("aliases", "aliases for this item", type=str, modifier=lightbulb.commands.base.OptionModifier(2), required=False, default=[])
 @lightbulb.option("value", "the value of the item", type=str)
 @lightbulb.option("item", "the item to add", type=str)
 @lightbulb.command("itemadd", "add a item to the item list", aliases=['ia'])
@@ -465,7 +469,7 @@ async def _add(ctx: lightbulb.Context) -> None:
         color = bot_config['color']['default'],
         description = f"""{bot_config['emoji']['blue_arrow2']} **Item:** `{itemdata['name']}`
 {bot_config['emoji']['blue_arrow2']} **Value:** `⏣ {int(itemdata['value']):,}`
-{bot_config['emoji']['blue_arrow2']} **Aliases: {(str(itemdata['aliases'])[1:][:-1]).replace("'", "`")}"""
+{bot_config['emoji']['blue_arrow2']} **Aliases:** {(str(itemdata['aliases'])[1:][:-1]).replace("'", "`")}"""
     )
     await ctx.respond(embed=embed)
     
