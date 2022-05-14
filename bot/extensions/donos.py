@@ -373,7 +373,7 @@ async def _show(ctx: lightbulb.Context) -> None:
 
 @_donation.child
 @lightbulb.option("item", "the item to check the value of", required=True, type=str)
-@lightbulb.command("value", "check the item value", aliases=['check', 'price'])
+@lightbulb.command("value", "check the item value", aliases=['check', 'price', 'v', 'item'])
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _value(ctx: lightbulb.Context) -> None:
     item = ctx.options.item.lower()
