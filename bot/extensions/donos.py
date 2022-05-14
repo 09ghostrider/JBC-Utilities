@@ -381,16 +381,20 @@ async def _value(ctx: lightbulb.Context) -> None:
     cluster = MongoClient(mongoclient)
     itemlist = cluster["donations"]["itemlist"]
 
-    itemdata = itemlist.find_one({"name": item})
+    id = itemlist.find_one({"name": item})
 
-    if not itemdata:
+    if not id:
+        itemdata = None
         items = itemlist.find()
         for i in items:
             if item in i['aliases']:
                 itemdata = i
                 break
-        return await ctx.respond(hikari.Embed(description=f"""Item with name or aliase "{item}" not found.""", color=bot_config['color']['default']), reply=True)
-    
+        if not itemdata:
+            return await ctx.respond(hikari.Embed(description=f"""Item with name or aliase "{item}" not found.""", color=bot_config['color']['default']), reply=True)
+    else:
+        itemdata = id
+
     embed = hikari.Embed(
         title = f"Item Value",
         color = bot_config['color']['default'],
