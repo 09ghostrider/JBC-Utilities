@@ -1243,7 +1243,7 @@ async def _on_bulk_delete(messages: hikari.GuildBulkMessageDeleteEvent) -> None:
     msgs = messages.old_messages
     content = ""
     
-    for msg in msgs.values():
+    for msg in (list(msgs.values())).reverse():
         content += f"\n**{msg.author.username}:** {msg.content}"
     
     data = {
