@@ -1240,7 +1240,7 @@ async def _on_message_delete(message: hikari.GuildMessageDeleteEvent) -> None:
 
 @plugin.listener(hikari.GuildBulkMessageDeleteEvent)
 async def _on_bulk_delete(messages: hikari.GuildBulkMessageDeleteEvent) -> None:
-    msgs = messages.old_messages
+    msgs = (messages.old_messages).reverse()
     content = ""
     
     for msg in msgs.values():
