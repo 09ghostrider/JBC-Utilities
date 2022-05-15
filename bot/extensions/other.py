@@ -41,6 +41,12 @@ async def _vote(ctx: lightbulb.Context) -> None:
     except:
         pass
 
+@plugin.command()
+@lightbulb.command("appeal", "link to the appeal server", aliases=['banappeal', 'appealserver'])
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _appeal(ctx: lightbulb.Context) -> None:
+    await ctx.respond("https://discord.gg/d4BwBUgSZK")
+
 # @plugin.command()
 # @lightbulb.command("info", "info about this bot")
 # @lightbulb.implements(lightbulb.PrefixCommand)

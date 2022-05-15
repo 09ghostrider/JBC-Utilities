@@ -51,12 +51,6 @@ async def _banner(ctx: lightbulb.Context) -> None:
     await ctx.respond(embed=embed, reply=True)
 
 @plugin.command()
-@lightbulb.command("appeal", "link to the appeal server", aliases=['banappeal', 'appealserver'])
-@lightbulb.implements(lightbulb.PrefixCommand)
-async def _appeal(ctx: lightbulb.Context) -> None:
-    await ctx.respond("https://discord.gg/d4BwBUgSZK")
-
-@plugin.command()
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.MANAGE_GUILD))
 @lightbulb.option("text", "the embed content", required=True, modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.option("channel", "the channel to send the embed in", type=hikari.GuildChannel, required=False, default=None)
@@ -1160,7 +1154,7 @@ async def _snipe(ctx: lightbulb.Context) -> None:
         )
         embed.set_author(name=f"{data['user']}", icon=data['avatar'])
         embed.timestamp = data['time']
-        embed.set_footer(text = f"{snipe_list.index(data)+1} / {len(snipe_list)} | # {channel.name}")
+        embed.set_footer(text = f"{snipe_list.index(data)+1} / {len(snipe_list)}")
 
         if data['type'] == "delete":
             if data['content'] != None:
