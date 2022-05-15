@@ -1186,7 +1186,10 @@ async def _on_message_update(message: hikari.GuildMessageUpdateEvent) -> None:
     if not new:
         return
     
-    if new.author.is_bot == True or new.author.is_system == True:
+    try:
+        if new.author.is_bot == True or new.author.is_system == True:
+            return
+    except:
         return
 
     data = {
@@ -1241,9 +1244,13 @@ async def _on_message_delete(message: hikari.GuildMessageDeleteEvent) -> None:
 @plugin.listener(hikari.GuildBulkMessageDeleteEvent)
 async def _on_bulk_delete(messages: hikari.GuildBulkMessageDeleteEvent) -> None:
     msgs = messages.old_messages
-    content = ""
     
-    for msg in (list(msgs.values())).reverse():
+    msgs_list = []
+    for m in msgs.values():
+        msgs_list.append(m)
+
+    content = ""
+    for msg in msgs_list.reverse():
         content += f"\n**{msg.author.username}:** {msg.content}"
     
     data = {
