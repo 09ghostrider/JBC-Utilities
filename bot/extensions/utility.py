@@ -1152,7 +1152,6 @@ async def _snipe(ctx: lightbulb.Context) -> None:
         embed = hikari.Embed(
             color = bot_config['color']['default']
         )
-        embed.set_author(name=f"{data['user']}", icon=data['avatar'])
         embed.timestamp = data['time']
         embed.set_footer(text = f"{snipe_list.index(data)+1} / {len(snipe_list)}")
 
@@ -1162,12 +1161,17 @@ async def _snipe(ctx: lightbulb.Context) -> None:
             if data['attachment'] != None:
                 embed.set_image(data['attachment'])
             embed.title = "Message Deleted"
+            embed.set_author(name=f"{data['user']}", icon=data['avatar'])
         
         elif data['type'] == "edit":
             embed.add_field(name="Old content", value=str(data['old']))
             embed.add_field(name="New content", value=str(data['new']))
-            embed.description = f"[Jump To Message]({data['url']})"
             embed.title = "Message Edited"
+            embed.set_author(name=f"{data['user']}", icon=data['avatar'])
+        
+        elif data['type'] == "purge":
+            embed.title = f"{data['count']} Messages Purged"
+            embed.description = data['content']
 
         pages.append(embed)
 
@@ -1184,8 +1188,6 @@ async def _on_message_update(message: hikari.GuildMessageUpdateEvent) -> None:
     
     if new.author.is_bot == True or new.author.is_system == True:
         return
-    
-    global snipe_data
 
     data = {
         "type": "edit",
@@ -1194,9 +1196,10 @@ async def _on_message_update(message: hikari.GuildMessageUpdateEvent) -> None:
         "avatar": str(new.author.avatar_url),
         "new": new.content,
         "old": old.content,
-        "time": new.edited_timestamp,
-        "url": f"https://discord.com/channels/{new.guild_id}/{new.channel_id}/{new.id}"
+        "time": new.edited_timestamp
     }
+
+    global snipe_data
 
     try:
         snipe_data[str(new.channel_id)] = [data] + snipe_data[str(new.channel_id)]
@@ -1213,21 +1216,44 @@ async def _on_message_delete(message: hikari.GuildMessageDeleteEvent) -> None:
     if msg.author.is_bot == True or msg.author.is_system == True:
         return
 
-    global snipe_data
-
     data = {
         "type": "delete",
         "id": int(msg.author.id),
         "user": str(msg.author),
         "avatar": str(msg.author.avatar_url),
         "content": msg.content,
-        "time": msg.created_at
+        "time": datetime.datetime.now(tz=datetime.timezone.utc)
     }
 
     if msg.attachments != ():
         data['attachment'] = str((msg.attachments[0]).url)
     else:
         data['attachment'] = None
+
+    global snipe_data
+
+    try:
+        snipe_data[str(msg.channel_id)] = [data] + snipe_data[str(msg.channel_id)]
+    except KeyError:
+        snipe_data[str(msg.channel_id)] = []
+        snipe_data[str(msg.channel_id)] = [data] + snipe_data[str(msg.channel_id)]
+
+@plugin.listener(hikari.GuildBulkMessageDeleteEvent)
+async def _on_bulk_delete(messages: hikari.GuildBulkMessageDeleteEvent) -> None:
+    msgs = messages.old_messages
+    content = ""
+    
+    for msg in msgs:
+        content += f"\n**{msg.user}:** {msg.content}"
+    
+    data = {
+        "type": "purge",
+        "content": content,
+        "time": datetime.datetime.now(tz=datetime.timezone.utc),
+        "count": len(msgs)
+    }
+
+    global snipe_data
 
     try:
         snipe_data[str(msg.channel_id)] = [data] + snipe_data[str(msg.channel_id)]

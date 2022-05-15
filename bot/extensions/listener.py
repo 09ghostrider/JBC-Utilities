@@ -52,7 +52,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
         embed=hikari.Embed(description=f"{msg.content}", color=bot_config['color']['default'])
         embed.set_footer(text=f"# {(await msg.fetch_channel()).name}")
         embed.timestamp = msg.created_at
-        embed.set_author(name=f"{msg.author} ({msg.author.id})", icon=str(msg.author.avatar_url))
+        embed.set_author(name=f"{msg.author}", icon=str(msg.author.avatar_url))
 
         await webhook.execute(embed=embed, components=view.build())
 
