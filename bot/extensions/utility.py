@@ -1243,8 +1243,8 @@ async def _on_bulk_delete(messages: hikari.GuildBulkMessageDeleteEvent) -> None:
     msgs = messages.old_messages
     content = ""
     
-    for msg in msgs:
-        content += f"\n**{msg.user}:** {msg.content}"
+    for msg in msgs.values():
+        content += f"\n**{msg.author}:** {msg.content}"
     
     data = {
         "type": "purge",
