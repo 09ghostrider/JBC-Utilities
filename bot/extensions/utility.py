@@ -529,7 +529,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     cluster = MongoClient(mongoclient)
     reacts = cluster["ar"]["react"]
 
-    react = reacts.find_one({"guild": {"$eq": guild_id}, "member": {"$eq": mentions[0].id}})
+    react = reacts.find_one({"guild": guild_id, "member": int((list(mentions.items())[0][1]).id)})
     if react != None:
         e = react["react"]
         if e != []:
@@ -1240,7 +1240,7 @@ async def _on_message_delete(message: hikari.GuildMessageDeleteEvent) -> None:
 
 @plugin.listener(hikari.GuildBulkMessageDeleteEvent)
 async def _on_bulk_delete(messages: hikari.GuildBulkMessageDeleteEvent) -> None:
-    msgs = (messages.old_messages).reverse()
+    msgs = messages.old_messages
     content = ""
     
     for msg in msgs.values():
