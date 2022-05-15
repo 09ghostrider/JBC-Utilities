@@ -1256,10 +1256,10 @@ async def _on_bulk_delete(messages: hikari.GuildBulkMessageDeleteEvent) -> None:
     global snipe_data
 
     try:
-        snipe_data[str(msg.channel_id)] = [data] + snipe_data[str(msg.channel_id)]
+        snipe_data[str(messages.channel_id)] = [data] + snipe_data[str(messages.channel_id)]
     except KeyError:
-        snipe_data[str(msg.channel_id)] = []
-        snipe_data[str(msg.channel_id)] = [data] + snipe_data[str(msg.channel_id)]
+        snipe_data[str(messages.channel_id)] = []
+        snipe_data[str(messages.channel_id)] = [data] + snipe_data[str(messages.channel_id)]
 
 def load(bot):
     bot.add_plugin(plugin)
