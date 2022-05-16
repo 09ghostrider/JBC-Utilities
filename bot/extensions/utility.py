@@ -235,7 +235,6 @@ async def _ignored(ctx: lightbulb.Context) -> None:
 @lightbulb.command("clear", "Remove the AFK status of a member.", inherit_checks=False)
 @lightbulb.implements(lightbulb.PrefixSubCommand)
 async def _clear(ctx: lightbulb.Context) -> None:
-    await ctx.respond(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
     member = ctx.options.member
     user_id = member.id
     guild_id = ctx.event.message.guild_id
@@ -249,10 +248,9 @@ async def _clear(ctx: lightbulb.Context) -> None:
     })
 
     if user_data == None:
-        await ctx.respond(f"{member} is not AFK", reply=True)
-        return
+        return await ctx.respond(f"{member} is not AFK", reply=True)
     
-    afk.delete_one({"id": user_id, "guild": guild_id})
+    afk.delete_one({"_id": user_id, "guild": guild_id})
     await ctx.respond(f"Cleared AFK status of {member}", reply=True)
 
 @plugin.listener(hikari.MessageCreateEvent)
