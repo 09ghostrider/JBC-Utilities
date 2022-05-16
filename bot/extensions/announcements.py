@@ -152,7 +152,7 @@ async def _heist(ctx: lightbulb.Context) -> None:
                     await edit_perms(ctx, "reset", ctx.event.message.channel_id, r.id, hikari.Permissions.VIEW_CHANNEL)
             return await ctx.respond("Channel reset comepete, ready for next heist.")
     
-    heist_detect = await ctx.respond(f"Heist time remaining <t:{round((ctx.event.message.created_at+datetime.timedelta(seconds=90)).timestamp())}:R>.", reply=heist)
+    heist_detect = await ctx.respond(f"Heist time remaining: <t:{round((heist.created_at+datetime.timedelta(seconds=90)).timestamp())}:R>.", reply=heist)
     heist_detect_msg = await heist_detect.message()
 
     await asyncio.sleep(90)
