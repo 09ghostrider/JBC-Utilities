@@ -4,6 +4,7 @@ import random
 import miru
 import json
 import asyncio
+import datetime
 from bot.utils.checks import botban_check, jbc_server_check
 from bot.utils.funcs import edit_perms
 
@@ -151,13 +152,14 @@ async def _heist(ctx: lightbulb.Context) -> None:
                     await edit_perms(ctx, "reset", ctx.event.message.channel_id, r.id, hikari.Permissions.VIEW_CHANNEL)
             return await ctx.respond("Channel reset comepete, ready for next heist.")
     
-    heist_detect = await ctx.respond("Heist time remaining: **90** seconds.", reply=heist)
+    heist_detect = await ctx.respond(f"Heist time remaining <t:{round((ctx.event.message.created_at+datetime.timedelta(seconds=90)).timestamp())}:R>.", reply=heist)
     heist_detect_msg = await heist_detect.message()
 
-    for r in range(18):
-        await asyncio.sleep(5)
-        await heist_detect_msg.edit(f"Heist time remaining: **{90-(r*5)-2}** seconds.")
-    await heist_detect_msg.edit(f"Heist time remaining: Heist ended.")
+    await asyncio.sleep(90)
+    try:
+        await heist_detect_msg.edit(f"Heist time remaining: Heist ended.")
+    except:
+        pass
 
     if reqs != []:
         await edit_perms(ctx, "unlock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
