@@ -54,6 +54,7 @@ async def _heist(ctx: lightbulb.Context) -> None:
 
     dankaccess = 888028007783100426
     heistping = 951694220345880596
+    duration = 60
 
     try:
         amount = int(amount)
@@ -98,16 +99,16 @@ async def _heist(ctx: lightbulb.Context) -> None:
     )
 
     embed_msg = await ctx.respond(embed=embed)
-    ping_msg = await ctx.respond(f"<@&{heistping}> **Heist starting in {60} seconds**", role_mentions=True)
+    ping_msg = await ctx.respond(f"<@&{heistping}> **Heist starting in {duration} seconds**", role_mentions=True)
     ping_msg2 = await ping_msg.message()
 
     await (ping_msg2).add_reaction("⏰")
-    await asyncio.sleep(60)
 
-    for r in range(30):
+    for r in range(int(duration/2)):
         await asyncio.sleep(2)
-        await ping_msg2.edit(f"<@&{heistping}> **Heist starting in {60-(r*2)} seconds**", role_mentions=True)
-    
+        await ping_msg2.edit(f"<@&{heistping}> Heist starting in **{duration-(r*2)-2}** seconds!", role_mentions=True)
+    await ping_msg2.edit(f"<@&{heistping}> Heist starting!", role_mentions=True)
+
     if reqs != []:
         await edit_perms(ctx, "lock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
         for r in reqs:
@@ -153,11 +154,11 @@ async def _heist(ctx: lightbulb.Context) -> None:
     heist_detect = await ctx.respond("Heist time remaining: **90** seconds.", reply=heist)
     heist_detect_msg = await heist_detect.message()
 
-    for r in range(45):
-        await asyncio.sleep(2)
-        await heist_detect_msg.edit(f"Heist time remaining: **{90-(r*2)}** seconds.")
+    for r in range(18):
+        await asyncio.sleep(5)
+        await heist_detect_msg.edit(f"Heist time remaining: **{90-(r*5)-2}** seconds.")
+    await heist_detect_msg.edit(f"Heist time remaining: Heist ended.")
 
-    await ctx.respond("Heist ended! Resetting channel.")
     if reqs != []:
         await edit_perms(ctx, "unlock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
         for r in reqs:
