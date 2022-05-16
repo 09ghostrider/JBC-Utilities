@@ -81,10 +81,9 @@ async def _heist(ctx: lightbulb.Context) -> None:
 
     reqs_str = ""
     if reqs != []:
-        await edit_perms(ctx, "lock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
         for r in reqs:
-            await edit_perms(ctx, "unlock", ctx.event.message.channel_id, r.id, hikari.Permissions.VIEW_CHANNEL)
-            reqs_str += str(r.mention)
+            reqs_str += f"{str(r.mention)}, "
+        reqs_str = reqs_str[:-2]
     else:
         reqs_str = "None"
 
@@ -92,7 +91,7 @@ async def _heist(ctx: lightbulb.Context) -> None:
 
     embed = hikari.Embed(
         color = bot_config['color']['default'],
-        title = "HEIST TIME",
+        title = "HEIST STARTING",
         description = f"""{bot_config['emoji']['blue_arrow2']} **Amount:** {amount:,}
 {bot_config['emoji']['blue_arrow2']} **Donor:** {donor.mention}
 {bot_config['emoji']['blue_arrow2']} **Requirements:** {reqs_str}
@@ -105,6 +104,15 @@ async def _heist(ctx: lightbulb.Context) -> None:
 
     await (ping_msg2).add_reaction("⏰")
     await asyncio.sleep(duration)
+
+    for r in range(duration/2):
+        await asyncio.sleep(2)
+        await ping_msg2.edit(f"<@&{heistping}> **Heist starting in {duration-(r*2)} seconds**", role_mentions=True)
+    
+    if reqs != []:
+        await edit_perms(ctx, "lock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
+        for r in reqs:
+            await edit_perms(ctx, "unlock", ctx.event.message.channel_id, r.id, hikari.Permissions.VIEW_CHANNEL)
 
     reactions = await ctx.app.rest.fetch_reactions_for_emoji(channel=ctx.event.message.channel_id, message=ping_msg2, emoji="⏰")
     
@@ -132,6 +140,7 @@ async def _heist(ctx: lightbulb.Context) -> None:
             msg = await ctx.app.rest.fetch_message(ctx.channel_id, event.message.id)
             if msg.embeds != []:
                 if msg.embeds[0].title == f"**{ctx.event.message.author.username}** is starting a bank robbery":
+                    heist = msg
                     break
 
         except asyncio.TimeoutError:
@@ -142,8 +151,13 @@ async def _heist(ctx: lightbulb.Context) -> None:
                     await edit_perms(ctx, "reset", ctx.event.message.channel_id, r.id, hikari.Permissions.VIEW_CHANNEL)
             return await ctx.respond("Channel reset comepete, ready for next heist.")
     
-    await ctx.respond("Heist detected!")
-    await asyncio.sleep(90)
+    heist_detect = await ctx.respond("Heist time remaining: **90** seconds.", reply=heist)
+    heist_detect_msg = await heist_detect.message()
+
+    for r in range(45):
+        await asyncio.sleep(2)
+        await heist_detect_msg.edit(f"Heist time remaining: **{90-(r*2)}** seconds.")
+
     await ctx.respond("Heist ended! Resetting channel.")
     if reqs != []:
         await edit_perms(ctx, "unlock", ctx.event.message.channel_id, dankaccess, hikari.Permissions.VIEW_CHANNEL)
