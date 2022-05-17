@@ -18,8 +18,7 @@ with open("./configs/config.json") as f:
     bot_config = json.load(f)
 
 @plugin.command()
-# @lightbulb.add_cooldown(300, 1, lightbulb.cooldowns.GuildBucket())
-@lightbulb.add_checks(lightbulb.has_roles(832111569764352060) | lightbulb.owner_only)
+@lightbulb.add_checks(lightbulb.has_roles(832111569764352060) | lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
 @lightbulb.option("message", "message to include while pinging", required=False, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.command("gping", "ping the giveaway ping role")
 @lightbulb.implements(lightbulb.PrefixCommand)
@@ -34,6 +33,23 @@ async def _gping(ctx: lightbulb.Context) -> None:
     
     text = "" if not ctx.options.message else f": {ctx.options.message}"
     await ctx.respond(f"<@&850991787593302016>{text}", role_mentions=True)
+
+@plugin.command()
+@lightbulb.add_checks(lightbulb.has_roles(832111569764352060) | lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
+@lightbulb.option("message", "message to include while pinging", required=False, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
+@lightbulb.command("eping", "ping the event ping role")
+@lightbulb.implements(lightbulb.PrefixCommand)
+async def _gping(ctx: lightbulb.Context) -> None:
+    if ctx.event.message.channel_id != 933855270826807308:
+        return await ctx.respond("This command can only be used in <#933855270826807308>", reply=True)
+
+    try:
+        await ctx.event.message.delete()
+    except:
+        pass
+    
+    text = "" if not ctx.options.message else f": {ctx.options.message}"
+    await ctx.respond(f"<@&832109829946081301>{text}", role_mentions=True)
 
 @plugin.command()
 @lightbulb.add_cooldown(300, 1, lightbulb.cooldowns.GuildBucket)
