@@ -296,6 +296,7 @@ async def _unlock(ctx: lightbulb.Context) -> None:
 
     if not role:
         role_id = ctx.event.message.guild_id
+        role = "@everyone"
     else:
         role_id = role.id
         role = role.name

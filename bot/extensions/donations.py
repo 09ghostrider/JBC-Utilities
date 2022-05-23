@@ -77,7 +77,7 @@ async def _gdonate(ctx: lightbulb.Context) -> None:
 @lightbulb.option("options", "the options for this giveaway", type=str, required=True, modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.command("kdonate", "donate for a karuta giveaway")
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _gdonate(ctx: lightbulb.Context) -> None:
+async def _kdonate(ctx: lightbulb.Context) -> None:
     if ctx.event.message.channel_id != 972472890077351996:
         return await ctx.respond("This command can only be used in <#972472890077351996>", reply=True)
     
@@ -153,18 +153,18 @@ eg: &gdonate 6h/1 tro 5 pem/level 15 5m donor/This is how to donate multiple ite
 @plugin.command()
 @lightbulb.command("kinfo", "shows information on how to donate for karuta giveaways")
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _ginfo(ctx: lightbulb.Context) -> None:
+async def _kinfo(ctx: lightbulb.Context) -> None:
     br_dot = bot_config["emoji"]["brown_dot"]
     embed=hikari.Embed(title=f"How to donate for giveaways {bot_config['emoji']['moneygun']}", color=bot_config["color"]["default"])
     embed.description = f"""If you would like to donate to karuta giveaways please use the command:
 
 **&kdonate duration/card/requirements/message**
-eg: &gdonate 24h/lv73mx/none/I love donating to JBC!
+eg: &kdonate 24h/lv73mx/none/I love donating to JBC!
 
 {br_dot} Minimum donation amounts:
 {bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 2+ tickets :tickets:
 {bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 15+ gems :gem:
-{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 100+ wishlist per card :black_joker:
+{bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 100+ wishlist or 300+ effort per card :black_joker:
 {bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 1,000+ bits :ice_cube:
 {bot_config['emoji']['space']}{bot_config['emoji']['reply2']} 1+ frame(s) :frame_photo:
 {bot_config['emoji']['space']}{bot_config['emoji']['reply']} 1+ dye(s) :red_circle:
