@@ -284,10 +284,10 @@ async def _lock(ctx: lightbulb.Context) -> None:
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only | gman_event_check)
-@lightbulb.option("state", "True for enable permission, False for reset permission (Default = False)", required=False, type=bool, default=False)
+@lightbulb.option("state", "True for enable permission, False for reset permission (Default = True)", required=False, type=bool, default=True)
 @lightbulb.option("role", "the role unlock the channel for", type=hikari.Role, required=False, default=None)
 @lightbulb.option("channel", "the channel to unlock", type=hikari.GuildChannel, required=False, default=None)
-@lightbulb.command("unlock", "unlock a channel for a perticular role")
+@lightbulb.command("unlock", "unlock a channel for a perticular role (State: True for enable permission, False for reset permission (Default = True))")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _unlock(ctx: lightbulb.Context) -> None:
     role = ctx.options.role
@@ -343,10 +343,10 @@ async def _viewlock(ctx: lightbulb.Context) -> None:
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only | gman_event_check)
-@lightbulb.option("state", "True for enable permission, False for reset permission (Default = False)", required=False, type=bool, default=False)
+@lightbulb.option("state", "True for enable permission, False for reset permission (Default = True)", required=False, type=bool, default=True)
 @lightbulb.option("role", "the role unlock the channel for", type=hikari.Role, required=False, default=None)
 @lightbulb.option("channel", "the channel to unlock", type=hikari.GuildChannel, required=False, default=None)
-@lightbulb.command("viewunlock", "unlock a channel for a perticular role", aliases=["vunlock"])
+@lightbulb.command("viewunlock", "unlock a channel for a perticular role (State: True for enable permission, False for reset permission (Default = True))", aliases=["vunlock"])
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _viewunlock(ctx: lightbulb.Context) -> None:
     role = ctx.options.role
@@ -358,10 +358,10 @@ async def _viewunlock(ctx: lightbulb.Context) -> None:
         role = "@everyone"
     else:
         role_id = role.id
+        role = role.name
     
     if not channel:
         channel_id = ctx.event.message.channel_id
-        role = role.name
     else:
         channel_id = channel.id
     
