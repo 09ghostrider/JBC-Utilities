@@ -268,8 +268,10 @@ async def _lock(ctx: lightbulb.Context) -> None:
 
     if not role:
         role_id = ctx.event.message.guild_id
+        role = "@everyone"
     else:
         role_id = role.id
+        role = role.name
     
     if not channel:
         channel_id = ctx.event.message.channel_id
@@ -278,7 +280,7 @@ async def _lock(ctx: lightbulb.Context) -> None:
     
     await edit_perms(ctx, "lock", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
 
-    await ctx.respond(f"Locked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
+    await ctx.respond(f"Locked <#{channel_id}> for **{role}**", role_mentions=False, mentions_everyone=False)
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only | gman_event_check)
@@ -296,6 +298,7 @@ async def _unlock(ctx: lightbulb.Context) -> None:
         role_id = ctx.event.message.guild_id
     else:
         role_id = role.id
+        role = role.name
     
     if not channel:
         channel_id = ctx.event.message.channel_id
@@ -309,7 +312,7 @@ async def _unlock(ctx: lightbulb.Context) -> None:
 
     await edit_perms(ctx, "reset", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
 
-    await ctx.respond(f"Unlocked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
+    await ctx.respond(f"Unlocked <#{channel_id}> for **{role}**", role_mentions=False, mentions_everyone=False)
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only | gman_event_check)
@@ -323,8 +326,10 @@ async def _viewlock(ctx: lightbulb.Context) -> None:
 
     if not role:
         role_id = ctx.event.message.guild_id
+        role = "@everyone"
     else:
         role_id = role.id
+        role = role.name
     
     if not channel:
         channel_id = ctx.event.message.channel_id
@@ -333,7 +338,7 @@ async def _viewlock(ctx: lightbulb.Context) -> None:
     
     await edit_perms(ctx, "lock", channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
 
-    await ctx.respond(f"View locked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
+    await ctx.respond(f"View locked <#{channel_id}> for **{role}**", role_mentions=False, mentions_everyone=False)
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only | gman_event_check)
@@ -349,11 +354,13 @@ async def _viewunlock(ctx: lightbulb.Context) -> None:
 
     if not role:
         role_id = ctx.event.message.guild_id
+        role = "@everyone"
     else:
         role_id = role.id
     
     if not channel:
         channel_id = ctx.event.message.channel_id
+        role = role.name
     else:
         channel_id = channel.id
     
@@ -364,7 +371,7 @@ async def _viewunlock(ctx: lightbulb.Context) -> None:
 
     await edit_perms(ctx, s, channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
 
-    await ctx.respond(f"View unlocked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
+    await ctx.respond(f"View unlocked <#{channel_id}> for **{role}**", role_mentions=False, mentions_everyone=False)
 
 @plugin.command()
 @lightbulb.add_checks(jbc_server_check)
