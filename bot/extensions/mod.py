@@ -250,8 +250,14 @@ async def lockdown_unlockdown(ctx:lightbulb.Context, lorul:str, channels:list, r
 
         await c.send(embed=embed)
 
+@lightbulb.Check
+def gman_event_check(ctx: lightbulb.Context) -> None:
+    if ctx.event.message.channel_id == 933855270826807308 and 832111569764352060 in ctx.event.message.member.role_ids:
+        return True
+    return False
+
 @plugin.command()
-@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only | gman_event_check)
 @lightbulb.option("role", "the role lock the channel for", type=hikari.Role, required=False, default=None)
 @lightbulb.option("channel", "the channel to lock", type=hikari.GuildChannel, required=False, default=None)
 @lightbulb.command("lock", "lock a channel for a perticular role")
@@ -275,7 +281,8 @@ async def _lock(ctx: lightbulb.Context) -> None:
     await ctx.respond(f"Locked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
 
 @plugin.command()
-@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only | gman_event_check)
+@lightbulb.option("state", "True for enable permission, False for reset permission (Default = False)", required=False, type=bool, default=False)
 @lightbulb.option("role", "the role unlock the channel for", type=hikari.Role, required=False, default=None)
 @lightbulb.option("channel", "the channel to unlock", type=hikari.GuildChannel, required=False, default=None)
 @lightbulb.command("unlock", "unlock a channel for a perticular role")
@@ -283,6 +290,7 @@ async def _lock(ctx: lightbulb.Context) -> None:
 async def _unlock(ctx: lightbulb.Context) -> None:
     role = ctx.options.role
     channel = ctx.options.channel
+    state = ctx.options.state
 
     if not role:
         role_id = ctx.event.message.guild_id
@@ -294,12 +302,17 @@ async def _unlock(ctx: lightbulb.Context) -> None:
     else:
         channel_id = channel.id
     
+    if state == True:
+        s = "unlock"
+    else:
+        s = "reset"
+
     await edit_perms(ctx, "reset", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
 
     await ctx.respond(f"Unlocked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
 
 @plugin.command()
-@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only | gman_event_check)
 @lightbulb.option("role", "the role lock the channel for", type=hikari.Role, required=False, default=None)
 @lightbulb.option("channel", "the channel to lock", type=hikari.GuildChannel, required=False, default=None)
 @lightbulb.command("viewlock", "lock a channel for a perticular role", aliases=["vlock"])
@@ -323,7 +336,8 @@ async def _viewlock(ctx: lightbulb.Context) -> None:
     await ctx.respond(f"View locked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
 
 @plugin.command()
-@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only)
+@lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.MANAGE_CHANNELS) | lightbulb.owner_only | gman_event_check)
+@lightbulb.option("state", "True for enable permission, False for reset permission (Default = False)", required=False, type=bool, default=False)
 @lightbulb.option("role", "the role unlock the channel for", type=hikari.Role, required=False, default=None)
 @lightbulb.option("channel", "the channel to unlock", type=hikari.GuildChannel, required=False, default=None)
 @lightbulb.command("viewunlock", "unlock a channel for a perticular role", aliases=["vunlock"])
@@ -331,6 +345,7 @@ async def _viewlock(ctx: lightbulb.Context) -> None:
 async def _viewunlock(ctx: lightbulb.Context) -> None:
     role = ctx.options.role
     channel = ctx.options.channel
+    state = ctx.options.state
 
     if not role:
         role_id = ctx.event.message.guild_id
@@ -342,7 +357,12 @@ async def _viewunlock(ctx: lightbulb.Context) -> None:
     else:
         channel_id = channel.id
     
-    await edit_perms(ctx, "unlock", channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
+    if state == True:
+        s = "unlock"
+    else:
+        s = "reset"
+
+    await edit_perms(ctx, s, channel_id, role_id, hikari.Permissions.VIEW_CHANNEL)
 
     await ctx.respond(f"View unlocked <#{channel_id}> for <@&{role_id}>", reply=True, role_mentions=False)
 
@@ -493,7 +513,7 @@ async def _unban(ctx: lightbulb.Context) -> None:
 @plugin.command()
 @lightbulb.add_checks(lightbulb.has_role_permissions(hikari.Permissions.KICK_MEMBERS))
 @lightbulb.option("reason", "the reason for their kick", type=str, modifier=lightbulb.commands.base.OptionModifier(3), required=False)
-@lightbulb.option("member", "the mmeber to kick", type=hikari.Member)
+@lightbulb.option("member", "the member to kick", type=hikari.Member)
 @lightbulb.command("kick", "kick a member from the server")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _kick(ctx: lightbulb.Context) -> None:
@@ -710,8 +730,6 @@ async def _settings_whitelist_role(ctx: lightbulb.Context) -> None:
     censor_list['whitelist']['role'].append(role.id)
     censor_db.update_one({"guild_id": guild_id}, {"$set": {"whitelist": censor_list['whitelist']}})
     await ctx.respond(f"Added {role.mention} to whitelist", reply=True, role_mentions=False)
-    
-
 
 @_settings_whitelist.child
 @lightbulb.option("channel", "the channel to whitelist", type=hikari.GuildChannel, required=True)
