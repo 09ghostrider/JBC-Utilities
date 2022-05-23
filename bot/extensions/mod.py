@@ -311,7 +311,7 @@ async def _unlock(ctx: lightbulb.Context) -> None:
     else:
         s = "reset"
 
-    await edit_perms(ctx, "reset", channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
+    await edit_perms(ctx, s, channel_id, role_id, hikari.Permissions.SEND_MESSAGES)
 
     await ctx.respond(f"Unlocked <#{channel_id}> for **{role}**", role_mentions=False, mentions_everyone=False)
 
