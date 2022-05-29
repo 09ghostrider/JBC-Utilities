@@ -136,13 +136,6 @@ async def _fact(ctx: lightbulb.Context) -> None:
     r = (requests.get("https://api.popcat.xyz/fact").json())["fact"]
     await ctx.respond(f"{r}", reply=True)
 
-# @plugin.command()
-# @lightbulb.command("thought", "Thoughts")
-# @lightbulb.implements(lightbulb.PrefixCommand)
-# async def _thought(ctx: lightbulb.Context) -> None:
-#     r = (requests.get("https://api.popcat.xyz/fact").json())["fact"]
-#     await ctx.respond(f"{r}", reply=True)
-
 @plugin.command()
 @lightbulb.command("quote", "Famous quotes")
 @lightbulb.implements(lightbulb.PrefixCommand)
