@@ -524,10 +524,24 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     if mentions == {}:
         return
 
+    mentions = list(mentions.items())
+    reference = message.message.referenced_message
+
+    if reference is not None:
+        if reference.author.id == int(mentions[0][1]).id:
+            try:
+                member = int(mentions[1][1])
+            except:
+                return
+        else:
+            member = int(mentions[0][1])
+    else:
+        member = int(mentions[0][1])
+
     cluster = MongoClient(mongoclient)
     reacts = cluster["ar"]["react"]
 
-    react = reacts.find_one({"guild": guild_id, "member": int((list(mentions.items())[0][1]).id)})
+    react = reacts.find_one({"guild": guild_id, "member": member.id})
     if react != None:
         e = react["react"]
         if e != []:
