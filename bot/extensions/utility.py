@@ -470,49 +470,6 @@ async def _list(ctx: lightbulb.Context) -> None:
     embed.add_field(name="Reacts", value=desc2)
     await ctx.respond(embed=embed, reply=True)
 
-# @plugin.listener(hikari.MessageCreateEvent)
-# async def _on_message(message: hikari.MessageCreateEvent) -> None:
-#     if message.is_human == False:
-#         return
-    
-#     guild_id = message.message.guild_id
-#     mentions = message.message.mentions.users
-#     reference = message.message.referenced_message
-#     if mentions == {}:
-#         return
-
-#     cluster = MongoClient(mongoclient)
-#     reacts = cluster["ar"]["react"]
-
-#     counter = 0
-#     while True:
-#         try:
-#             member_id = list(mentions.items())[counter][0]
-#         except:
-#             return
-        
-#         if reference != None:
-#             if member_id == reference.author.id:
-#                 try:
-#                     member_id = list(mentions.items())[counter+1][0]
-#                 except:
-#                     return
-
-#         react = reacts.find_one({"guild": {"$eq": guild_id}, "member": {"$eq": member_id}})
-#         if react != None:
-#             e = react["react"]
-#             if e != []:
-#                 for x in e:
-#                     emoji = await message.app.rest.fetch_emoji(guild_id, x)
-#                     try:
-#                         await message.message.add_reaction(emoji)
-#                     except:
-#                         pass
-#             return
-
-#         else:
-#             counter += 1
-
 @plugin.listener(hikari.MessageCreateEvent)
 async def _on_message(message: hikari.MessageCreateEvent) -> None:
     if message.is_human == False:
@@ -520,37 +477,80 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
     
     guild_id = message.message.guild_id
     mentions = message.message.mentions.users
-    
+    reference = message.message.referenced_message
     if mentions == {}:
         return
-
-    mentions = list(mentions.items())
-    reference = message.message.referenced_message
-
-    if reference is not None:
-        if reference.author.id == int(mentions[0][1]).id:
-            try:
-                member = int(mentions[1][1])
-            except:
-                return
-        else:
-            member = int(mentions[0][1])
-    else:
-        member = int(mentions[0][1])
 
     cluster = MongoClient(mongoclient)
     reacts = cluster["ar"]["react"]
 
-    react = reacts.find_one({"guild": guild_id, "member": member.id})
-    if react != None:
-        e = react["react"]
-        if e != []:
-            for x in e:
-                emoji = await message.app.rest.fetch_emoji(guild_id, x)
+    counter = 0
+    while True:
+        try:
+            member_id = list(mentions.items())[counter][0]
+        except:
+            return
+        
+        if reference != None:
+            if member_id == reference.author.id:
                 try:
-                    await message.message.add_reaction(emoji)
+                    member_id = list(mentions.items())[counter+1][0]
                 except:
-                    pass
+                    return
+
+        react = reacts.find_one({"guild": {"$eq": guild_id}, "member": {"$eq": member_id}})
+        if react != None:
+            e = react["react"]
+            if e != []:
+                for x in e:
+                    emoji = await message.app.rest.fetch_emoji(guild_id, x)
+                    try:
+                        await message.message.add_reaction(emoji)
+                    except:
+                        pass
+            return
+
+        else:
+            counter += 1
+
+# @plugin.listener(hikari.MessageCreateEvent)
+# async def _on_message(message: hikari.MessageCreateEvent) -> None:
+#     if message.is_human == False:
+#         return
+    
+#     guild_id = message.message.guild_id
+#     mentions = message.message.mentions.users
+    
+#     if mentions == {}:
+#         return
+
+#     mentions = list(mentions.items())
+#     reference = message.message.referenced_message
+
+#     if reference is not None:
+#         if reference.author.id == int(mentions[0][1]).id:
+#             try:
+#                 member = int(mentions[1][1])
+#             except:
+#                 return
+#         else:
+#             member = int(mentions[0][1])
+#     else:
+#         member = int(mentions[0][1])
+
+#     cluster = MongoClient(mongoclient)
+#     reacts = cluster["ar"]["react"]
+
+#     react = reacts.find_one({"guild": guild_id, "member": member.id})
+#     if react != None:
+#         e = react["react"]
+#         if e != []:
+#             for x in e:
+#                 emoji = await message.app.rest.fetch_emoji(guild_id, x)
+#                 try:
+#                     await message.message.add_reaction(emoji)
+#                 except:
+#                     pass
 
 # @lightbulb.Check
 # def hl_perms_check(ctx: lightbulb.Context) -> None:
