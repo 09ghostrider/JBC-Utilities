@@ -52,7 +52,7 @@ async def _gping(ctx: lightbulb.Context) -> None:
     await ctx.respond(f"<@&832109829946081301>{text}", role_mentions=True)
 
 @plugin.command()
-@lightbulb.add_cooldown(300, 1, lightbulb.cooldowns.GuildBucket)
+@lightbulb.add_cooldown(300, 1, lightbulb.buckets.GuildBucket)
 @lightbulb.add_checks(lightbulb.has_roles(901767319716524085, 832108259221307392, mode=any) | lightbulb.owner_only)
 @lightbulb.option("message", "donors message", required=True, type=str, modifier=lightbulb.commands.base.OptionModifier(3))
 @lightbulb.option("requirements", "the requirements for this giveaway", required=False, type=hikari.Role, modifier=lightbulb.commands.base.OptionModifier(2))
