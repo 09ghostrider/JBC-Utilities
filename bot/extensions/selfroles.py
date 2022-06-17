@@ -1,4 +1,3 @@
-from operator import le
 import hikari
 import lightbulb
 import random
@@ -75,7 +74,7 @@ class karutaaccess(miru.View):
             await ctx.respond("You dont have access to karuta channels anymore", flags=ephemeral)
             await ctx.member.remove_role(role)
 
-class pingroles(miru.View):
+class selfroles(miru.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
     
@@ -83,7 +82,7 @@ class pingroles(miru.View):
     async def button_1(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(832109776136568863)
-        embed = hikari.Embed(color = "2f3136")
+        embed = hikari.Embed(color = role.color)
         if role not in ctx.member.get_roles():
             await ctx.member.add_role(role)
             embed.description = f"Added {role.mention} to you"
@@ -96,7 +95,7 @@ class pingroles(miru.View):
     async def button_2(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(834014226699649035)
-        embed = hikari.Embed(color = "2f3136")
+        embed = hikari.Embed(color = role.color)
         if role not in ctx.member.get_roles():
             await ctx.member.add_role(role)
             embed.description = f"Added {role.mention} to you"
@@ -109,7 +108,7 @@ class pingroles(miru.View):
     async def button_3(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(832109829946081301)
-        embed = hikari.Embed(color = "2f3136")
+        embed = hikari.Embed(color = role.color)
         if role not in ctx.member.get_roles():
             await ctx.member.add_role(role)
             embed.description = f"Added {role.mention} to you"
@@ -122,7 +121,7 @@ class pingroles(miru.View):
     async def button_4(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(849617885218996234)
-        embed = hikari.Embed(color = "2f3136")
+        embed = hikari.Embed(color = role.color)
         if role not in ctx.member.get_roles():
             await ctx.member.add_role(role)
             embed.description = f"Added {role.mention} to you"
@@ -135,7 +134,7 @@ class pingroles(miru.View):
     async def button_5(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(850012948390739988)
-        embed = hikari.Embed(color = "2f3136")
+        embed = hikari.Embed(color = role.color)
         if role not in ctx.member.get_roles():
             await ctx.member.add_role(role)
             embed.description = f"Added {role.mention} to you"
@@ -144,11 +143,11 @@ class pingroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[6]), style=hikari.ButtonStyle.PRIMARY, custom_id="850991787593302016", row=2)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[6]), style=hikari.ButtonStyle.PRIMARY, custom_id="936928572877209641", row=2)
     async def button_6(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
-        role = self.app.cache.get_role(850991787593302016)
-        embed = hikari.Embed(color = "2f3136")
+        role = self.app.cache.get_role(936928572877209641)
+        embed = hikari.Embed(color = role.color)
         if role not in ctx.member.get_roles():
             await ctx.member.add_role(role)
             embed.description = f"Added {role.mention} to you"
@@ -157,11 +156,11 @@ class pingroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[7]), style=hikari.ButtonStyle.PRIMARY, custom_id="913265617254105128", row=2)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[7]), style=hikari.ButtonStyle.PRIMARY, custom_id="936928600341508126", row=2)
     async def button_7(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
-        role = self.app.cache.get_role(913265617254105128)
-        embed = hikari.Embed(color = "2f3136")
+        role = self.app.cache.get_role(936928600341508126)
+        embed = hikari.Embed(color = role.color)
         if role not in ctx.member.get_roles():
             await ctx.member.add_role(role)
             embed.description = f"Added {role.mention} to you"
@@ -170,11 +169,11 @@ class pingroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[8]), style=hikari.ButtonStyle.PRIMARY, custom_id="951694220345880596", row=2)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[8]), style=hikari.ButtonStyle.PRIMARY, custom_id="936928617374564382", row=2)
     async def button_8(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
-        role = self.app.cache.get_role(951694220345880596)
-        embed = hikari.Embed(color = "2f3136")
+        role = self.app.cache.get_role(936928617374564382)
+        embed = hikari.Embed(color = role.color)
         if role not in ctx.member.get_roles():
             await ctx.member.add_role(role)
             embed.description = f"Added {role.mention} to you"
@@ -185,9 +184,9 @@ class pingroles(miru.View):
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.guild_only)
-@lightbulb.command("pingroles", "get ping roles", aliases=["pr"])
+@lightbulb.command("selfroles", "get self roles", aliases=["sroles", "srole", "selfrole"])
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _pingrole(ctx: lightbulb.Context) -> None:
+async def _selfroles(ctx: lightbulb.Context) -> None:
     try:
         await ctx.event.message.delete()
     except:
@@ -200,13 +199,13 @@ async def _pingrole(ctx: lightbulb.Context) -> None:
 {numemojis[3]}: <@&832109829946081301>
 {numemojis[4]}: <@&849617885218996234>
 {numemojis[5]}: <@&850012948390739988>
-{numemojis[6]}: <@&850991787593302016>
-{numemojis[7]}: <@&913265617254105128>
-{numemojis[8]}: <@&951694220345880596>""",
+{numemojis[6]}: <@&936928572877209641>
+{numemojis[7]}: <@&936928600341508126>
+{numemojis[8]}: <@&936928617374564382>""",
         color = bot_config['color']['default']
     )
     embed.set_thumbnail(ctx.get_guild().icon_url)
-    view = pingroles()
+    view = selfroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
 

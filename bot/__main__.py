@@ -6,7 +6,7 @@ import random
 import miru
 import json
 from bot import extensions
-from bot.extensions.selfroles import pingroles, verify, dankaccess, karutaaccess
+from bot.extensions.selfroles import selfroles, verify, dankaccess, karutaaccess
 # from bot.extensions.giveaway import giveaway_view
 from dotenv import load_dotenv
 from lightbulb.ext import tasks
@@ -45,7 +45,7 @@ async def _on_started(event:hikari.StartedEvent) -> None:
     channel = await bot.rest.fetch_channel(bot_config["logging"]["startup"])
     await channel.send("Bot has Started")
 
-    view = pingroles()
+    view = selfroles()
     view.start_listener()
 
     view2 = verify()
