@@ -193,7 +193,7 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
         pass
 
     embed = hikari.Embed(
-        title = "<a:preparing:943820731043696671> PING ROLES <a:preparing:943820731043696671>",
+        title = "<a:preparing:943820731043696671> SELF ROLES <a:preparing:943820731043696671>",
         description = f"""{numemojis[1]}: <@&832109776136568863>
 {numemojis[2]}: <@&834014226699649035>
 {numemojis[3]}: <@&832109829946081301>
@@ -214,9 +214,6 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
 @lightbulb.command("verify", "shows the verify embed")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _verify(ctx: lightbulb.Context) -> None:
-    if ctx.event.message.channel_id != 834009679553101854:
-        return await ctx.respond(f"This command can only be used in <#834009679553101854>", reply=True)
-    
     try:
         await ctx.event.message.delete()
     except:
@@ -233,9 +230,6 @@ async def _verify(ctx: lightbulb.Context) -> None:
 @lightbulb.command("dankaccess", "sends the dank access embed")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _dankaccess(ctx: lightbulb.Context) -> None:
-    if ctx.event.message.channel_id != 852396608440107048:
-        return await ctx.respond("This command can only be used in <#852396608440107048>", reply=True)
-
     try:
         await ctx.event.message.delete()
     except:
@@ -252,9 +246,6 @@ async def _dankaccess(ctx: lightbulb.Context) -> None:
 @lightbulb.command("karutaaccess", "sends the karuta access embed")
 @lightbulb.implements(lightbulb.PrefixCommand)
 async def _karutaccess(ctx: lightbulb.Context) -> None:
-    if ctx.event.message.channel_id != 974227197181173760:
-        return await ctx.respond("This command can only be used in <#974227197181173760>", reply=True)
-
     try:
         await ctx.event.message.delete()
     except:
