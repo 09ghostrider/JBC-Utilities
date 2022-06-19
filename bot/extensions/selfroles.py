@@ -411,6 +411,7 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
     await ctx.respond(embed=embed)
 
     embed = hikari.Embed(
+        title = "COLOR ROLES",
         description = f"""{numemojis[1]}: <@&987598471768989697>
 {numemojis[2]}: <@&987598639088152596>
 {numemojis[3]}: <@&987598764107792444>
@@ -428,6 +429,7 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
     view.start(await msg.message())
 
     embed = hikari.Embed(
+        title = "BIO ROLES",
         description = f"""{numemojis[1]}: <@&936928572877209641>
 {numemojis[2]}: <@&936928600341508126>
 {numemojis[3]}: <@&936928617374564382>""",
@@ -438,6 +440,7 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
     view.start(await msg.message())
 
     embed = hikari.Embed(
+        title = "PING ROLES",
         description = f"""{numemojis[1]}: <@&832109776136568863>
 {numemojis[2]}: <@&834014226699649035>
 {numemojis[3]}: <@&832109829946081301>
