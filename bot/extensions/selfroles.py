@@ -130,19 +130,6 @@ class pingroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[5]), style=hikari.ButtonStyle.PRIMARY, custom_id="850012948390739988", row=1)
-    async def button_5(self, button: miru.Button, ctx: miru.Context) -> None:
-        await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
-        role = self.app.cache.get_role(850012948390739988)
-        embed = hikari.Embed(color = role.color)
-        if role not in ctx.member.get_roles():
-            await ctx.member.add_role(role)
-            embed.description = f"Added {role.mention} to you"
-        else:
-            await ctx.member.remove_role(role)
-            embed.description = f"Removed {role.mention} from you"
-        await ctx.respond(embed=embed, flags=ephemeral)
-    
 class bioroles(miru.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
@@ -336,8 +323,7 @@ async def _pingroles(ctx: lightbulb.Context) -> None:
         description = f"""{numemojis[1]}: <@&832109776136568863>
 {numemojis[2]}: <@&834014226699649035>
 {numemojis[3]}: <@&832109829946081301>
-{numemojis[4]}: <@&849617885218996234>
-{numemojis[5]}: <@&850012948390739988>""",
+{numemojis[4]}: <@&849617885218996234>""",
         color = bot_config['color']['default']
     )
     embed.set_image("https://media.discordapp.net/attachments/804978370050916362/971477192208973884/Tumblr_l_1076311018323767.gif")
@@ -446,8 +432,7 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
         description = f"""{numemojis[1]}: <@&832109776136568863>
 {numemojis[2]}: <@&834014226699649035>
 {numemojis[3]}: <@&832109829946081301>
-{numemojis[4]}: <@&849617885218996234>
-{numemojis[5]}: <@&850012948390739988>""",
+{numemojis[4]}: <@&849617885218996234>""",
         color = bot_config['color']['default']
     )
     embed.set_image("https://media.discordapp.net/attachments/804978370050916362/971477192208973884/Tumblr_l_1076311018323767.gif")
