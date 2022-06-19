@@ -340,7 +340,7 @@ async def _pingroles(ctx: lightbulb.Context) -> None:
 {numemojis[5]}: <@&850012948390739988>""",
         color = bot_config['color']['default']
     )
-    embed.set_thumbnail(ctx.get_guild().icon_url)
+    embed.set_image("https://media.discordapp.net/attachments/804978370050916362/971477192208973884/Tumblr_l_1076311018323767.gif")
     view = pingroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
@@ -362,7 +362,7 @@ async def _bioroles(ctx: lightbulb.Context) -> None:
 {numemojis[3]}: <@&936928617374564382>""",
         color = bot_config['color']['default']
     )
-    embed.set_thumbnail(ctx.get_guild().icon_url)
+    embed.set_image("https://media.discordapp.net/attachments/804978370050916362/971477192208973884/Tumblr_l_1076311018323767.gif")
     view = bioroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
@@ -391,7 +391,7 @@ async def _colorroles(ctx: lightbulb.Context) -> None:
 {numemojis[10]}: <@&987598400520343622>""",
         color = bot_config['color']['default']
     )
-    embed.set_thumbnail(ctx.get_guild().icon_url)
+    embed.set_image("https://media.discordapp.net/attachments/804978370050916362/971477192208973884/Tumblr_l_1076311018323767.gif")
     view = colorroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
@@ -424,6 +424,7 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
 {numemojis[10]}: <@&987598400520343622>""",
         color = bot_config['color']['default']
     )
+    embed.set_image("https://media.discordapp.net/attachments/804978370050916362/971477192208973884/Tumblr_l_1076311018323767.gif")
     view = colorroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
@@ -435,6 +436,7 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
 {numemojis[3]}: <@&936928617374564382>""",
         color = bot_config['color']['default']
     )
+    embed.set_image("https://media.discordapp.net/attachments/804978370050916362/971477192208973884/Tumblr_l_1076311018323767.gif")
     view = bioroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
@@ -448,6 +450,7 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
 {numemojis[5]}: <@&850012948390739988>""",
         color = bot_config['color']['default']
     )
+    embed.set_image("https://media.discordapp.net/attachments/804978370050916362/971477192208973884/Tumblr_l_1076311018323767.gif")
     view = pingroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
