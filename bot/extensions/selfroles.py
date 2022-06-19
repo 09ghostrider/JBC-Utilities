@@ -78,7 +78,7 @@ class pingroles(miru.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[1]), style=hikari.ButtonStyle.PRIMARY, custom_id="832109776136568863", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[1]), style=hikari.ButtonStyle.SECONDARY, custom_id="832109776136568863", row=1)
     async def button_1(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(832109776136568863)
@@ -91,7 +91,7 @@ class pingroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[2]), style=hikari.ButtonStyle.PRIMARY, custom_id="834014226699649035", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[2]), style=hikari.ButtonStyle.SECONDARY, custom_id="834014226699649035", row=1)
     async def button_2(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(834014226699649035)
@@ -104,7 +104,7 @@ class pingroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
 
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[3]), style=hikari.ButtonStyle.PRIMARY, custom_id="832109829946081301", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[3]), style=hikari.ButtonStyle.SECONDARY, custom_id="832109829946081301", row=1)
     async def button_3(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(832109829946081301)
@@ -117,7 +117,7 @@ class pingroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[4]), style=hikari.ButtonStyle.PRIMARY, custom_id="849617885218996234", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[4]), style=hikari.ButtonStyle.SECONDARY, custom_id="849617885218996234", row=1)
     async def button_4(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(849617885218996234)
@@ -130,7 +130,7 @@ class pingroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[5]), style=hikari.ButtonStyle.PRIMARY, custom_id="850012948390739988", row=2)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[5]), style=hikari.ButtonStyle.SECONDARY, custom_id="850012948390739988", row=1)
     async def button_5(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(850012948390739988)
@@ -147,7 +147,7 @@ class bioroles(miru.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[1]), style=hikari.ButtonStyle.PRIMARY, custom_id="936928572877209641", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[1]), style=hikari.ButtonStyle.SECONDARY, custom_id="936928572877209641", row=1)
     async def button_1(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(936928572877209641)
@@ -160,7 +160,7 @@ class bioroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[2]), style=hikari.ButtonStyle.PRIMARY, custom_id="936928600341508126", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[2]), style=hikari.ButtonStyle.SECONDARY, custom_id="936928600341508126", row=1)
     async def button_2(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(936928600341508126)
@@ -173,7 +173,7 @@ class bioroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
 
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[3]), style=hikari.ButtonStyle.PRIMARY, custom_id="936928617374564382", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[3]), style=hikari.ButtonStyle.SECONDARY, custom_id="936928617374564382", row=1)
     async def button_3(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(936928617374564382)
@@ -190,7 +190,7 @@ class colorroles(miru.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[1]), style=hikari.ButtonStyle.PRIMARY, custom_id="987598471768989697", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[1]), style=hikari.ButtonStyle.SECONDARY, custom_id="987598471768989697", row=1)
     async def button_1(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987598471768989697)
@@ -203,7 +203,7 @@ class colorroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[2]), style=hikari.ButtonStyle.PRIMARY, custom_id="987598639088152596", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[2]), style=hikari.ButtonStyle.SECONDARY, custom_id="987598639088152596", row=1)
     async def button_2(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987598639088152596)
@@ -216,7 +216,7 @@ class colorroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
 
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[3]), style=hikari.ButtonStyle.PRIMARY, custom_id="987598764107792444", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[3]), style=hikari.ButtonStyle.SECONDARY, custom_id="987598764107792444", row=1)
     async def button_3(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987598764107792444)
@@ -230,7 +230,7 @@ class colorroles(miru.View):
         await ctx.respond(embed=embed, flags=ephemeral)
     
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[4]), style=hikari.ButtonStyle.PRIMARY, custom_id="987599242401034310", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[4]), style=hikari.ButtonStyle.SECONDARY, custom_id="987599242401034310", row=1)
     async def button_4(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987599242401034310)
@@ -243,7 +243,7 @@ class colorroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[5]), style=hikari.ButtonStyle.PRIMARY, custom_id="987599561130381323", row=2)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[5]), style=hikari.ButtonStyle.SECONDARY, custom_id="987599561130381323", row=1)
     async def button_5(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987599561130381323)
@@ -256,7 +256,7 @@ class colorroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[6]), style=hikari.ButtonStyle.PRIMARY, custom_id="987599090818875442", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[6]), style=hikari.ButtonStyle.SECONDARY, custom_id="987599090818875442", row=2)
     async def button_6(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987599090818875442)
@@ -269,7 +269,7 @@ class colorroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[7]), style=hikari.ButtonStyle.PRIMARY, custom_id="987598830256152576", row=2)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[7]), style=hikari.ButtonStyle.SECONDARY, custom_id="987598830256152576", row=2)
     async def button_7(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987598830256152576)
@@ -282,7 +282,7 @@ class colorroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[8]), style=hikari.ButtonStyle.PRIMARY, custom_id="987599062519939102", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[8]), style=hikari.ButtonStyle.SECONDARY, custom_id="987599062519939102", row=2)
     async def button_8(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987599062519939102)
@@ -295,7 +295,7 @@ class colorroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[9]), style=hikari.ButtonStyle.PRIMARY, custom_id="987599607263535114", row=2)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[9]), style=hikari.ButtonStyle.SECONDARY, custom_id="987599607263535114", row=2)
     async def button_9(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987599607263535114)
@@ -308,7 +308,7 @@ class colorroles(miru.View):
             embed.description = f"Removed {role.mention} from you"
         await ctx.respond(embed=embed, flags=ephemeral)
     
-    @miru.button(emoji=hikari.Emoji.parse(numemojis[10]), style=hikari.ButtonStyle.PRIMARY, custom_id="987598400520343622", row=1)
+    @miru.button(emoji=hikari.Emoji.parse(numemojis[10]), style=hikari.ButtonStyle.SECONDARY, custom_id="987598400520343622", row=2)
     async def button_10(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(987598400520343622)
