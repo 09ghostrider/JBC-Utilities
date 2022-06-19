@@ -406,12 +406,11 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
     except:
         pass
 
-    embed = hikari.Embed()
+    embed = hikari.Embed(color = bot_config['color']['default'])
     embed.set_image("https://media.discordapp.net/attachments/957710808119398430/988019246548254780/unknown.png")
     await ctx.respond(embed=embed)
 
     embed = hikari.Embed(
-        title = "COLOR ROLES",
         description = f"""{numemojis[1]}: <@&987598471768989697>
 {numemojis[2]}: <@&987598639088152596>
 {numemojis[3]}: <@&987598764107792444>
@@ -424,25 +423,21 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
 {numemojis[10]}: <@&987598400520343622>""",
         color = bot_config['color']['default']
     )
-    embed.set_thumbnail(ctx.get_guild().icon_url)
     view = colorroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
 
     embed = hikari.Embed(
-        title = "BIO ROLES",
         description = f"""{numemojis[1]}: <@&936928572877209641>
 {numemojis[2]}: <@&936928600341508126>
 {numemojis[3]}: <@&936928617374564382>""",
         color = bot_config['color']['default']
     )
-    embed.set_thumbnail(ctx.get_guild().icon_url)
     view = bioroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
 
     embed = hikari.Embed(
-        title = "PING ROLES",
         description = f"""{numemojis[1]}: <@&832109776136568863>
 {numemojis[2]}: <@&834014226699649035>
 {numemojis[3]}: <@&832109829946081301>
@@ -450,7 +445,6 @@ async def _selfroles(ctx: lightbulb.Context) -> None:
 {numemojis[5]}: <@&850012948390739988>""",
         color = bot_config['color']['default']
     )
-    embed.set_thumbnail(ctx.get_guild().icon_url)
     view = pingroles()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
