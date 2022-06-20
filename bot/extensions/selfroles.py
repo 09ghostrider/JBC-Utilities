@@ -39,25 +39,25 @@ class verify(miru.View):
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
         role = self.app.cache.get_role(832108400129212438)
         if role not in ctx.member.get_roles():
-            await ctx.respond("You are now verified", flags=ephemeral)
             await ctx.member.add_role(role)
+            await ctx.respond("You are now verified", flags=ephemeral)
         else:
             await ctx.respond("You are already verified", flags=ephemeral)
 
-class dankaccess(miru.View):
+class botaccess(miru.View):
     def __init__(self) -> None:
         super().__init__(timeout=None)
     
-    @miru.button(emoji=hikari.Emoji.parse(bot_config['emoji']['clap']), label="Gain Access", style=hikari.ButtonStyle.SUCCESS, custom_id="dankaccess")
+    @miru.button(emoji=hikari.Emoji.parse(bot_config['emoji']['bot']), label="Gain Access", style=hikari.ButtonStyle.SUCCESS, custom_id="botaccess")
     async def verify_button(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
-        role = self.app.cache.get_role(888028007783100426)
+        role = self.app.cache.get_role(984037651835400222)
         if role not in ctx.member.get_roles():
-            await ctx.respond("You now have access to dank memer channels", flags=ephemeral)
             await ctx.member.add_role(role)
+            await ctx.respond(f"Added {role.mention} to you", flags=ephemeral)
         else:
-            await ctx.respond("You dont have access to dank memer channels anymore", flags=ephemeral)
             await ctx.member.remove_role(role)
+            await ctx.respond(f"Removed {role.mention} from you", flags=ephemeral)
 
 class karutaaccess(miru.View):
     def __init__(self) -> None:
@@ -66,13 +66,13 @@ class karutaaccess(miru.View):
     @miru.button(emoji=hikari.Emoji.parse(bot_config['emoji']['karuta']), label="Gain Access", style=hikari.ButtonStyle.SUCCESS, custom_id="karutaaccess")
     async def verify_button(self, button: miru.Button, ctx: miru.Context) -> None:
         await ctx.defer(hikari.ResponseType.DEFERRED_MESSAGE_CREATE)
-        role = self.app.cache.get_role(973792910774509698)
+        role = self.app.cache.get_role(984690279636418560)
         if role not in ctx.member.get_roles():
-            await ctx.respond("You now have access to karuta channels", flags=ephemeral)
             await ctx.member.add_role(role)
+            await ctx.respond(f"Added {role.mention} to you", flags=ephemeral)
         else:
-            await ctx.respond("You dont have access to karuta channels anymore", flags=ephemeral)
             await ctx.member.remove_role(role)
+            await ctx.respond(f"Removed {role.mention} from you", flags=ephemeral)
 
 class pingroles(miru.View):
     def __init__(self) -> None:
@@ -466,9 +466,9 @@ async def _dankaccess(ctx: lightbulb.Context) -> None:
     except:
         pass
 
-    embed = hikari.Embed(title="Dank Memer access", description=f"""Click the {bot_config['emoji']['clap']} button to gain access to the channels.\nBe sure to read the rules.\nDank channels also include <#851315401459892245>, <#933855270826807308> and <#945812242857865276>""", color=bot_config['color']['default'])
+    embed = hikari.Embed(title="Bots access", description=f"""Click the {bot_config['emoji']['bot']} button to gain access to the channels.\nBe sure to read the rules.\nYou will gain access to dank memer, owo, mudae and karuta.""", color=bot_config['color']['default'])
     embed.set_thumbnail(ctx.get_guild().icon_url)
-    view = dankaccess()
+    view = botaccess()
     msg = await ctx.respond(embed=embed, components=view.build())
     view.start(await msg.message())
 
