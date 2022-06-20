@@ -9,7 +9,7 @@ from miru.ext import nav
 import json
 from bot.utils.checks import botban_check, jbc_server_check
 
-plugin = lightbulb.Plugin("donations")
+plugin = lightbulb.Plugin("selfroles")
 plugin.add_checks(jbc_server_check)
 plugin.add_checks(botban_check)
 ephemeral = hikari.MessageFlag.EPHEMERAL
@@ -458,9 +458,9 @@ async def _verify(ctx: lightbulb.Context) -> None:
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-@lightbulb.command("dankaccess", "sends the dank access embed")
+@lightbulb.command("botaccess", "sends the bot access embed")
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _dankaccess(ctx: lightbulb.Context) -> None:
+async def _botaccess(ctx: lightbulb.Context) -> None:
     try:
         await ctx.event.message.delete()
     except:
