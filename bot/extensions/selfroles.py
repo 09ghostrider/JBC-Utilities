@@ -384,9 +384,9 @@ async def _colorroles(ctx: lightbulb.Context) -> None:
 
 @plugin.command()
 @lightbulb.add_checks(lightbulb.owner_only | lightbulb.has_role_permissions(hikari.Permissions.ADMINISTRATOR))
-@lightbulb.command("selfroles", "get self roles", aliases=["sr", "selfrole", "sroles"])
+@lightbulb.command("allroles", "get all self roles", aliases=["sr", "allrole", "aroles", "ar"])
 @lightbulb.implements(lightbulb.PrefixCommand)
-async def _selfroles(ctx: lightbulb.Context) -> None:
+async def _allroles(ctx: lightbulb.Context) -> None:
     try:
         await ctx.event.message.delete()
     except:
