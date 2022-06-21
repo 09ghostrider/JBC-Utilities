@@ -46,8 +46,6 @@ async def _on_started(event:hikari.StartedEvent) -> None:
     channel = await bot.rest.fetch_channel(bot_config["logging"]["startup"])
     await channel.send("Bot has Started")
 
-    bot.uptime = datetime.datetime.now(tz=datetime.timezone.utc)
-
     view = pingroles()
     view.start_listener()
 
