@@ -66,7 +66,7 @@ async def _status_update(ctx: hikari.PresenceUpdateEvent) -> None:
     if ctx.guild_id != 832105614577631232:
         return
     
-    status_list = ['discord.gg/1vs', '.gg/1vs', 'https://discord.com/1vs', 'https://discord.com/invite/1vs', 'discord.com/invite/1vs']
+    status_list = ["https://discord.gg/1vs"]
 
     presence = ctx.presence
     try:

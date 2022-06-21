@@ -466,7 +466,9 @@ async def _botaccess(ctx: lightbulb.Context) -> None:
     except:
         pass
 
-    embed = hikari.Embed(title="Bots access", description=f"""Click the {bot_config['emoji']['bot']} button to gain access to the channels.\nBe sure to read the rules.\nYou will gain access to dank memer, owo, mudae and karuta.""", color=bot_config['color']['default'])
+    embed = hikari.Embed(title="Bots access", description=f"""Click the {bot_config['emoji']['bot']} button to gain access to the channels.
+Be sure to read the rules in <#832107000589844491>.
+By gaining the <@&984037651835400222> role, you can access bot channels and giveaways!""", color=bot_config['color']['default'])
     embed.set_thumbnail(ctx.get_guild().icon_url)
     view = botaccess()
     msg = await ctx.respond(embed=embed, components=view.build())
@@ -482,7 +484,8 @@ async def _karutaccess(ctx: lightbulb.Context) -> None:
     except:
         pass
 
-    embed = hikari.Embed(title="Karuta access", description=f"""Click the {bot_config['emoji']['karuta']} button to gain access to the channels.\nBe sure to read the rules.""", color=bot_config['color']['default'])
+    embed = hikari.Embed(title="Karuta access", description=f"""Click the {bot_config['emoji']['karuta']} button to gain access to the channels.
+Be sure to read the rules in <#832107000589844491>.""", color=bot_config['color']['default'])
     embed.set_thumbnail(ctx.get_guild().icon_url)
     view = karutaaccess()
     msg = await ctx.respond(embed=embed, components=view.build())
