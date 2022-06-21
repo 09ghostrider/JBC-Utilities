@@ -10,6 +10,7 @@ from bot.extensions.selfroles import verify, botaccess, karutaaccess, pingroles,
 # from bot.extensions.giveaway import giveaway_view
 from dotenv import load_dotenv
 from lightbulb.ext import tasks
+import datetime
 
 load_dotenv()
 with open("./configs/config.json") as f:
@@ -44,6 +45,8 @@ tasks.load(bot)
 async def _on_started(event:hikari.StartedEvent) -> None:
     channel = await bot.rest.fetch_channel(bot_config["logging"]["startup"])
     await channel.send("Bot has Started")
+
+    bot.uptime = datetime.datetime.now(tz=datetime.timezone.utc)
 
     view = pingroles()
     view.start_listener()
