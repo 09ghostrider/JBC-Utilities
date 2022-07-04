@@ -983,7 +983,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
 
             elif action == "ban":
                 try:
-                    await message.message.author.send(f"You have banned from **{guild.name}**\nReason: {reason}")
+                    await message.message.author.send(f"You have been banned from **{guild.name}**\nReason: {reason}")
                     member_dm = bot_config['emoji']['tick']
                 except:
                     member_dm = bot_config['emoji']['cross']
@@ -1006,7 +1006,7 @@ async def _on_message(message: hikari.MessageCreateEvent) -> None:
 
             elif action == "kick":
                 try:
-                    await message.message.author.send(f"You have kicked from **{guild.name}**\nReason: {reason}")
+                    await message.message.author.send(f"You have been kicked from **{guild.name}**\nReason: {reason}")
                     member_dm = bot_config['emoji']['tick']
                 except:
                     member_dm = bot_config['emoji']['cross']

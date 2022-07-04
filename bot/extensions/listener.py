@@ -3,6 +3,7 @@ import lightbulb
 import json
 import miru
 import re
+import datetime
 from bot.utils.checks import botban_check
 
 plugin = lightbulb.Plugin("listener")
@@ -98,6 +99,26 @@ async def _status_update(ctx: hikari.PresenceUpdateEvent) -> None:
                 channel = await ctx.app.rest.fetch_channel(status_log)
                 embed=hikari.Embed(color=bot_config['color']['green'], description=f"Added {role.mention} to {member.mention}\n**New Status:** {status}")
                 return await channel.send(embed=embed)
+
+@plugin.listener(hikari.MemberCreateEvent)
+async def _on_member_join(ctx: hikari.MemberCreateEvent) -> None:
+    member = ctx.member
+    created = round(member.created_at.timestamp())
+    current = round(datetime.datetime.now(tz=datetime.timezone.utc).timestamp())
+    diff = current - created
+    if diff <= 259200:
+        try:
+            await member.send(f"You were banned from **{ctx.get_guild().name}**\nReason: Account too young to be allowed.")
+        except:
+            pass
+        await member.ban(delete_message_days=0, reason="Account too young to be allowed")
+    elif diff <= 604800:
+        role =  ctx.app.cache.get_role(896416813611638866)
+        try:
+            await member.send(f"You were blacklisted in **{ctx.get_guild().name}**\nReason: Account age too young.")
+        except:
+            pass
+        await member.add_role(role, reason="Account age too young")
 
 # @plugin.listener(hikari.MessageCreateEvent)
 # async def _on_message(message: hikari.MessageCreateEvent) -> None:
