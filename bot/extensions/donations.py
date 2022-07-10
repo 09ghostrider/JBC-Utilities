@@ -64,11 +64,14 @@ async def _gdonate(ctx: lightbulb.Context) -> None:
     view.add_item(claim_button(cmd))
     msg = await ctx.app.rest.create_message(ctx.get_guild().get_channel(ctx.event.message.channel_id), "<@&832108169441574914>", embed=embed, role_mentions=True, components=view.build())
 
-    view = miru.View()
-    view.add_item(miru.Button(label="Claimed", emoji=hikari.Emoji.parse(bot_config['emoji']['check']), disabled=True, style=hikari.ButtonStyle.SECONDARY))
+    view.start(msg)
+    await view.wait()
+
+    view2 = miru.View()
+    view2.add_item(miru.Button(label="Claimed", emoji=hikari.Emoji.parse(bot_config['emoji']['check']), disabled=True, style=hikari.ButtonStyle.SECONDARY))
 
     embed.set_footer(text=f"Claimed by {view.gman}", icon=view.gman.avatar_url)
-    await msg.edit(content="<@&832108169441574914>", embed=embed, components=view.build())
+    await msg.edit(content="<@&832108169441574914>", embed=embed, components=view2.build())
 
 @plugin.command()
 @lightbulb.command("ginfo", "shows information on how to donate")
